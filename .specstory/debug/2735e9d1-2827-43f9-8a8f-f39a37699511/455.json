@@ -1,0 +1,36 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.service;\n2\t\n3\timport com.coding.assistant.config.LlmConfig;\n4\timport com.fasterxml.jackson.databind.JsonNode;\n5\timport com.fasterxml.jackson.databind.ObjectMapper;\n6\timport com.fasterxml.jackson.databind.node.ObjectNode;\n7\timport lombok.extern.slf4j.Slf4j;\n8\timport org.springframework.http.MediaType;\n9\timport org.springframework.stereotype.Service;\n10\timport org.springframework.web.reactive.function.client.WebClient;\n11\t\n12\timport java.util.ArrayList;\n13\timport java.util.List;\n14\t\n15\t@Slf4j\n16\t@Service\n17\tpublic class EmbeddingService {\n18\t\n19\t    private final WebClient webClient;\n20\t    private final ObjectMapper objectMapper;\n21\t    private static final String EMBEDDING_MODEL = \"text-embedding-ada-002\";\n22\t\n23\t    public EmbeddingService(LlmConfig llmConfig, ObjectMapper objectMapper) {\n24\t        this.objectMapper = objectMapper;\n25\t        LlmConfig.ProviderConfig config = llmConfig.getOpenai();\n26\t        this.webClient = WebClient.builder()\n27\t                .baseUrl(config.getBaseUrl())\n28\t                .defaultHeader(\"Authorization\", \"Bearer \" + config.getApiKey())\n29\t                .defaultHeader(\"Content-Type\", \"application/json\")\n30\t                .codecs(c -\u003e c.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))\n31\t                .build();\n32\t    }\n33\t\n34\t    /**\n35\t     * 调用 embedding 接口，返回向量列表\n36\t     */\n37\t    public List\u003cDouble\u003e embed(String text) {\n38\t        try {\n39\t            ObjectNode body = objectMapper.createObjectNode();\n40\t            body.put(\"model\", EMBEDDING_MODEL);\n41\t            body.put(\"input\", text);\n42\t\n43\t            String response = webClient.post()\n44\t                    .uri(\"/v1/embeddings\")\n45\t                    .contentType(MediaType.APPLICATION_JSON)\n46\t                    .bodyValue(body.toString())\n47\t                    .retrieve()\n48\t                    .bodyToMono(String.class)\n49\t                    .block();\n50\t\n51\t            JsonNode node = objectMapper.readTree(response);\n52\t            JsonNode embeddingArray = node.path(\"data\").path(0).path(\"embedding\");\n53\t\n54\t            List\u003cDouble\u003e vector = new ArrayList\u003c\u003e();\n55\t            for (JsonNode val : embeddingArray) {\n56\t                vector.add(val.asDouble());\n57\t            }\n58\t            return vector;\n59\t        } catch (Exception e) {\n60\t            log.error(\"Embedding failed: {}\", e.getMessage());\n61\t            return List.of();\n62\t        }\n63\t    }\n64\t\n65\t    /**\n66\t     * 计算两个向量的余弦相似度\n67\t     */\n68\t    public double cosineSimilarity(List\u003cDouble\u003e a, List\u003cDouble\u003e b) {\n69\t        if (a.isEmpty() || b.isEmpty() || a.size() != b.size()) return 0.0;\n70\t        double dot = 0, normA = 0, normB = 0;\n71\t        for (int i = 0; i \u003c a.size(); i++) {\n72\t            dot += a.get(i) * b.get(i);\n73\t            normA += a.get(i) * a.get(i);\n74\t            normB += b.get(i) * b.get(i);\n75\t        }\n76\t        return (normA == 0 || normB == 0) ? 0.0 : dot / (Math.sqrt(normA) * Math.sqrt(normB));\n77\t    }\n78\t}\n79\t",
+        "tool_use_id": "tooluse_QtkHCXyEEdLVLuyejj02JY",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "0cc7c531-b148-4455-9c9a-93e8dec50f84",
+  "promptId": "3ec3c1c9-6b6e-45e4-babf-9c7e57f87474",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "0cc7c531-b148-4455-9c9a-93e8dec50f84",
+  "timestamp": "2026-04-08T02:02:25.358Z",
+  "toolUseResult": {
+    "file": {
+      "content": "package com.coding.assistant.service;\n\nimport com.coding.assistant.config.LlmConfig;\nimport com.fasterxml.jackson.databind.JsonNode;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.node.ObjectNode;\nimport lombok.extern.slf4j.Slf4j;\nimport org.springframework.http.MediaType;\nimport org.springframework.stereotype.Service;\nimport org.springframework.web.reactive.function.client.WebClient;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\n@Slf4j\n@Service\npublic class EmbeddingService {\n\n    private final WebClient webClient;\n    private final ObjectMapper objectMapper;\n    private static final String EMBEDDING_MODEL = \"text-embedding-ada-002\";\n\n    public EmbeddingService(LlmConfig llmConfig, ObjectMapper objectMapper) {\n        this.objectMapper = objectMapper;\n        LlmConfig.ProviderConfig config = llmConfig.getOpenai();\n        this.webClient = WebClient.builder()\n                .baseUrl(config.getBaseUrl())\n                .defaultHeader(\"Authorization\", \"Bearer \" + config.getApiKey())\n                .defaultHeader(\"Content-Type\", \"application/json\")\n                .codecs(c -\u003e c.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))\n                .build();\n    }\n\n    /**\n     * 调用 embedding 接口，返回向量列表\n     */\n    public List\u003cDouble\u003e embed(String text) {\n        try {\n            ObjectNode body = objectMapper.createObjectNode();\n            body.put(\"model\", EMBEDDING_MODEL);\n            body.put(\"input\", text);\n\n            String response = webClient.post()\n                    .uri(\"/v1/embeddings\")\n                    .contentType(MediaType.APPLICATION_JSON)\n                    .bodyValue(body.toString())\n                    .retrieve()\n                    .bodyToMono(String.class)\n                    .block();\n\n            JsonNode node = objectMapper.readTree(response);\n            JsonNode embeddingArray = node.path(\"data\").path(0).path(\"embedding\");\n\n            List\u003cDouble\u003e vector = new ArrayList\u003c\u003e();\n            for (JsonNode val : embeddingArray) {\n                vector.add(val.asDouble());\n            }\n            return vector;\n        } catch (Exception e) {\n            log.error(\"Embedding failed: {}\", e.getMessage());\n            return List.of();\n        }\n    }\n\n    /**\n     * 计算两个向量的余弦相似度\n     */\n    public double cosineSimilarity(List\u003cDouble\u003e a, List\u003cDouble\u003e b) {\n        if (a.isEmpty() || b.isEmpty() || a.size() != b.size()) return 0.0;\n        double dot = 0, normA = 0, normB = 0;\n        for (int i = 0; i \u003c a.size(); i++) {\n            dot += a.get(i) * b.get(i);\n            normA += a.get(i) * a.get(i);\n            normB += b.get(i) * b.get(i);\n        }\n        return (normA == 0 || normB == 0) ? 0.0 : dot / (Math.sqrt(normA) * Math.sqrt(normB));\n    }\n}\n",
+      "filePath": "d:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\service\\EmbeddingService.java",
+      "numLines": 79,
+      "startLine": 1,
+      "totalLines": 79
+    },
+    "type": "text"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "c4fdbdfb-460d-4a0c-a758-f1b91e8c7f64",
+  "version": "2.1.94"
+}

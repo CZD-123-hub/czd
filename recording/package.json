@@ -1,0 +1,12 @@
+{
+  "name": "demo-recording",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "record": "node record.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0"
+  }
+}

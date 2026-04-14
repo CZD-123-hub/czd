@@ -1,0 +1,28 @@
+{
+  "agentId": "a7128afaafc595c06",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/ChatGlmProvider.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/ChatMessage.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/LlmProvider.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/LlmProviderFactory.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/OpenAiProvider.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/QwenProvider.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/CodingAssistantApplication.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/config/LlmConfig.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/config/MyBatisPlusConfig.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/config/Neo4jConfig.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/config/Neo4jDataInitializer.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/config/WebConfig.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/config/XssFilter.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/controller/AuthController.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/controller/ChatController.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/controller/GraphController.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/controller/PathController.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/controller/ProgressController.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/controller/SnippetController.java\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/dto/ActivityVO.java",
+        "is_error": false,
+        "tool_use_id": "toolu_bdrk_01KamiXER19Xj7m6f7mHdB8S",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "fce6bc91-b36f-4053-ba47-4c0d398621c3",
+  "promptId": "800f6955-869d-49a2-ba91-5ef951fe8aa5",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "sourceToolAssistantUUID": "fce6bc91-b36f-4053-ba47-4c0d398621c3",
+  "timestamp": "2026-04-07T22:22:07.907Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "fea472b7-2bb3-48be-a06b-db8bcb6d96fb",
+  "version": "2.1.94"
+}

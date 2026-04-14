@@ -1,0 +1,24 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "[Request interrupted by user for tool use]",
+        "type": "text"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "48f06d3b-9c1c-415a-b910-17240b32a804",
+  "promptId": "c9efd091-67fc-4b71-90fb-fed972249c1b",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "timestamp": "2026-04-08T01:31:36.913Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "9a010d55-b526-4df4-8118-7bac39315688",
+  "version": "2.1.94"
+}

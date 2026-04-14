@@ -1,0 +1,28 @@
+{
+  "agentId": "a7128afaafc595c06",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "/d/intelligent-coding-assistant/frontend/src/api/auth.ts\n/d/intelligent-coding-assistant/frontend/src/api/chat.ts\n/d/intelligent-coding-assistant/frontend/src/api/graph.ts\n/d/intelligent-coding-assistant/frontend/src/api/path.ts\n/d/intelligent-coding-assistant/frontend/src/api/progress.ts\n/d/intelligent-coding-assistant/frontend/src/api/request.ts\n/d/intelligent-coding-assistant/frontend/src/api/snippet.ts\n/d/intelligent-coding-assistant/frontend/src/App.vue\n/d/intelligent-coding-assistant/frontend/src/auto-imports.d.ts\n/d/intelligent-coding-assistant/frontend/src/components/chat/ConversationList.vue\n/d/intelligent-coding-assistant/frontend/src/components/chat/FeedbackButton.vue\n/d/intelligent-coding-assistant/frontend/src/components/chat/MessageBubble.vue\n/d/intelligent-coding-assistant/frontend/src/components/common/CodeBlock.vue\n/d/intelligent-coding-assistant/frontend/src/components/common/CodeEditor.vue\n/d/intelligent-coding-assistant/frontend/src/components/dashboard/HeatmapChart.vue\n/d/intelligent-coding-assistant/frontend/src/components/dashboard/RadarChart.vue\n/d/intelligent-coding-assistant/frontend/src/components/graph/GraphRenderer.vue\n/d/intelligent-coding-assistant/frontend/src/components/layout/AppLayout.vue\n/d/intelligent-coding-assistant/frontend/src/components/path/PathTimeline.vue\n/d/intelligent-coding-assistant/frontend/src/components.d.ts",
+        "is_error": false,
+        "tool_use_id": "toolu_vrtx_01J27ouHN2UuSwsBdPEks2JR",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "991940de-9b95-47e9-b0bf-3729a9ad8906",
+  "promptId": "800f6955-869d-49a2-ba91-5ef951fe8aa5",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "sourceToolAssistantUUID": "991940de-9b95-47e9-b0bf-3729a9ad8906",
+  "timestamp": "2026-04-07T22:22:13.253Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "a9ae543c-2e5f-498e-b804-bc3c52dbce32",
+  "version": "2.1.94"
+}

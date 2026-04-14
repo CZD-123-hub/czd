@@ -1,0 +1,46 @@
+{
+  "cwd": "D:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "现在我对这个项目有了足够的了解，可以给你一份详细的讲解提纲了。\n\n---\n\n## 中期检查讲解提纲：智能编程学习助手\n\n---\n\n### 一、一句话定位（30秒开场）\n\n\u003e 这是一个面向程序员学习者的 AI 驱动助手，核心亮点是：**大模型问答 + 知识图谱导航 + 个性化学习路径** 三位一体，帮助用户系统化地学习编程知识。\n\n---\n\n### 二、技术架构总览（2分钟）\n\n用一张分层图来讲，从上到下：\n\n```\n前端 (Vue3 + Vite + ECharts)\n        ↓  HTTP/SSE\n后端 (Spring Boot)\n   ├── 业务层：ChatService / PathService / ProgressService\n   ├── AI层：LlmProviderFactory → ChatGLM / Qwen / OpenAI\n   └── 数据层：MySQL (MyBatis-Plus) + Neo4j (图数据库)\n```\n\n**重点强调**：系统支持多 LLM 提供商切换——通过 [LlmProviderFactory.java](backend/src/main/java/com/coding/assistant/ai/LlmProviderFactory.java) 工厂模式，只需修改配置文件的 `llm.provider` 即可在 ChatGLM、Qwen、OpenAI 之间切换，体现了**开闭原则**。\n\n---\n\n### 三、三大技术核心逐一讲解\n\n#### 核心1：流式问答（SSE）\n\n- 用户发送问题后，后端不是等 AI 回答完再返回，而是用 **Server-Sent Events** 实时流式推送\n- 代码位置：[ChatController.java:27](backend/src/main/java/com/coding/assistant/controller/ChatController.java#L27)，返回类型是 `Flux\u003cServerSentEvent\u003cString\u003e\u003e`，这是 Spring WebFlux 的响应式编程\n- 效果：用户看到 AI 像打字机一样逐字输出，首字响应 \u003c 2秒\n\n#### 核心2：知识图谱 + 拓扑排序生成学习路径（最有技术含量）\n\n这是最值得重点讲的部分，位于 [PathService.java](backend/src/main/java/com/coding/assistant/service/PathService.java)。\n\n**双重路径生成策略**（重点强调这个设计决策）：\n\n```\n用户请求学习目标（如\"掌握Spring Cloud\"）\n       ↓\n查询 Neo4j 图数据库\n  ── 找到相关知识点及依赖关系\n       ↓\n拓扑排序（Kahn算法）\n  ── 保证前置知识优先（如：Java基础→Spring→Spring Cloud）\n  ── 排除用户已掌握的知识点\n       ↓\n若图中无数据 → 降级到 AI 生成\n  ── 发送结构化 Prompt 给 LLM\n  ── 解析返回的 JSON 数组\n```\n\n**可以说**：用 Neo4j 的 `DEPENDS_ON` 关系天然建模了知识依赖，然后用 Kahn 拓扑排序确保学习顺序合理，这是图数据库在教育场景的经典应用。\n\n#### 核心3：知识图谱可视化\n\n- 后端用 Cypher 查询 Neo4j，返回节点+边的结构化数据\n- 前端用 ECharts 或 AntV G6 渲染力导向图\n- 节点按类别着色（语言/框架/数据库/工具），支持点击展开、懒加载、搜索定位\n\n---\n\n### 四、数据模型设计亮点（1分钟）\n\n**两库协同**：\n- **MySQL**：存用户、会话、消息、代码片段（结构化、适合关系查询）\n- **Neo4j**：存知识点节点和依赖关系（图结构、适合路径遍历）\n\n```\nKnowledge节点 --[DEPENDS_ON]--\u003e Knowledge节点\nKnowledge节点 --[HAS_RESOURCE]--\u003e Resource节点\n```\n\n---\n\n### 五、安全与工程规范（30秒加分项）\n\n- **JWT + Spring Security** 做无状态认证\n- **XSS 过滤器**：[XssFilter.java](backend/src/main/java/com/coding/assistant/config/XssFilter.java) 防注入攻击\n- **Docker Compose** 一键部署（MySQL + Neo4j + 后端 + 前端 Nginx）\n\n---\n\n### 六、如果老师追问\n\n| 问题 | 你的回答方向 |\n|------|------|\n| \"为什么用 Neo4j 不用 MySQL 存知识图谱？\" | 知识点有多层依赖关系，用图遍历（Cypher的 `*0..5`）比 SQL 多表 JOIN 性能好很多 |\n| \"AI 生成路径和图谱路径有什么区别？\" | 图谱路径更准确（基于真实依赖关系），AI路径是兜底方案（适用于图谱还没有录入的新领域） |\n| \"SSE 和 WebSocket 有什么区别？\" | SSE 是单向推送、基于 HTTP，更简单；WebSocket 是双向通信，本项目只需服务端推送所以用 SSE |\n| \"后续怎么扩展？\" | SPEC 中预留了 RAG（向量检索）扩展点，可以接入 Milvus/Elasticsearch 做语义搜索 |\n\n---\n\n**建议的讲解顺序**：架构图 → 演示流式问答 → 演示知识图谱 → 演示学习路径生成 → 讲 PathService 的核心代码 → 回答追问。把 PathService 的拓扑排序那段代码打开给老师看，那是整个项目技术含量最高的地方。",
+        "type": "text"
+      }
+    ],
+    "id": "msg_bdrk_016pTkF7yHhGuTWDF62JnGta",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 24547,
+      "cache_read_input_tokens": 17487,
+      "inference_geo": "",
+      "input_tokens": 1,
+      "iterations": [],
+      "output_tokens": 1782,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "6ce2a89e-67b5-474e-b14d-7882fec40070",
+  "sessionId": "87f9fee4-bf84-431a-b0d5-855e836e118a",
+  "slug": "rippling-enchanting-mochi",
+  "timestamp": "2026-04-07T22:46:50.650Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "eb4643ce-11ad-4bcb-9dad-61bffc8eed0b",
+  "version": "2.1.94"
+}

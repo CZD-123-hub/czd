@@ -1,0 +1,53 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "id": "tooluse_57Xu9ZOoJjV7E5vLIkOdjp",
+        "input": {
+          "file_path": "d:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\service\\DocumentService.java",
+          "new_string": "import jakarta.annotation.PostConstruct;\nimport org.springframework.stereotype.Service;\n\nimport java.time.LocalDateTime;\nimport java.util.Comparator;\nimport java.util.List;\nimport java.util.stream.Collectors;\n\n@Slf4j\n@Service\n@RequiredArgsConstructor\npublic class DocumentService {\n\n    private final KnowledgeDocumentMapper documentMapper;\n    private final EmbeddingService embeddingService;\n    private final ObjectMapper objectMapper;\n\n    /** 启动时加载所有文档语料，初始化 TF-IDF 词表 */\n    @PostConstruct\n    public void initCorpus() {\n        try {\n            List\u003cKnowledgeDocument\u003e all = documentMapper.selectList(\n                    new LambdaQueryWrapper\u003cKnowledgeDocument\u003e()\n                            .select(KnowledgeDocument::getTitle, KnowledgeDocument::getContent));\n            for (KnowledgeDocument doc : all) {\n                embeddingService.updateCorpus(doc.getTitle() + \"\\n\" + doc.getContent());\n            }\n            log.info(\"TF-IDF corpus initialized with {} documents\", all.size());\n        } catch (Exception e) {\n            log.warn(\"Failed to init corpus: {}\", e.getMessage());\n        }\n    }\n\n    /**\n     * 新增文档并自动生成 embedding\n     */\n    public KnowledgeDocument addDocument(String title, String content, String category) {\n        // 先更新语料，再向量化（保证 IDF 包含本文档）\n        embeddingService.updateCorpus(title + \"\\n\" + content);",
+          "old_string": "import org.springframework.stereotype.Service;\n\nimport java.time.LocalDateTime;\nimport java.util.Comparator;\nimport java.util.List;\nimport java.util.stream.Collectors;\n\n@Slf4j\n@Service\n@RequiredArgsConstructor\npublic class DocumentService {\n\n    private final KnowledgeDocumentMapper documentMapper;\n    private final EmbeddingService embeddingService;\n    private final ObjectMapper objectMapper;\n\n    /**\n     * 新增文档并自动生成 embedding\n     */\n    public KnowledgeDocument addDocument(String title, String content, String category) {",
+          "replace_all": false
+        },
+        "name": "Edit",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_20260408100333",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 85446,
+      "iterations": [],
+      "output_tokens": 734,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "fc9fc091-19c5-46e4-8bb1-84bb94f32d68",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "timestamp": "2026-04-08T02:03:48.861Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "8b52baae-352a-4dad-b77f-3ba15bc27718",
+  "version": "2.1.94"
+}

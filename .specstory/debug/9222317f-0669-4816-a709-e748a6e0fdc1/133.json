@@ -1,0 +1,27 @@
+{
+  "agentId": "aec633934c059eb99",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\t# ============================================================\n2\t# Backend Dockerfile - Spring Boot (Multi-stage build)\n3\t# ============================================================\n4\t\n5\t# Stage 1: Build with Maven\n6\tFROM maven:3.9-eclipse-temurin-21 AS build\n7\tWORKDIR /app\n8\t\n9\t# Copy POM first to cache dependencies\n10\tCOPY pom.xml .\n11\tRUN mvn dependency:go-offline -B\n12\t\n13\t# Copy source and build\n14\tCOPY src ./src\n15\tRUN mvn package -DskipTests -B\n16\t\n17\t# Stage 2: Runtime\n18\tFROM eclipse-temurin:21-jre-alpine\n19\tWORKDIR /app\n20\t\n21\t# Add non-root user for security\n22\tRUN addgroup -S appgroup \u0026\u0026 adduser -S appuser -G appgroup\n23\t\n24\t# Copy the built JAR\n25\tCOPY --from=build /app/target/*.jar app.jar\n26\t\n27\t# Set ownership\n28\tRUN chown -R appuser:appgroup /app\n29\t\n30\tUSER appuser\n31\t\n32\tEXPOSE 8080\n33\t\n34\t# Health check\n35\tHEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \\\n36\t    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1\n37\t\n38\tENTRYPOINT [\"java\", \\\n39\t    \"-XX:+UseContainerSupport\", \\\n40\t    \"-XX:MaxRAMPercentage=75.0\", \\\n41\t    \"-Djava.security.egd=file:/dev/./urandom\", \\\n42\t    \"-jar\", \"app.jar\"]",
+        "tool_use_id": "toolu_bdrk_013R6MRntXTSDNw23XWHLbNt",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "6d293ce9-8696-49b1-b33f-f8e9c89f8490",
+  "promptId": "11ee6348-5e1a-43fe-ac10-b31e4304d735",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "sourceToolAssistantUUID": "6d293ce9-8696-49b1-b33f-f8e9c89f8490",
+  "timestamp": "2026-04-07T22:25:31.107Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "24ca79e1-fa1d-4aa3-beaf-10276c6baa78",
+  "version": "2.1.94"
+}

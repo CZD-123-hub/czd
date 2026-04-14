@@ -1,0 +1,28 @@
+{
+  "agentId": "a1501e3f7e6f160fd",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/service/ChatService.java:                throw new BusinessException(404, \"Conversation not found\");\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/service/ChatService.java:            throw new BusinessException(404, \"Conversation not found\");\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/service/ChatService.java:            throw new BusinessException(404, \"Conversation not found\");\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/service/SnippetService.java:            throw new BusinessException(404, \"Snippet not found\");\n/d/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/service/SnippetService.java:            throw new BusinessException(404, \"Snippet not found\");",
+        "is_error": false,
+        "tool_use_id": "tooluse_psdIQ3w2Vpn8pP3s7DuWMt",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "f7330cc6-02f3-4597-9963-84f94d35b15b",
+  "promptId": "817f44e6-fe7d-4a73-a272-36d9ea1afcac",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "f7330cc6-02f3-4597-9963-84f94d35b15b",
+  "timestamp": "2026-04-08T01:38:23.148Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "d1f68ccd-67f3-4180-88b0-3f1bb7c44564",
+  "version": "2.1.94"
+}

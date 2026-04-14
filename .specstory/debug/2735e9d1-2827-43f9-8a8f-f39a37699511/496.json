@@ -1,0 +1,27 @@
+{
+  "agentId": "ae4ebc04317ea0d11",
+  "cwd": "D:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.security;\n2\t\n3\timport jakarta.servlet.DispatcherType;\n4\timport lombok.RequiredArgsConstructor;\n5\timport org.springframework.context.annotation.Bean;\n6\timport org.springframework.context.annotation.Configuration;\n7\timport org.springframework.security.authentication.AuthenticationManager;\n8\timport org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;\n9\timport org.springframework.security.config.annotation.web.builders.HttpSecurity;\n10\timport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;\n11\timport org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;\n12\timport org.springframework.security.config.http.SessionCreationPolicy;\n13\timport org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;\n14\timport org.springframework.security.crypto.password.PasswordEncoder;\n15\timport org.springframework.security.web.SecurityFilterChain;\n16\timport org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;\n17\timport org.springframework.web.cors.CorsConfiguration;\n18\timport org.springframework.web.cors.CorsConfigurationSource;\n19\timport org.springframework.web.cors.UrlBasedCorsConfigurationSource;\n20\t\n21\timport java.util.Arrays;\n22\timport java.util.List;\n23\t\n24\t@Configuration\n25\t@EnableWebSecurity\n26\t@RequiredArgsConstructor\n27\tpublic class SecurityConfig {\n28\t\n29\t    private final JwtAuthenticationFilter jwtAuthenticationFilter;\n30\t\n31\t    @Bean\n32\t    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {\n33\t        http\n34\t                .csrf(AbstractHttpConfigurer::disable)\n35\t                .cors(cors -\u003e cors.configurationSource(corsConfigurationSource()))\n36\t                .sessionManagement(session -\u003e session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\n37\t                .exceptionHandling(ex -\u003e ex\n38\t                        .authenticationEntryPoint((request, response, authException) -\u003e {\n39\t                            response.setStatus(401);\n40\t                            response.setContentType(\"application/json;charset=UTF-8\");\n41\t                            response.getWriter().write(\"{\\\"code\\\":401,\\\"message\\\":\\\"未登录或登录已过期\\\",\\\"data\\\":null}\");\n42\t                        })\n43\t                )\n44\t                .authorizeHttpRequests(auth -\u003e auth\n45\t                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()\n46\t                        .requestMatchers(\"/api/auth/register\", \"/api/auth/login\").permitAll()\n47\t                        .requestMatchers(\"/uploads/**\").permitAll()\n48\t                        .requestMatchers(\"/api/**\").authenticated()\n49\t                        .anyRequest().permitAll()\n50\t                )\n51\t                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);\n52\t\n53\t        return http.build();\n54\t    }\n55\t\n56\t    @Bean\n57\t    public CorsConfigurationSource corsConfigurationSource() {\n58\t        CorsConfiguration configuration = new CorsConfiguration();\n59\t        configuration.setAllowedOriginPatterns(List.of(\"*\"));\n60\t        configuration.setAllowedMethods(Arrays.asList(\"GET\", \"POST\", \"PUT\", \"DELETE\", \"OPTIONS\", \"PATCH\"));\n61\t        configuration.setAllowedHeaders(List.of(\"*\"));\n62\t        configuration.setAllowCredentials(true);\n63\t        configuration.setMaxAge(3600L);\n64\t\n65\t        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();\n66\t        source.registerCorsConfiguration(\"/**\", configuration);\n67\t        return source;\n68\t    }\n69\t\n70\t    @Bean\n71\t    public PasswordEncoder passwordEncoder() {\n72\t        return new BCryptPasswordEncoder();\n73\t    }\n74\t\n75\t    @Bean\n76\t    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {\n77\t        return authConfig.getAuthenticationManager();\n78\t    }\n79\t}",
+        "tool_use_id": "tooluse_GY4QqibvIFATW2tFLyr9yt",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "130f1494-9654-4d80-b5bc-1cd7b77f9155",
+  "promptId": "95b78f29-3683-4f4d-a928-acadca8abc93",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "130f1494-9654-4d80-b5bc-1cd7b77f9155",
+  "timestamp": "2026-04-08T02:06:48.914Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "684d558a-49ea-444d-ac2d-21cb24848144",
+  "version": "2.1.94"
+}

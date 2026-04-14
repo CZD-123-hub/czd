@@ -1,0 +1,28 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "User cancelled the edit",
+        "is_error": true,
+        "tool_use_id": "tooluse_J8WxDS08sD4hdC7RM60CUO",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "8bac6f02-a544-449b-8661-f36a76484259",
+  "promptId": "c9efd091-67fc-4b71-90fb-fed972249c1b",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "8bac6f02-a544-449b-8661-f36a76484259",
+  "timestamp": "2026-04-08T01:31:36.911Z",
+  "toolUseResult": "Error: User cancelled the edit",
+  "type": "user",
+  "userType": "external",
+  "uuid": "48f06d3b-9c1c-415a-b910-17240b32a804",
+  "version": "2.1.94"
+}

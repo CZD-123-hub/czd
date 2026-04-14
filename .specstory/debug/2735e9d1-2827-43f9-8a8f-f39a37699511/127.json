@@ -1,0 +1,27 @@
+{
+  "agentId": "a1501e3f7e6f160fd",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.service;\n2\t\n3\timport com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;\n4\timport com.baomidou.mybatisplus.extension.plugins.pagination.Page;\n5\timport com.coding.assistant.dto.*;\n6\timport com.coding.assistant.entity.CodeSnippet;\n7\timport com.coding.assistant.entity.Message;\n8\timport com.coding.assistant.exception.BusinessException;\n9\timport com.coding.assistant.mapper.CodeSnippetMapper;\n10\timport com.coding.assistant.mapper.MessageMapper;\n11\timport com.fasterxml.jackson.core.JsonProcessingException;\n12\timport com.fasterxml.jackson.core.type.TypeReference;\n13\timport com.fasterxml.jackson.databind.ObjectMapper;\n14\timport lombok.RequiredArgsConstructor;\n15\timport lombok.extern.slf4j.Slf4j;\n16\timport org.springframework.stereotype.Service;\n17\timport org.springframework.transaction.annotation.Transactional;\n18\t\n19\timport java.time.LocalDateTime;\n20\timport java.util.ArrayList;\n21\timport java.util.Arrays;\n22\timport java.util.List;\n23\timport java.util.stream.Collectors;\n24\t\n25\t@Slf4j\n26\t@Service\n27\t@RequiredArgsConstructor\n28\tpublic class SnippetService {\n29\t\n30\t    private final CodeSnippetMapper codeSnippetMapper;\n31\t    private final MessageMapper messageMapper;\n32\t    private final ObjectMapper objectMapper;\n33\t\n34\t    @Transactional\n35\t    public SnippetVO create(Long userId, SnippetRequest request) {\n36\t        String tagsJson = null;\n37\t        if (request.getTags() != null \u0026\u0026 !request.getTags().isEmpty()) {\n38\t            try {\n39\t                tagsJson = objectMapper.writeValueAsString(request.getTags());\n40\t            } catch (JsonProcessingException e) {\n41\t                log.error(\"Error serializing tags: {}\", e.getMessage());\n42\t            }\n43\t        }\n44\t\n45\t        CodeSnippet snippet = CodeSnippet.builder()\n46\t                .userId(userId)\n47\t                .title(request.getTitle())\n48\t                .code(request.getCode())\n49\t                .language(request.getLanguage())\n50\t                .description(request.getDescription())\n51\t                .tags(tagsJson)\n52\t                .useCount(0)\n53\t                .createdAt(LocalDateTime.now())\n54\t                .updatedAt(LocalDateTime.now())\n55\t                .build();\n56\t        codeSnippetMapper.insert(snippet);\n57\t\n58\t        log.info(\"Code snippet created: id={}, userId={}\", snippet.getId(), userId);\n59\t        return toSnippetVO(snippet);\n60\t    }\n61\t\n62\t    public PageResult\u003cSnippetVO\u003e list(Long userId, SnippetQueryRequest request) {\n63\t        Page\u003cCodeSnippet\u003e page = new Page\u003c\u003e(request.getPage(), request.getSize());\n64\t        Page\u003cCodeSnippet\u003e result = (Page\u003cCodeSnippet\u003e) codeSnippetMapper.selectByUserIdWithFilter(\n65\t                page, userId, request.getKeyword(), request.getTag());\n66\t\n67\t        List\u003cSnippetVO\u003e records = result.getRecords().stream()\n68\t                .map(this::toSnippetVO)\n69\t                .collect(Collectors.toList());\n70\t\n71\t        return PageResult.\u003cSnippetVO\u003ebuilder()\n72\t                .records(records)\n73\t                .total(result.getTotal())\n74\t                .page(request.getPage())\n75\t                .size(request.getSize())\n76\t                .build();\n77\t    }\n78\t\n79\t    public List\u003cSnippetVO\u003e recommend(Long userId, Long conversationId) {\n80\t        // Get conversation keywords from messages\n81\t        List\u003cMessage\u003e messages = messageMapper.selectByConversationIdOrderByCreatedAt(conversationId);\n82\t        if (messages.isEmpty()) {\n83\t            return List.of();\n84\t        }\n85\t\n86\t        // Extract keywords from user messages\n87\t        String combinedContent = messages.stream()\n88\t                .filter(m -\u003e \"user\".equals(m.getRole()))\n89\t                .map(Message::getContent)\n90\t                .collect(Collectors.joining(\" \"));\n91\t\n92\t        List\u003cString\u003e keywords = extractKeywords(combinedContent);\n93\t\n94\t        // Get user's snippets\n95\t        List\u003cCodeSnippet\u003e allSnippets = codeSnippetMapper.selectList(\n96\t                new LambdaQueryWrapper\u003cCodeSnippet\u003e()\n97\t                        .eq(CodeSnippet::getUserId, userId)\n98\t        );\n99\t\n100\t        // Score and sort snippets by relevance",
+        "tool_use_id": "tooluse_7JTuXlmnficu7EOfhOYAcu",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "ce034399-e05d-441c-8bfa-1705fe438792",
+  "promptId": "817f44e6-fe7d-4a73-a272-36d9ea1afcac",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "ce034399-e05d-441c-8bfa-1705fe438792",
+  "timestamp": "2026-04-08T01:37:22.639Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "1b233e4d-2d75-4037-b360-8d5b151839b0",
+  "version": "2.1.94"
+}

@@ -1,0 +1,36 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "1\t// API Response\n2\texport interface ApiResponse\u003cT\u003e {\n3\t  code: number\n4\t  message: string\n5\t  data: T\n6\t}\n7\t\n8\texport interface PageResult\u003cT\u003e {\n9\t  records: T[]\n10\t  total: number\n11\t  page: number\n12\t  size: number\n13\t}\n14\t\n15\t// Auth\n16\texport interface LoginForm {\n17\t  username: string\n18\t  password: string\n19\t}\n20\t\n21\texport interface RegisterForm {\n22\t  username: string\n23\t  password: string\n24\t  email: string\n25\t}\n26\t\n27\texport interface UserInfo {\n28\t  id: number\n29\t  username: string\n30\t  email: string\n31\t  avatar: string\n32\t  level: string\n33\t  createdAt: string\n34\t}\n35\t\n36\texport interface TokenInfo {\n37\t  token: string\n38\t  user: UserInfo\n39\t}\n40\t\n41\t// Chat\n42\texport interface Conversation {\n43\t  id: number\n44\t  title: string\n45\t  createdAt: string\n46\t  updatedAt: string\n47\t}\n48\t\n49\texport interface Message {\n50\t  id: number\n51\t  conversationId: number\n52\t  role: 'user' | 'assistant'\n53\t  content: string\n54\t  sources: string[]\n55\t  createdAt: string\n56\t}\n57\t\n58\t// Graph\n59\texport interface KnowledgeNode {\n60\t  id: string\n61\t  name: string\n62\t  category: string\n63\t  description: string\n64\t  difficulty: string\n65\t  keywords: string[]\n66\t}\n67\t\n68\texport interface GraphEdge {\n69\t  source: string\n70\t  target: string\n71\t  type: string\n72\t}\n73\t\n74\texport interface GraphData {\n75\t  nodes: KnowledgeNode[]\n76\t  edges: GraphEdge[]\n77\t}\n78\t\n79\t// Learning Path\n80\texport interface LearningPath {\n81\t  id: number\n82\t  target: string\n83\t  status: string\n84\t  nodes: LearningNodeInfo[]\n85\t  createdAt: string\n86\t}\n87\t\n88\texport interface LearningNodeInfo {\n89\t  id: number\n90\t  knowledgeId: string\n91\t  knowledgeName: string\n92\t  nodeOrder: number\n93\t  status: 'todo' | 'doing' | 'done' | 'skipped'\n94\t  resourceUrls: string[]\n95\t}\n96\t\n97\t// Snippets\n98\texport interface CodeSnippet {\n99\t  id: number\n100\t  title: string\n101\t  code: string\n102\t  language: string\n103\t  description: string\n104\t  tags: string[]\n105\t  useCount: number\n106\t  createdAt: string\n107\t  updatedAt: string\n108\t}\n109\t\n110\t// Progress\n111\texport interface DashboardData {\n112\t  totalDays: number\n113\t  totalChats: number\n114\t  totalSnippets: number\n115\t  knowledgeCoverage: number\n116\t  recentActivity: { date: string; count: number }[]\n117\t}\n118\t\n119\texport interface HeatmapData {\n120\t  year: number\n121\t  data: { date: string; count: number }[]\n122\t}\n123\t\n124\texport interface RadarData {\n125\t  categories: string[]\n126\t  values: number[]\n127\t}\n128\t\n129\texport interface WeakArea {\n130\t  key: string\n131\t  name: string\n132\t  score: number\n133\t  suggestion: string\n134\t}\n135\t\n136\texport interface WeeklyPlanItem {\n137\t  id: string\n138\t  title: string\n139\t  description: string\n140\t  completed: boolean\n141\t}\n142\t\n143\texport interface SmartInsights {\n144\t  healthScore: number\n145\t  weakAreas: WeakArea[]\n146\t  weeklyPlan: WeeklyPlanItem[]\n147\t}\n148\t",
+        "tool_use_id": "tooluse_zRJIfN9Xn4oJbUe3GgeGkD",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "b3191025-602d-4f64-a932-b463bc759b93",
+  "promptId": "bdda92e5-91a2-4f24-bb85-b26db0c3203e",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "b3191025-602d-4f64-a932-b463bc759b93",
+  "timestamp": "2026-04-08T03:45:00.095Z",
+  "toolUseResult": {
+    "file": {
+      "content": "// API Response\nexport interface ApiResponse\u003cT\u003e {\n  code: number\n  message: string\n  data: T\n}\n\nexport interface PageResult\u003cT\u003e {\n  records: T[]\n  total: number\n  page: number\n  size: number\n}\n\n// Auth\nexport interface LoginForm {\n  username: string\n  password: string\n}\n\nexport interface RegisterForm {\n  username: string\n  password: string\n  email: string\n}\n\nexport interface UserInfo {\n  id: number\n  username: string\n  email: string\n  avatar: string\n  level: string\n  createdAt: string\n}\n\nexport interface TokenInfo {\n  token: string\n  user: UserInfo\n}\n\n// Chat\nexport interface Conversation {\n  id: number\n  title: string\n  createdAt: string\n  updatedAt: string\n}\n\nexport interface Message {\n  id: number\n  conversationId: number\n  role: 'user' | 'assistant'\n  content: string\n  sources: string[]\n  createdAt: string\n}\n\n// Graph\nexport interface KnowledgeNode {\n  id: string\n  name: string\n  category: string\n  description: string\n  difficulty: string\n  keywords: string[]\n}\n\nexport interface GraphEdge {\n  source: string\n  target: string\n  type: string\n}\n\nexport interface GraphData {\n  nodes: KnowledgeNode[]\n  edges: GraphEdge[]\n}\n\n// Learning Path\nexport interface LearningPath {\n  id: number\n  target: string\n  status: string\n  nodes: LearningNodeInfo[]\n  createdAt: string\n}\n\nexport interface LearningNodeInfo {\n  id: number\n  knowledgeId: string\n  knowledgeName: string\n  nodeOrder: number\n  status: 'todo' | 'doing' | 'done' | 'skipped'\n  resourceUrls: string[]\n}\n\n// Snippets\nexport interface CodeSnippet {\n  id: number\n  title: string\n  code: string\n  language: string\n  description: string\n  tags: string[]\n  useCount: number\n  createdAt: string\n  updatedAt: string\n}\n\n// Progress\nexport interface DashboardData {\n  totalDays: number\n  totalChats: number\n  totalSnippets: number\n  knowledgeCoverage: number\n  recentActivity: { date: string; count: number }[]\n}\n\nexport interface HeatmapData {\n  year: number\n  data: { date: string; count: number }[]\n}\n\nexport interface RadarData {\n  categories: string[]\n  values: number[]\n}\n\nexport interface WeakArea {\n  key: string\n  name: string\n  score: number\n  suggestion: string\n}\n\nexport interface WeeklyPlanItem {\n  id: string\n  title: string\n  description: string\n  completed: boolean\n}\n\nexport interface SmartInsights {\n  healthScore: number\n  weakAreas: WeakArea[]\n  weeklyPlan: WeeklyPlanItem[]\n}\n",
+      "filePath": "d:/intelligent-coding-assistant/frontend/src/types/index.ts",
+      "numLines": 148,
+      "startLine": 1,
+      "totalLines": 148
+    },
+    "type": "text"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "2b160e0d-476c-4e5c-9a07-d500030d181c",
+  "version": "2.1.94"
+}

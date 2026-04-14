@@ -1,0 +1,28 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.",
+        "is_error": true,
+        "tool_use_id": "tooluse_IJZTTPwFAGcsIIJ9lYkUDv",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "aae50b53-dfc6-4d68-b200-12404aac98d7",
+  "promptId": "8e5d6460-014c-4c3e-a73b-a2ae83409c3a",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "aae50b53-dfc6-4d68-b200-12404aac98d7",
+  "timestamp": "2026-04-08T01:35:50.065Z",
+  "toolUseResult": "Error: The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.",
+  "type": "user",
+  "userType": "external",
+  "uuid": "6c620ec4-b8c7-46f5-9684-4b6cf551f674",
+  "version": "2.1.94"
+}

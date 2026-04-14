@@ -1,0 +1,36 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "100\t    `target_id` VARCHAR(100) DEFAULT NULL,\n101\t    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n102\t    INDEX `idx_record_user_created` (`user_id`, `created_at`),\n103\t    CONSTRAINT `fk_record_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE\n104\t) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n105\t\n106\t-- ============================================================\n107\t-- 测试数据\n108\t-- ============================================================\n109\t",
+        "tool_use_id": "tooluse_lhtEyrfE0t9Wqd8lf87iUd",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "365f5e0f-4940-4f12-ad36-a57fd62e6224",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "365f5e0f-4940-4f12-ad36-a57fd62e6224",
+  "timestamp": "2026-04-08T01:45:15.367Z",
+  "toolUseResult": {
+    "file": {
+      "content": "    `target_id` VARCHAR(100) DEFAULT NULL,\n    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    INDEX `idx_record_user_created` (`user_id`, `created_at`),\n    CONSTRAINT `fk_record_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n\n-- ============================================================\n-- 测试数据\n-- ============================================================\n",
+      "filePath": "d:\\intelligent-coding-assistant\\backend\\src\\main\\resources\\schema.sql",
+      "numLines": 10,
+      "startLine": 100,
+      "totalLines": 369
+    },
+    "type": "text"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "085f0676-db79-4cd5-bdf3-1e006c5142c7",
+  "version": "2.1.94"
+}

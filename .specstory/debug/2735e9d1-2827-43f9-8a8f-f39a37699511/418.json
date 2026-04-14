@@ -1,0 +1,33 @@
+{
+  "cwd": "D:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "File created successfully at: d:\\intelligent-coding-assistant\\frontend\\src\\api\\document.ts",
+        "tool_use_id": "tooluse_gk4JdCKS2nYboRDf5WDgmK",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "b79fc859-4cdb-4e02-bb2f-0e2c48346952",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "b79fc859-4cdb-4e02-bb2f-0e2c48346952",
+  "timestamp": "2026-04-08T01:54:29.406Z",
+  "toolUseResult": {
+    "content": "import request from './request'\n\nexport interface KnowledgeDocument {\n  id?: number\n  title: string\n  content: string\n  category?: string\n  createdAt?: string\n}\n\nexport const documentApi = {\n  list: () =\u003e request.get\u003cKnowledgeDocument[]\u003e('/documents'),\n  add: (data: KnowledgeDocument) =\u003e request.post\u003cKnowledgeDocument\u003e('/documents', data),\n  delete: (id: number) =\u003e request.delete(`/documents/${id}`),\n}\n",
+    "filePath": "d:\\intelligent-coding-assistant\\frontend\\src\\api\\document.ts",
+    "originalFile": null,
+    "structuredPatch": [],
+    "type": "create"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "81d8048c-1a1e-47e9-9552-e50224c09e12",
+  "version": "2.1.94"
+}

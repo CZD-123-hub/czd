@@ -1,0 +1,52 @@
+{
+  "agentId": "ad94ec181cd0def78",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "id": "tooluse_YM4RQn5ChO8PGcFQiXMnsr",
+        "input": {
+          "file_path": "/d/intelligent-coding-assistant/frontend/src/views/Chat/ChatView.vue",
+          "limit": 50
+        },
+        "name": "Read",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_20260408114232",
+    "model": "claude-haiku-4-5-20251001",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 34745,
+      "iterations": [],
+      "output_tokens": 126,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "45f4ef15-609b-4062-9f93-724058286aa2",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "timestamp": "2026-04-08T03:42:35.452Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "94aca6d9-d99a-4fcb-9f09-c251fb02e874",
+  "version": "2.1.94"
+}

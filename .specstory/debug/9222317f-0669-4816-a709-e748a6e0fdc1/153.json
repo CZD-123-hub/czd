@@ -1,0 +1,25 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "假如明天我们的老师要对我们的项目进行中期检查，我该怎么讲解我的项目核心技术重点",
+        "type": "text"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "07d5b26b-7c04-4130-b255-b87352867557",
+  "permissionMode": "default",
+  "promptId": "1bf4e45f-69f1-4547-89ae-3ee14301bfba",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "timestamp": "2026-04-07T22:34:03.116Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "1fd74de0-0741-4307-adf4-f6409eb91311",
+  "version": "2.1.94"
+}

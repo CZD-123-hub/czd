@@ -1,0 +1,36 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "1\tCREATE DATABASE IF NOT EXISTS coding_assistant DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\n2\t\n3\tUSE coding_assistant;\n4\t\n5\t-- User table\n6\tCREATE TABLE IF NOT EXISTS `user` (\n7\t    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,\n8\t    `username` VARCHAR(50) NOT NULL UNIQUE,\n9\t    `password` VARCHAR(255) NOT NULL,\n10\t    `email` VARCHAR(100) NOT NULL UNIQUE,\n11\t    `avatar` VARCHAR(255) DEFAULT NULL,\n12\t    `level` VARCHAR(20) DEFAULT 'beginner',\n13\t    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n14\t    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n15\t    INDEX `idx_user_username` (`username`),\n16\t    INDEX `idx_user_email` (`email`)\n17\t) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n18\t\n19\t-- Conversation table\n20\tCREATE TABLE IF NOT EXISTS `conversation` (\n21\t    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,\n22\t    `user_id` BIGINT NOT NULL,\n23\t    `title` VARCHAR(200) DEFAULT NULL,\n24\t    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n25\t    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n26\t    INDEX `idx_conversation_user_id` (`user_id`),\n27\t    CONSTRAINT `fk_conversation_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE\n28\t) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n29\t\n30\t-- Message table",
+        "tool_use_id": "tooluse_ZD1xCCCc4exmrfWhDySnAG",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "451731c1-a875-4618-9f2c-beaef609cf89",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "451731c1-a875-4618-9f2c-beaef609cf89",
+  "timestamp": "2026-04-08T01:44:43.326Z",
+  "toolUseResult": {
+    "file": {
+      "content": "CREATE DATABASE IF NOT EXISTS coding_assistant DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\n\nUSE coding_assistant;\n\n-- User table\nCREATE TABLE IF NOT EXISTS `user` (\n    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,\n    `username` VARCHAR(50) NOT NULL UNIQUE,\n    `password` VARCHAR(255) NOT NULL,\n    `email` VARCHAR(100) NOT NULL UNIQUE,\n    `avatar` VARCHAR(255) DEFAULT NULL,\n    `level` VARCHAR(20) DEFAULT 'beginner',\n    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    INDEX `idx_user_username` (`username`),\n    INDEX `idx_user_email` (`email`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n\n-- Conversation table\nCREATE TABLE IF NOT EXISTS `conversation` (\n    `id` BIGINT AUTO_INCREMENT PRIMARY KEY,\n    `user_id` BIGINT NOT NULL,\n    `title` VARCHAR(200) DEFAULT NULL,\n    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    INDEX `idx_conversation_user_id` (`user_id`),\n    CONSTRAINT `fk_conversation_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n\n-- Message table",
+      "filePath": "d:\\intelligent-coding-assistant\\backend\\src\\main\\resources\\schema.sql",
+      "numLines": 30,
+      "startLine": 1,
+      "totalLines": 369
+    },
+    "type": "text"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "33569d3c-ce25-4db2-9c4b-62aaf404aa4d",
+  "version": "2.1.94"
+}

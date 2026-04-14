@@ -1,0 +1,25 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isMeta": true,
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "[Image: original 2146x1033, displayed at 2000x963. Multiply coordinates by 1.07 to map to original image.]",
+        "type": "text"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "212684bb-d550-43e6-9ece-4b75a8dcab04",
+  "promptId": "95b78f29-3683-4f4d-a928-acadca8abc93",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "timestamp": "2026-04-08T02:06:07.748Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "8ee326b0-e949-45b7-bbeb-c56af9784948",
+  "version": "2.1.94"
+}

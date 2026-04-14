@@ -1,0 +1,52 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "id": "tooluse_osRdGqaaCRZAqMPOJEM3UD",
+        "input": {
+          "file_path": "d:/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/service/ChatService.java",
+          "limit": 20,
+          "offset": 182
+        },
+        "name": "Read",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_20260408115104",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 55506,
+      "iterations": [],
+      "output_tokens": 79,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "426a3c1d-45cb-47c0-9107-8c503c76ce20",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "timestamp": "2026-04-08T03:51:10.826Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "6242d14a-7da9-4532-974c-764b48f68c7e",
+  "version": "2.1.94"
+}

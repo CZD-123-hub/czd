@@ -1,0 +1,28 @@
+{
+  "agentId": "ad94ec181cd0def78",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "/d/intelligent-coding-assistant/frontend/src/api/auth.ts\n/d/intelligent-coding-assistant/frontend/src/api/chat.ts\n/d/intelligent-coding-assistant/frontend/src/api/document.ts\n/d/intelligent-coding-assistant/frontend/src/api/graph.ts\n/d/intelligent-coding-assistant/frontend/src/api/path.ts\n/d/intelligent-coding-assistant/frontend/src/api/progress.ts\n/d/intelligent-coding-assistant/frontend/src/api/request.ts\n/d/intelligent-coding-assistant/frontend/src/api/snippet.ts\n/d/intelligent-coding-assistant/frontend/src/App.vue\n/d/intelligent-coding-assistant/frontend/src/assets/logo.svg\n/d/intelligent-coding-assistant/frontend/src/auto-imports.d.ts\n/d/intelligent-coding-assistant/frontend/src/components/chat/ConversationList.vue\n/d/intelligent-coding-assistant/frontend/src/components/chat/FeedbackButton.vue\n/d/intelligent-coding-assistant/frontend/src/components/chat/MessageBubble.vue\n/d/intelligent-coding-assistant/frontend/src/components/common/CodeBlock.vue\n/d/intelligent-coding-assistant/frontend/src/components/common/CodeEditor.vue\n/d/intelligent-coding-assistant/frontend/src/components/dashboard/HeatmapChart.vue\n/d/intelligent-coding-assistant/frontend/src/components/dashboard/RadarChart.vue\n/d/intelligent-coding-assistant/frontend/src/components/graph/GraphRenderer.vue\n/d/intelligent-coding-assistant/frontend/src/components/layout/AppLayout.vue\n/d/intelligent-coding-assistant/frontend/src/components/path/PathTimeline.vue\n/d/intelligent-coding-assistant/frontend/src/components.d.ts\n/d/intelligent-coding-assistant/frontend/src/main.ts\n/d/intelligent-coding-assistant/frontend/src/router/index.ts\n/d/intelligent-coding-assistant/frontend/src/stores/auth.ts\n/d/intelligent-coding-assistant/frontend/src/stores/chat.ts\n/d/intelligent-coding-assistant/frontend/src/stores/graph.ts\n/d/intelligent-coding-assistant/frontend/src/stores/path.ts\n/d/intelligent-coding-assistant/frontend/src/stores/progress.ts\n/d/intelligent-coding-assistant/frontend/src/stores/snippet.ts",
+        "is_error": false,
+        "tool_use_id": "tooluse_fkU5c1wjmzhC7V9IO6BzT9",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "0687ad73-114f-4c82-952b-775543a6b788",
+  "promptId": "93326166-ee8b-4af4-9c00-8b64e733a20b",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "0687ad73-114f-4c82-952b-775543a6b788",
+  "timestamp": "2026-04-08T03:40:21.958Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "f13707d8-3411-4d37-b2fb-dab57d13acb6",
+  "version": "2.1.94"
+}

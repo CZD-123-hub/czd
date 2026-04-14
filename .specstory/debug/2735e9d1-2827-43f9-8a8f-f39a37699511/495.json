@@ -1,0 +1,27 @@
+{
+  "agentId": "ae4ebc04317ea0d11",
+  "cwd": "D:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.config;\n2\t\n3\timport org.springframework.beans.factory.annotation.Value;\n4\timport org.springframework.context.annotation.Configuration;\n5\timport org.springframework.web.servlet.config.annotation.CorsRegistry;\n6\timport org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;\n7\timport org.springframework.web.servlet.config.annotation.WebMvcConfigurer;\n8\t\n9\timport java.nio.file.Path;\n10\timport java.nio.file.Paths;\n11\t\n12\t@Configuration\n13\tpublic class WebConfig implements WebMvcConfigurer {\n14\t\n15\t    @Value(\"${file.upload-dir:./uploads}\")\n16\t    private String uploadDir;\n17\t\n18\t    @Override\n19\t    public void addCorsMappings(CorsRegistry registry) {\n20\t        registry.addMapping(\"/**\")\n21\t                .allowedOriginPatterns(\"*\")\n22\t                .allowedMethods(\"GET\", \"POST\", \"PUT\", \"DELETE\", \"OPTIONS\", \"PATCH\")\n23\t                .allowedHeaders(\"*\")\n24\t                .allowCredentials(true)\n25\t                .maxAge(3600);\n26\t    }\n27\t\n28\t    @Override\n29\t    public void addResourceHandlers(ResourceHandlerRegistry registry) {\n30\t        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();\n31\t        registry.addResourceHandler(\"/uploads/**\")\n32\t                .addResourceLocations(\"file:\" + uploadPath.toString() + \"/\");\n33\t    }\n34\t}",
+        "tool_use_id": "tooluse_HCpNSItUbcwLahrEzD9HJ3",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "985f115e-28c9-49be-966b-ea42c5cd288a",
+  "promptId": "95b78f29-3683-4f4d-a928-acadca8abc93",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "985f115e-28c9-49be-966b-ea42c5cd288a",
+  "timestamp": "2026-04-08T02:06:48.912Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "86db941a-ba3a-4d52-a2d4-f9cbcecf41f8",
+  "version": "2.1.94"
+}

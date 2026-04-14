@@ -1,0 +1,28 @@
+{
+  "agentId": "a50583799544996df",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "d:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\controller/AuthController.java\nd:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\controller/ChatController.java\nd:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\controller/GraphController.java\nd:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\controller/PathController.java\nd:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\controller/ProgressController.java\nd:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\controller/SnippetController.java",
+        "is_error": false,
+        "tool_use_id": "tooluse_qv7tFzQVbAQM2DTbQOep9i",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "04ab88d8-f070-4d56-9131-582a940416be",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "04ab88d8-f070-4d56-9131-582a940416be",
+  "timestamp": "2026-04-08T01:42:39.174Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "38c544da-cb6d-4807-b0d1-4905b227a5c5",
+  "version": "2.1.94"
+}

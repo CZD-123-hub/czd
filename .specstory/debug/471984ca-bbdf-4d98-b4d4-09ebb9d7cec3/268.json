@@ -1,0 +1,52 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "The file d:/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/OpenAiProvider.java has been updated successfully.",
+        "tool_use_id": "tooluse_ZfS0NsyMVUula6wYEH3uaw",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "977b5321-9ce1-4d1f-9f77-578e2f5f23c4",
+  "promptId": "3feeac48-dd71-406d-9fa3-f6fe8dc59120",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "977b5321-9ce1-4d1f-9f77-578e2f5f23c4",
+  "timestamp": "2026-04-08T04:17:38.224Z",
+  "toolUseResult": {
+    "filePath": "d:/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/OpenAiProvider.java",
+    "newString": "                .uri(\"/chat/completions\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .bodyValue(requestBody.toString())\n                .retrieve()\n                .bodyToMono(String.class)",
+    "oldString": "                .uri(\"/v1/chat/completions\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .bodyValue(requestBody.toString())\n                .retrieve()\n                .bodyToMono(String.class)",
+    "originalFile": "package com.coding.assistant.ai;\n\nimport com.coding.assistant.config.LlmConfig;\nimport com.fasterxml.jackson.databind.JsonNode;\nimport com.fasterxml.jackson.databind.ObjectMapper;\nimport com.fasterxml.jackson.databind.node.ArrayNode;\nimport com.fasterxml.jackson.databind.node.ObjectNode;\nimport lombok.extern.slf4j.Slf4j;\nimport org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;\nimport org.springframework.http.MediaType;\nimport org.springframework.stereotype.Component;\nimport org.springframework.web.reactive.function.client.WebClient;\nimport reactor.core.publisher.Flux;\n\nimport java.util.ArrayList;\nimport java.util.HashMap;\nimport java.util.List;\nimport java.util.Map;\n\n@Slf4j\n@Component(\"openaiProvider\")\n@ConditionalOnProperty(name = \"llm.openai.api-key\")\npublic class OpenAiProvider implements LlmProvider {\n\n    private final WebClient webClient;\n    private final LlmConfig.ProviderConfig config;\n    private final ObjectMapper objectMapper;\n\n    public OpenAiProvider(LlmConfig llmConfig, ObjectMapper objectMapper) {\n        this.config = llmConfig.getOpenai();\n        this.objectMapper = objectMapper;\n        this.webClient = WebClient.builder()\n                .baseUrl(config.getBaseUrl())\n                .defaultHeader(\"Authorization\", \"Bearer \" + config.getApiKey())\n                .defaultHeader(\"Content-Type\", \"application/json\")\n                .codecs(configurer -\u003e configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))\n                .build();\n    }\n\n    @Override\n    public Flux\u003cString\u003e chatStream(List\u003cChatMessage\u003e messages, String systemPrompt) {\n        ObjectNode requestBody = buildRequestBody(messages, systemPrompt, true);\n\n        return webClient.post()\n                .uri(\"/chat/completions\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .bodyValue(requestBody.toString())\n                .retrieve()\n                .bodyToFlux(String.class)\n                .filter(data -\u003e !data.equals(\"[DONE]\"))\n                .map(data -\u003e {\n                    try {\n                        JsonNode node = objectMapper.readTree(data);\n                        JsonNode delta = node.path(\"choices\").path(0).path(\"delta\").path(\"content\");\n                        return delta.isMissingNode() ? \"\" : delta.asText();\n                    } catch (Exception e) {\n                        log.error(\"Error parsing SSE data: {}\", e.getMessage());\n                        return \"\";\n                    }\n                })\n                .filter(s -\u003e !s.isEmpty());\n    }\n\n    @Override\n    public String chat(List\u003cChatMessage\u003e messages, String systemPrompt) {\n        ObjectNode requestBody = buildRequestBody(messages, systemPrompt, false);\n\n        String responseBody = webClient.post()\n                .uri(\"/v1/chat/completions\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .bodyValue(requestBody.toString())\n                .retrieve()\n                .bodyToMono(String.class)\n                .block();\n\n        try {\n            JsonNode node = objectMapper.readTree(responseBody);\n            return node.path(\"choices\").path(0).path(\"message\").path(\"content\").asText();\n        } catch (Exception e) {\n            log.error(\"Error parsing chat response: {}\", e.getMessage());\n            return \"Sorry, an error occurred while processing your request.\";\n        }\n    }\n\n    private ObjectNode buildRequestBody(List\u003cChatMessage\u003e messages, String systemPrompt, boolean stream) {\n        ObjectNode root = objectMapper.createObjectNode();\n        root.put(\"model\", config.getModel());\n        root.put(\"stream\", stream);\n\n        ArrayNode messagesArray = root.putArray(\"messages\");\n\n        if (systemPrompt != null \u0026\u0026 !systemPrompt.isEmpty()) {\n            ObjectNode systemMsg = objectMapper.createObjectNode();\n            systemMsg.put(\"role\", \"system\");\n            systemMsg.put(\"content\", systemPrompt);\n            messagesArray.add(systemMsg);\n        }\n\n        for (ChatMessage msg : messages) {\n            ObjectNode msgNode = objectMapper.createObjectNode();\n            msgNode.put(\"role\", msg.getRole());\n            msgNode.put(\"content\", msg.getContent());\n            messagesArray.add(msgNode);\n        }\n\n        return root;\n    }\n}",
+    "replaceAll": false,
+    "structuredPatch": [
+      {
+        "lines": [
+          "         ObjectNode requestBody = buildRequestBody(messages, systemPrompt, false);",
+          " ",
+          "         String responseBody = webClient.post()",
+          "-                .uri(\"/v1/chat/completions\")",
+          "+                .uri(\"/chat/completions\")",
+          "                 .contentType(MediaType.APPLICATION_JSON)",
+          "                 .bodyValue(requestBody.toString())",
+          "                 .retrieve()"
+        ],
+        "newLines": 7,
+        "newStart": 66,
+        "oldLines": 7,
+        "oldStart": 66
+      }
+    ],
+    "userModified": false
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "1c52502d-441a-47d0-8086-2da98e6c0f95",
+  "version": "2.1.94"
+}

@@ -1,0 +1,51 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "id": "tooluse_7nXfdjHCfEsLP5rR3yADcE",
+        "input": {
+          "path": "d:/intelligent-coding-assistant/backend/src/main/java/com/example",
+          "pattern": "**/*.java"
+        },
+        "name": "Glob",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_20260408114513",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 38904,
+      "iterations": [],
+      "output_tokens": 43,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "dcfe3766-3f10-44f3-bb74-337d79c2e2fb",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "timestamp": "2026-04-08T03:45:19.168Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "524ae7da-402c-4705-8f2a-c7e07b2ae1b8",
+  "version": "2.1.94"
+}

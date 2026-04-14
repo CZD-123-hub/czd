@@ -1,0 +1,56 @@
+{
+  "cwd": "D:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "The file d:\\intelligent-coding-assistant\\frontend\\src\\router\\index.ts has been updated successfully.",
+        "tool_use_id": "tooluse_PMp0Rx2CIY2x4O8wvF3y6d",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "af385a7d-cc17-4461-94d1-59fc7e373126",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "af385a7d-cc17-4461-94d1-59fc7e373126",
+  "timestamp": "2026-04-08T01:55:52.891Z",
+  "toolUseResult": {
+    "filePath": "d:\\intelligent-coding-assistant\\frontend\\src\\router\\index.ts",
+    "newString": "        {\n          path: 'documents',\n          name: 'documents',\n          component: () =\u003e import('@/views/KnowledgeDoc/KnowledgeDocView.vue'),\n          meta: { title: '知识文档' },\n        },\n        {\n          path: 'dashboard',",
+    "oldString": "        {\n          path: 'dashboard',",
+    "originalFile": "import { createRouter, createWebHistory } from 'vue-router'\n\nconst router = createRouter({\n  history: createWebHistory(import.meta.env.BASE_URL),\n  routes: [\n    {\n      path: '/',\n      redirect: '/chat',\n    },\n    {\n      path: '/login',\n      name: 'login',\n      component: () =\u003e import('@/views/Auth/LoginView.vue'),\n      meta: { requiresAuth: false },\n    },\n    {\n      path: '/register',\n      name: 'register',\n      component: () =\u003e import('@/views/Auth/RegisterView.vue'),\n      meta: { requiresAuth: false },\n    },\n    {\n      path: '/',\n      component: () =\u003e import('@/components/layout/AppLayout.vue'),\n      meta: { requiresAuth: true },\n      children: [\n        {\n          path: 'chat',\n          name: 'chat',\n          component: () =\u003e import('@/views/Chat/ChatView.vue'),\n          meta: { title: '智能问答' },\n        },\n        {\n          path: 'graph',\n          name: 'graph',\n          component: () =\u003e import('@/views/KnowledgeGraph/KnowledgeGraphView.vue'),\n          meta: { title: '知识图谱' },\n        },\n        {\n          path: 'path',\n          name: 'path',\n          component: () =\u003e import('@/views/LearningPath/LearningPathView.vue'),\n          meta: { title: '学习路径' },\n        },\n        {\n          path: 'snippets',\n          name: 'snippets',\n          component: () =\u003e import('@/views/CodeSnippets/CodeSnippetsView.vue'),\n          meta: { title: '代码片段' },\n        },\n        {\n          path: 'dashboard',\n          name: 'dashboard',\n          component: () =\u003e import('@/views/Dashboard/DashboardView.vue'),\n          meta: { title: '学习仪表盘' },\n        },\n        {\n          path: 'profile',\n          name: 'profile',\n          component: () =\u003e import('@/views/Profile/ProfileView.vue'),\n          meta: { title: '个人中心' },\n        },\n      ],\n    },\n  ],\n})\n\nrouter.beforeEach((to) =\u003e {\n  const token = localStorage.getItem('token')\n\n  if (to.meta.requiresAuth !== false \u0026\u0026 !token) {\n    return { name: 'login', query: { redirect: to.fullPath } }\n  }\n\n  if ((to.name === 'login' || to.name === 'register') \u0026\u0026 token) {\n    return { name: 'chat' }\n  }\n\n  return true\n})\n\nexport default router",
+    "replaceAll": false,
+    "structuredPatch": [
+      {
+        "lines": [
+          "           meta: { title: '代码片段' },",
+          "         },",
+          "         {",
+          "+          path: 'documents',",
+          "+          name: 'documents',",
+          "+          component: () =\u003e import('@/views/KnowledgeDoc/KnowledgeDocView.vue'),",
+          "+          meta: { title: '知识文档' },",
+          "+        },",
+          "+        {",
+          "           path: 'dashboard',",
+          "           name: 'dashboard',",
+          "           component: () =\u003e import('@/views/Dashboard/DashboardView.vue'),"
+        ],
+        "newLines": 12,
+        "newStart": 49,
+        "oldLines": 6,
+        "oldStart": 49
+      }
+    ],
+    "userModified": false
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "6ddce3e0-1145-4351-9335-d2f417d6aa74",
+  "version": "2.1.94"
+}

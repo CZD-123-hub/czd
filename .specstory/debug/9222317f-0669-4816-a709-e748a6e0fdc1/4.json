@@ -1,0 +1,24 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "你是什么模型",
+        "type": "text"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "e05a5e87-f32b-4ba5-a1e5-ee611bd1b70a",
+  "permissionMode": "default",
+  "promptId": "20647aa0-a150-4306-933d-f24151eb513c",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "timestamp": "2026-04-07T22:20:58.304Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "9b32ff40-3e12-49e0-91e7-cf9a0e283597",
+  "version": "2.1.94"
+}

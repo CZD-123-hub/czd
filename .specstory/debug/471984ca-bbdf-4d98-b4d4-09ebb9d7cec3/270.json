@@ -1,0 +1,29 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "\u003cide_opened_file\u003eThe user opened the file d:\\intelligent-coding-assistant\\backend\\src\\main\\resources\\application-dev.yml in the IDE. This may or may not be related to the current task.\u003c/ide_opened_file\u003e",
+        "type": "text"
+      },
+      {
+        "text": "我的api是这个sk-cda6bcc5a5974617b03f38b371a67a7e",
+        "type": "text"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "3f6aa267-5460-4d4d-9d70-056b296068fb",
+  "permissionMode": "acceptEdits",
+  "promptId": "5851deb9-bb4f-4a30-b511-2b103e494deb",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "timestamp": "2026-04-08T04:22:23.999Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "fb921c9b-0a74-4dd7-bf7e-88d9acf291d1",
+  "version": "2.1.94"
+}

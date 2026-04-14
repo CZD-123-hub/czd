@@ -1,0 +1,24 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "请问我这个项目主要是干什么的",
+        "type": "text"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "77b0e744-ffff-497b-8171-e40bd0b69bea",
+  "permissionMode": "default",
+  "promptId": "800f6955-869d-49a2-ba91-5ef951fe8aa5",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "timestamp": "2026-04-07T22:21:45.322Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "ba40f5f3-8653-4571-afe1-89e7469b5702",
+  "version": "2.1.94"
+}

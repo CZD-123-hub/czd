@@ -1,0 +1,50 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "error": "authentication_failed",
+  "gitBranch": "HEAD",
+  "isApiErrorMessage": true,
+  "isSidechain": false,
+  "message": {
+    "container": null,
+    "content": [
+      {
+        "text": "Failed to authenticate. API Error: 403 {\"error\":{\"type\":\"new_api_error\",\"message\":\"预扣费额度失败, 用户剩余额度: ＄0.154594, 需要预扣费额度: ＄0.168056 (request id: 20260407223402905726424PnyD6FKn)\"},\"type\":\"error\"}",
+        "type": "text"
+      }
+    ],
+    "context_management": null,
+    "id": "cfca02a4-e0d9-4fee-8842-c7e92e2eaa1e",
+    "model": "\u003csynthetic\u003e",
+    "role": "assistant",
+    "stop_reason": "stop_sequence",
+    "stop_sequence": "",
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": null,
+      "input_tokens": 0,
+      "iterations": null,
+      "output_tokens": 0,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": null,
+      "speed": null
+    }
+  },
+  "parentUuid": "1fd74de0-0741-4307-adf4-f6409eb91311",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "timestamp": "2026-04-07T22:34:03.605Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "55e99cdc-e1be-4f5e-a914-35818bd6488e",
+  "version": "2.1.94"
+}

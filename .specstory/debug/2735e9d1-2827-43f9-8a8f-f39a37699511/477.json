@@ -1,0 +1,46 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "完成。总结这次改动：\n\n---\n\n## 改动内容\n\n只改了 [EmbeddingService.java](backend/src/main/java/com/coding/assistant/service/EmbeddingService.java) 和 [DocumentService.java](backend/src/main/java/com/coding/assistant/service/DocumentService.java)，其他文件不变。\n\n**EmbeddingService** 从\"调用 OpenAI API\"改为\"本地 TF-IDF 计算\"：\n- 内置 60+ 个编程领域词汇作为初始词表（冷启动兜底）\n- 每次添加文档时动态扩充词表，IDF 权重随语料增长越来越准\n- 零网络请求，零延迟，零费用\n\n**DocumentService** 新增 `@PostConstruct`：\n- 服务启动时自动加载数据库里已有的文档来初始化词表\n- 保证重启后词表不丢失\n\n---\n\n## 注意事项\n\nTF-IDF 向量维度会随词表增长而变化。**已存入数据库的旧向量维度比新向量小**，会导致相似度计算偏低。`cosineSimilarity` 已处理了维度不对齐的情况（短的补 0），不会报错，但精度会稍差。\n\n如果你之前已经添加过文档，建议删掉重新添加一遍，让向量用最新词表重新生成。",
+        "type": "text"
+      }
+    ],
+    "id": "msg_20260408100451",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 88554,
+      "iterations": [],
+      "output_tokens": 346,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "ac4ffe88-c3ad-4f5d-835e-2dc064f973e1",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "timestamp": "2026-04-08T02:05:07.719Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "e6500b7d-c8cc-4cf2-ab28-8e4532c311d1",
+  "version": "2.1.94"
+}

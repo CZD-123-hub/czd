@@ -1,0 +1,68 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "The file d:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\entity\\KnowledgeDocument.java has been updated successfully.",
+        "tool_use_id": "tooluse_YNFtk4VbTh7tqHGoKwevUP",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "0a735d01-9bf6-4b9f-ab41-b91a09341f87",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "0a735d01-9bf6-4b9f-ab41-b91a09341f87",
+  "timestamp": "2026-04-08T01:46:48.457Z",
+  "toolUseResult": {
+    "filePath": "d:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\entity\\KnowledgeDocument.java",
+    "newString": "package com.coding.assistant.entity;\n\nimport com.baomidou.mybatisplus.annotation.IdType;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\nimport lombok.AllArgsConstructor;\nimport lombok.Builder;\nimport lombok.Data;\nimport lombok.NoArgsConstructor;\n\nimport java.time.LocalDateTime;\n\n@Data\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@TableName(\"knowledge_document\")\npublic class KnowledgeDocument {\n\n    @TableId(type = IdType.AUTO)\n    private Long id;\n    private String title;\n    private String content;\n    private String category;\n    /** 向量，JSON 数组字符串，如 \"[0.1, 0.2, ...]\" */\n    private String embedding;\n    private LocalDateTime createdAt;\n}\n",
+    "oldString": "package com.coding.assistant.entity;\n\nimport com.baomidou.mybatisplus.annotation.IdType;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\nimport lombok.AllArgsConstructor;\nimport lombok.Builder;\nimport lombok.Data;\nimport lombok.NoArgsConstructor;\n\nimport java.time.LocalDateTime;\nimport java.util.List;\n\n@Data\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@TableName(\"knowledge_document\")\npublic class KnowledgeDocument {\n\n    @TableId(type = IdType.AUTO)\n    private Long id;\n    private String title;\n    private String content;\n    private String category;\n    /** 向量，存储为 JSON 数组，通过 TypeHandler 处理 */\n    private List\u003cDouble\u003e embedding;\n    private LocalDateTime createdAt;\n}\n",
+    "originalFile": "package com.coding.assistant.entity;\n\nimport com.baomidou.mybatisplus.annotation.IdType;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\nimport lombok.AllArgsConstructor;\nimport lombok.Builder;\nimport lombok.Data;\nimport lombok.NoArgsConstructor;\n\nimport java.time.LocalDateTime;\nimport java.util.List;\n\n@Data\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@TableName(\"knowledge_document\")\npublic class KnowledgeDocument {\n\n    @TableId(type = IdType.AUTO)\n    private Long id;\n    private String title;\n    private String content;\n    private String category;\n    /** 向量，存储为 JSON 数组，通过 TypeHandler 处理 */\n    private List\u003cDouble\u003e embedding;\n    private LocalDateTime createdAt;\n}\n",
+    "replaceAll": false,
+    "structuredPatch": [
+      {
+        "lines": [
+          " import lombok.NoArgsConstructor;",
+          " ",
+          " import java.time.LocalDateTime;",
+          "-import java.util.List;",
+          " ",
+          " @Data",
+          " @Builder"
+        ],
+        "newLines": 6,
+        "newStart": 9,
+        "oldLines": 7,
+        "oldStart": 9
+      },
+      {
+        "lines": [
+          "     private String title;",
+          "     private String content;",
+          "     private String category;",
+          "-    /** 向量，存储为 JSON 数组，通过 TypeHandler 处理 */",
+          "-    private List\u003cDouble\u003e embedding;",
+          "+    /** 向量，JSON 数组字符串，如 \"[0.1, 0.2, ...]\" */",
+          "+    private String embedding;",
+          "     private LocalDateTime createdAt;",
+          " }"
+        ],
+        "newLines": 7,
+        "newStart": 22,
+        "oldLines": 7,
+        "oldStart": 23
+      }
+    ],
+    "userModified": false
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "5c82e9a5-7c6a-4f5b-a85b-a970ad7c355d",
+  "version": "2.1.94"
+}

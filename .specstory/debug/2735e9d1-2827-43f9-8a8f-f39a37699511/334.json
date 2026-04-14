@@ -1,0 +1,36 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.config;\n2\t\n3\timport lombok.Data;\n4\timport org.springframework.boot.context.properties.ConfigurationProperties;\n5\timport org.springframework.context.annotation.Configuration;\n6\t\n7\t@Data\n8\t@Configuration\n9\t@ConfigurationProperties(prefix = \"llm\")\n10\tpublic class LlmConfig {\n11\t\n12\t    private String provider;\n13\t    private ProviderConfig openai = new ProviderConfig();\n14\t    private ProviderConfig chatglm = new ProviderConfig();\n15\t    private ProviderConfig qwen = new ProviderConfig();\n16\t\n17\t    @Data\n18\t    public static class ProviderConfig {\n19\t        private String apiKey;\n20\t        private String baseUrl;\n21\t        private String model;\n22\t    }\n23\t}",
+        "tool_use_id": "tooluse_Z895DG0LMJEHIY4uM4MmHj",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "d73175b3-49cb-4b61-8a50-1a5d624cc9dc",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "d73175b3-49cb-4b61-8a50-1a5d624cc9dc",
+  "timestamp": "2026-04-08T01:47:45.208Z",
+  "toolUseResult": {
+    "file": {
+      "content": "package com.coding.assistant.config;\n\nimport lombok.Data;\nimport org.springframework.boot.context.properties.ConfigurationProperties;\nimport org.springframework.context.annotation.Configuration;\n\n@Data\n@Configuration\n@ConfigurationProperties(prefix = \"llm\")\npublic class LlmConfig {\n\n    private String provider;\n    private ProviderConfig openai = new ProviderConfig();\n    private ProviderConfig chatglm = new ProviderConfig();\n    private ProviderConfig qwen = new ProviderConfig();\n\n    @Data\n    public static class ProviderConfig {\n        private String apiKey;\n        private String baseUrl;\n        private String model;\n    }\n}",
+      "filePath": "d:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\config\\LlmConfig.java",
+      "numLines": 23,
+      "startLine": 1,
+      "totalLines": 23
+    },
+    "type": "text"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "32899435-6eec-4ca7-b7c7-e0fa78405e66",
+  "version": "2.1.94"
+}

@@ -1,0 +1,51 @@
+{
+  "agentId": "ad94ec181cd0def78",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "id": "tooluse_Or4C6Pc2InqVAvYWYMn9tT",
+        "input": {
+          "command": "head -50 /d/intelligent-coding-assistant/backend/src/main/resources/schema.sql"
+        },
+        "name": "Bash",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_20260408114255",
+    "model": "claude-haiku-4-5-20251001",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 40560,
+      "iterations": [],
+      "output_tokens": 129,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "1f506380-349a-4b01-b65e-15eff212cf4a",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "timestamp": "2026-04-08T03:43:03.369Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "c8361cf8-dda6-405f-8766-39e8ddeb85a7",
+  "version": "2.1.94"
+}

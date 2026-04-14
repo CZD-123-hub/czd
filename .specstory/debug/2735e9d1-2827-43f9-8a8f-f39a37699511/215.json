@@ -1,0 +1,27 @@
+{
+  "agentId": "ad58a68e3b78e6c9a",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "backend\\src\\main\\java\\com\\coding\\assistant\\ai\\ChatMessage.java\nbackend\\src\\main\\java\\com\\coding\\assistant\\ai\\LlmProvider.java\nbackend\\src\\main\\java\\com\\coding\\assistant\\ai\\OpenAiProvider.java\nbackend\\src\\main\\java\\com\\coding\\assistant\\ai\\ChatGlmProvider.java\nbackend\\src\\main\\java\\com\\coding\\assistant\\ai\\QwenProvider.java\nbackend\\src\\main\\java\\com\\coding\\assistant\\ai\\LlmProviderFactory.java",
+        "tool_use_id": "tooluse_b2wlhPYcS8I4QyslbNW5xh",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "2bd26343-a7f9-4c11-a4f6-e9030e9c621c",
+  "promptId": "d9a13d85-5479-4e3c-a60c-452c71e1a4e1",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "2bd26343-a7f9-4c11-a4f6-e9030e9c621c",
+  "timestamp": "2026-04-08T01:40:40.559Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "892f559e-4269-467d-92e4-2c9a6d273354",
+  "version": "2.1.94"
+}

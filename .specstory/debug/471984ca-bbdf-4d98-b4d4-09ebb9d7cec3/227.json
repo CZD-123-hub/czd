@@ -1,0 +1,33 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "No matches found",
+        "tool_use_id": "tooluse_rDhi8F9pKUhqEJqpUJ1SLe",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "331e74e5-6fb4-4fce-80c7-7ece12f32414",
+  "promptId": "cff71268-99a9-44c6-9deb-babacd0468c9",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "331e74e5-6fb4-4fce-80c7-7ece12f32414",
+  "timestamp": "2026-04-08T03:51:46.620Z",
+  "toolUseResult": {
+    "content": "",
+    "filenames": [],
+    "mode": "content",
+    "numFiles": 0,
+    "numLines": 0
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "872ba7bc-8f21-43aa-8993-c68f010d87ca",
+  "version": "2.1.94"
+}

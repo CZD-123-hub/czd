@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coding.assistant.mapper.CodeSnippetMapper">
+
+    <resultMap id="codeSnippetResultMap" type="com.coding.assistant.entity.CodeSnippet">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="title" property="title"/>
+        <result column="code" property="code"/>
+        <result column="language" property="language"/>
+        <result column="description" property="description"/>
+        <result column="tags" property="tags"/>
+        <result column="use_count" property="useCount"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <select id="selectByUserIdWithFilter" resultMap="codeSnippetResultMap">
+        SELECT * FROM code_snippet
+        WHERE user_id = #{userId}
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%')
+                 OR description LIKE CONCAT('%', #{keyword}, '%')
+                 OR code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="tag != null and tag != ''">
+            AND JSON_CONTAINS(tags, JSON_QUOTE(#{tag}))
+        </if>
+        ORDER BY updated_at DESC
+    </select>
+
+</mapper>

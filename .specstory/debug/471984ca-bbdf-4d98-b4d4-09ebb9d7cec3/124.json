@@ -1,0 +1,28 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "File does not exist. Note: your current working directory is d:\\intelligent-coding-assistant.",
+        "is_error": true,
+        "tool_use_id": "tooluse_MhODk1CcVOPdrfKtpCkQn6",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "058d2569-e9cc-4569-a9de-3023fe2f652d",
+  "promptId": "bdda92e5-91a2-4f24-bb85-b26db0c3203e",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "058d2569-e9cc-4569-a9de-3023fe2f652d",
+  "timestamp": "2026-04-08T03:44:53.305Z",
+  "toolUseResult": "Error: File does not exist. Note: your current working directory is d:\\intelligent-coding-assistant.",
+  "type": "user",
+  "userType": "external",
+  "uuid": "ab8ade86-1bb2-4106-98de-7a615a5d24c6",
+  "version": "2.1.94"
+}

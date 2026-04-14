@@ -1,0 +1,36 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.entity;\n2\t\n3\timport com.baomidou.mybatisplus.annotation.IdType;\n4\timport com.baomidou.mybatisplus.annotation.TableField;\n5\timport com.baomidou.mybatisplus.annotation.TableId;\n6\timport com.baomidou.mybatisplus.annotation.TableName;\n7\timport lombok.AllArgsConstructor;\n8\timport lombok.Builder;\n9\timport lombok.Data;\n10\timport lombok.NoArgsConstructor;\n11\t\n12\timport java.time.LocalDateTime;\n13\t\n14\t@Data\n15\t@Builder\n16\t@NoArgsConstructor\n17\t@AllArgsConstructor\n18\t@TableName(\"code_snippet\")\n19\tpublic class CodeSnippet {\n20\t\n21\t    @TableId(type = IdType.AUTO)\n22\t    private Long id;\n23\t\n24\t    @TableField(\"user_id\")\n25\t    private Long userId;\n26\t\n27\t    @TableField(\"title\")\n28\t    private String title;\n29\t\n30\t    @TableField(\"code\")\n31\t    private String code;\n32\t\n33\t    @TableField(\"language\")\n34\t    private String language;\n35\t\n36\t    @TableField(\"description\")\n37\t    private String description;\n38\t\n39\t    @TableField(\"tags\")\n40\t    private String tags;\n41\t\n42\t    @TableField(\"use_count\")\n43\t    private Integer useCount;\n44\t\n45\t    @TableField(\"created_at\")\n46\t    private LocalDateTime createdAt;\n47\t\n48\t    @TableField(\"updated_at\")\n49\t    private LocalDateTime updatedAt;\n50\t}",
+        "tool_use_id": "tooluse_sZhIJfkhDFCpkkZ0keZejP",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "37579932-33cf-4892-be77-1176f608d338",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "37579932-33cf-4892-be77-1176f608d338",
+  "timestamp": "2026-04-08T01:46:35.386Z",
+  "toolUseResult": {
+    "file": {
+      "content": "package com.coding.assistant.entity;\n\nimport com.baomidou.mybatisplus.annotation.IdType;\nimport com.baomidou.mybatisplus.annotation.TableField;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\nimport lombok.AllArgsConstructor;\nimport lombok.Builder;\nimport lombok.Data;\nimport lombok.NoArgsConstructor;\n\nimport java.time.LocalDateTime;\n\n@Data\n@Builder\n@NoArgsConstructor\n@AllArgsConstructor\n@TableName(\"code_snippet\")\npublic class CodeSnippet {\n\n    @TableId(type = IdType.AUTO)\n    private Long id;\n\n    @TableField(\"user_id\")\n    private Long userId;\n\n    @TableField(\"title\")\n    private String title;\n\n    @TableField(\"code\")\n    private String code;\n\n    @TableField(\"language\")\n    private String language;\n\n    @TableField(\"description\")\n    private String description;\n\n    @TableField(\"tags\")\n    private String tags;\n\n    @TableField(\"use_count\")\n    private Integer useCount;\n\n    @TableField(\"created_at\")\n    private LocalDateTime createdAt;\n\n    @TableField(\"updated_at\")\n    private LocalDateTime updatedAt;\n}",
+      "filePath": "d:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\entity\\CodeSnippet.java",
+      "numLines": 50,
+      "startLine": 1,
+      "totalLines": 50
+    },
+    "type": "text"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "6225bee8-01c2-499d-be44-610b1027380d",
+  "version": "2.1.94"
+}

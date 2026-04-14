@@ -1,0 +1,44 @@
+{
+  "agentId": "a7128afaafc595c06",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "id": "toolu_bdrk_01Q7fJxgEN66wqvXjzPfinbu",
+        "input": {
+          "file_path": "/d/intelligent-coding-assistant/frontend/src/views/Chat/ChatView.vue",
+          "limit": 80
+        },
+        "name": "Read",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_bdrk_01KunHCCNv2hMWdNDJetjdPz",
+    "model": "claude-haiku-4-5-20251001",
+    "role": "assistant",
+    "stop_reason": null,
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 246,
+      "cache_read_input_tokens": 22966,
+      "input_tokens": 6,
+      "output_tokens": 25
+    }
+  },
+  "parentUuid": "81108209-1e56-49a1-95f9-d56e84d38ac7",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "timestamp": "2026-04-07T22:22:33.288Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "35fd770a-febc-46f1-9998-ff1e1bff5f07",
+  "version": "2.1.94"
+}

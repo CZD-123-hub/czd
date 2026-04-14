@@ -1,0 +1,50 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "id": "tooluse_EueEZDxgZkQMuSaT17mYNN",
+        "input": {
+          "file_path": "d:\\intelligent-coding-assistant\\backend\\src\\main\\java\\com\\coding\\assistant\\ai\\OpenAiProvider.java"
+        },
+        "name": "Read",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_20260408094728",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 53861,
+      "iterations": [],
+      "output_tokens": 72,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "8ab1f44e-d63e-4d6e-aa1f-b73e69152f2a",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "timestamp": "2026-04-08T01:47:34.817Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "ba1b3028-5072-44a0-bac6-83c71b8bcf3a",
+  "version": "2.1.94"
+}

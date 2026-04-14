@@ -1,0 +1,40 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "JSON 字段用 `String` 存储。embedding 也用同样方式，用 String 存 JSON，在 Service 层手动序列化/反序列化，避免引入额外 TypeHandler。",
+        "type": "text"
+      }
+    ],
+    "id": "msg_20260408094637",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": null,
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "not_available",
+      "input_tokens": 52688,
+      "output_tokens": 0,
+      "service_tier": "standard"
+    }
+  },
+  "parentUuid": "6225bee8-01c2-499d-be44-610b1027380d",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "timestamp": "2026-04-08T01:46:42.853Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "587a2652-6276-4f2f-bdc1-ebe374500a9d",
+  "version": "2.1.94"
+}

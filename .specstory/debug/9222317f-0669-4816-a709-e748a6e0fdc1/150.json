@@ -1,0 +1,25 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "怎么上传一个文件给你",
+        "type": "text"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "3d6a786d-8303-4074-9769-78a03e2d08e8",
+  "permissionMode": "default",
+  "promptId": "71078296-835e-4b9c-b112-d76c35ea005f",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "timestamp": "2026-04-07T22:32:01.551Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "ca12106a-5a5a-4f4c-97bd-e444e1593880",
+  "version": "2.1.94"
+}

@@ -1,0 +1,36 @@
+{
+  "cwd": "D:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.ai;\n2\t\n3\timport com.coding.assistant.exception.BusinessException;\n4\timport lombok.extern.slf4j.Slf4j;\n5\timport org.springframework.beans.factory.annotation.Value;\n6\timport org.springframework.stereotype.Component;\n7\t\n8\timport java.util.Map;\n9\t\n10\t@Slf4j\n11\t@Component\n12\tpublic class LlmProviderFactory {\n13\t\n14\t    @Value(\"${llm.provider}\")\n15\t    private String providerName;\n16\t\n17\t    private final Map\u003cString, LlmProvider\u003e providers;\n18\t\n19\t    public LlmProviderFactory(Map\u003cString, LlmProvider\u003e providers) {\n20\t        this.providers = providers;\n21\t    }\n22\t\n23\t    public LlmProvider getProvider() {\n24\t        String beanName = providerName + \"Provider\";\n25\t        LlmProvider provider = providers.get(beanName);\n26\t        if (provider == null) {\n27\t            log.warn(\"LLM provider '{}' not found, available providers: {}\", providerName, providers.keySet());\n28\t            throw new BusinessException(500, \"LLM provider '\" + providerName + \"' is not configured or not available\");\n29\t        }\n30\t        return provider;\n31\t    }\n32\t}",
+        "tool_use_id": "toolu_bdrk_01EVgWacCjaFc3AxrvokZ77W",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "466553a1-7fec-4dd0-891f-4a59a0d334d9",
+  "promptId": "0fd5c516-a6f8-4c31-ad4a-d84a901dfbce",
+  "sessionId": "87f9fee4-bf84-431a-b0d5-855e836e118a",
+  "slug": "rippling-enchanting-mochi",
+  "sourceToolAssistantUUID": "466553a1-7fec-4dd0-891f-4a59a0d334d9",
+  "timestamp": "2026-04-07T22:46:12.812Z",
+  "toolUseResult": {
+    "file": {
+      "content": "package com.coding.assistant.ai;\n\nimport com.coding.assistant.exception.BusinessException;\nimport lombok.extern.slf4j.Slf4j;\nimport org.springframework.beans.factory.annotation.Value;\nimport org.springframework.stereotype.Component;\n\nimport java.util.Map;\n\n@Slf4j\n@Component\npublic class LlmProviderFactory {\n\n    @Value(\"${llm.provider}\")\n    private String providerName;\n\n    private final Map\u003cString, LlmProvider\u003e providers;\n\n    public LlmProviderFactory(Map\u003cString, LlmProvider\u003e providers) {\n        this.providers = providers;\n    }\n\n    public LlmProvider getProvider() {\n        String beanName = providerName + \"Provider\";\n        LlmProvider provider = providers.get(beanName);\n        if (provider == null) {\n            log.warn(\"LLM provider '{}' not found, available providers: {}\", providerName, providers.keySet());\n            throw new BusinessException(500, \"LLM provider '\" + providerName + \"' is not configured or not available\");\n        }\n        return provider;\n    }\n}",
+      "filePath": "d:/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/ai/LlmProviderFactory.java",
+      "numLines": 32,
+      "startLine": 1,
+      "totalLines": 32
+    },
+    "type": "text"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "b1ef11c7-b656-4c58-a8ba-ef4e4fa6a9e7",
+  "version": "2.1.94"
+}

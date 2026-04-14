@@ -1,0 +1,28 @@
+{
+  "agentId": "a1501e3f7e6f160fd",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "import request from './request'\nimport type { ApiResponse, CodeSnippet, PageResult } from '@/types'\nexport function listSnippets(params: {\nexport function createSnippet(data: Partial\u003cCodeSnippet\u003e) {\nexport function updateSnippet(id: number, data: Partial\u003cCodeSnippet\u003e) {\nexport function deleteSnippet(id: number) {\nexport function recommendSnippets(context: string) {\nexport function exportAll() {\n  return request.get('/snippets/export', { responseType: 'blob' })\nexport function importFile(file: File) {\n  return request.post\u003cApiResponse\u003cnull\u003e\u003e('/snippets/import', formData, {",
+        "is_error": false,
+        "tool_use_id": "tooluse_wjfELe8sJd5npr6POoTRXR",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "d43e0a4c-c1d7-407c-b2eb-723bb605d2ee",
+  "promptId": "817f44e6-fe7d-4a73-a272-36d9ea1afcac",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "d43e0a4c-c1d7-407c-b2eb-723bb605d2ee",
+  "timestamp": "2026-04-08T01:38:14.964Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "734a6362-ebcf-429d-812f-3e2578daa672",
+  "version": "2.1.94"
+}

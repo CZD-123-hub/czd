@@ -1,0 +1,27 @@
+{
+  "agentId": "a7128afaafc595c06",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.controller;\n2\t\n3\timport com.coding.assistant.dto.*;\n4\timport com.coding.assistant.security.SecurityUtil;\n5\timport com.coding.assistant.service.ChatService;\n6\timport com.coding.assistant.service.FeedbackService;\n7\timport com.coding.assistant.service.ProgressService;\n8\timport jakarta.validation.Valid;\n9\timport lombok.RequiredArgsConstructor;\n10\timport org.springframework.http.MediaType;\n11\timport org.springframework.http.codec.ServerSentEvent;\n12\timport org.springframework.web.bind.annotation.*;\n13\timport reactor.core.publisher.Flux;\n14\t\n15\timport java.util.List;\n16\t\n17\t@RestController\n18\t@RequestMapping(\"/api/chat\")\n19\t@RequiredArgsConstructor\n20\tpublic class ChatController {\n21\t\n22\t    private final ChatService chatService;\n23\t    private final FeedbackService feedbackService;\n24\t    private final ProgressService progressService;\n25\t\n26\t    @PostMapping(value = \"/send\", produces = MediaType.TEXT_EVENT_STREAM_VALUE)\n27\t    public Flux\u003cServerSentEvent\u003cString\u003e\u003e sendMessage(@Valid @RequestBody ChatSendRequest request) {\n28\t        Long userId = SecurityUtil.getCurrentUserId();\n29\t\n30\t        // Record chat action\n31\t        progressService.recordAction(userId, \"chat\", null);\n32\t\n33\t        return chatService.sendMessage(userId, request)\n34\t                .map(content -\u003e ServerSentEvent.\u003cString\u003ebuilder()\n35\t                        .data(content)\n36\t                        .build())\n37\t                .concatWith(Flux.just(ServerSentEvent.\u003cString\u003ebuilder()\n38\t                        .event(\"done\")\n39\t                        .data(\"[DONE]\")\n40\t                        .build()));\n41\t    }\n42\t\n43\t    @GetMapping(\"/conversations\")\n44\t    public ApiResponse\u003cList\u003cConversationVO\u003e\u003e getConversations() {\n45\t        Long userId = SecurityUtil.getCurrentUserId();\n46\t        List\u003cConversationVO\u003e conversations = chatService.getConversations(userId);\n47\t        return ApiResponse.success(conversations);\n48\t    }\n49\t\n50\t    @GetMapping(\"/conversations/{id}/messages\")",
+        "tool_use_id": "toolu_vrtx_01KBNT8Rj4Gp8syhoVquYzDR",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "245cb289-1a1b-43aa-b7a9-fd8f09ba7a78",
+  "promptId": "800f6955-869d-49a2-ba91-5ef951fe8aa5",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "sourceToolAssistantUUID": "245cb289-1a1b-43aa-b7a9-fd8f09ba7a78",
+  "timestamp": "2026-04-07T22:22:18.091Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "846feb72-0d6a-4342-9157-adeb5ec744ee",
+  "version": "2.1.94"
+}

@@ -1,0 +1,56 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "The file d:/intelligent-coding-assistant/backend/src/main/resources/application-dev.yml has been updated successfully.",
+        "tool_use_id": "tooluse_8Z2uDxB0sxkK9zyX6rPsOh",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "0dbf5387-6644-4ed1-bf70-1816b44205c8",
+  "promptId": "3feeac48-dd71-406d-9fa3-f6fe8dc59120",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "0dbf5387-6644-4ed1-bf70-1816b44205c8",
+  "timestamp": "2026-04-08T04:17:08.069Z",
+  "toolUseResult": {
+    "filePath": "d:/intelligent-coding-assistant/backend/src/main/resources/application-dev.yml",
+    "newString": "llm:\n  provider: ${LLM_PROVIDER:openai}\n  openai:\n    api-key: ${OPENAI_API_KEY:你的DeepSeek_API_Key}\n    base-url: ${OPENAI_BASE_URL:https://api.deepseek.com/v1}\n    model: ${OPENAI_MODEL:deepseek-chat}",
+    "oldString": "llm:\n  provider: ${LLM_PROVIDER:openai}\n  openai:\n    api-key: ${OPENAI_API_KEY:}\n    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}\n    model: ${OPENAI_MODEL:gpt-4o-mini}",
+    "originalFile": "spring:\n  datasource:\n    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:coding_assistant}?useSSL=false\u0026allowPublicKeyRetrieval=true\u0026serverTimezone=Asia/Shanghai\n    username: ${MYSQL_USER:root}\n    password: ${MYSQL_PASSWORD:12345678}\n    driver-class-name: com.mysql.cj.jdbc.Driver\n  data:\n    redis:\n      host: ${REDIS_HOST:localhost}\n      port: ${REDIS_PORT:6379}\n      password: ${REDIS_PASSWORD:}\n      timeout: 3000ms\n\nneo4j:\n  uri: ${NEO4J_URI:bolt://localhost:7687}\n  username: ${NEO4J_USER:neo4j}\n  password: ${NEO4J_PASSWORD:neo4j123456}\n\njwt:\n  secret: ${JWT_SECRET:mySecretKeyForJWTTokenGenerationThatIsLongEnough2024}\n\nllm:\n  provider: ${LLM_PROVIDER:openai}\n  openai:\n    api-key: ${OPENAI_API_KEY:}\n    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}\n    model: ${OPENAI_MODEL:gpt-4o-mini}\n  chatglm:\n    api-key: ${CHATGLM_API_KEY:}\n    base-url: ${CHATGLM_BASE_URL:}\n    model: ${CHATGLM_MODEL:chatglm3-turbo}\n  qwen:\n    api-key: ${QWEN_API_KEY:}\n    base-url: ${QWEN_BASE_URL:}\n    model: ${QWEN_MODEL:qwen-turbo}\n\nlogging:\n  level:\n    com.coding.assistant: ${APP_LOG_LEVEL:debug}\n",
+    "replaceAll": false,
+    "structuredPatch": [
+      {
+        "lines": [
+          " llm:",
+          "   provider: ${LLM_PROVIDER:openai}",
+          "   openai:",
+          "-    api-key: ${OPENAI_API_KEY:}",
+          "-    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}",
+          "-    model: ${OPENAI_MODEL:gpt-4o-mini}",
+          "+    api-key: ${OPENAI_API_KEY:你的DeepSeek_API_Key}",
+          "+    base-url: ${OPENAI_BASE_URL:https://api.deepseek.com/v1}",
+          "+    model: ${OPENAI_MODEL:deepseek-chat}",
+          "   chatglm:",
+          "     api-key: ${CHATGLM_API_KEY:}",
+          "     base-url: ${CHATGLM_BASE_URL:}"
+        ],
+        "newLines": 9,
+        "newStart": 22,
+        "oldLines": 9,
+        "oldStart": 22
+      }
+    ],
+    "userModified": false
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "94a9c524-172d-4f74-81cb-1c0aae540623",
+  "version": "2.1.94"
+}

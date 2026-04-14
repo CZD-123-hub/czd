@@ -1,0 +1,28 @@
+{
+  "agentId": "ad94ec181cd0def78",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "spring:\n  datasource:\n    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT:3306}/${MYSQL_DB:coding_assistant}?useSSL=false\u0026allowPublicKeyRetrieval=true\u0026serverTimezone=Asia/Shanghai\n    username: ${MYSQL_USER}\n    password: ${MYSQL_PASSWORD}\n    driver-class-name: com.mysql.cj.jdbc.Driver\n  data:\n    redis:\n      host: ${REDIS_HOST}\n      port: ${REDIS_PORT:6379}\n      password: ${REDIS_PASSWORD:}\n      timeout: 3000ms\n\nneo4j:\n  uri: ${NEO4J_URI}\n  username: ${NEO4J_USER}\n  password: ${NEO4J_PASSWORD}\n\njwt:\n  secret: ${JWT_SECRET}\n\nllm:\n  provider: ${LLM_PROVIDER:openai}\n  openai:\n    api-key: ${OPENAI_API_KEY}\n    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}\n    model: ${OPENAI_MODEL:gpt-4o-mini}\n  chatglm:\n    api-key: ${CHATGLM_API_KEY:}\n    base-url: ${CHATGLM_BASE_URL:}\n    model: ${CHATGLM_MODEL:chatglm3-turbo}\n  qwen:\n    api-key: ${QWEN_API_KEY:}\n    base-url: ${QWEN_BASE_URL:}\n    model: ${QWEN_MODEL:qwen-turbo}\n\nlogging:\n  level:\n    com.coding.assistant: ${APP_LOG_LEVEL:info}",
+        "is_error": false,
+        "tool_use_id": "tooluse_9EVqcrjUoPHdiUTrhoSnzZ",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "9a7b9ad5-62a3-4886-b072-3aa9ed6f9285",
+  "promptId": "93326166-ee8b-4af4-9c00-8b64e733a20b",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "9a7b9ad5-62a3-4886-b072-3aa9ed6f9285",
+  "timestamp": "2026-04-08T03:42:53.805Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "92409587-de0d-414d-b071-aeba3a52bc83",
+  "version": "2.1.94"
+}

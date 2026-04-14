@@ -1,0 +1,49 @@
+{
+  "agentId": "aec633934c059eb99",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01BR6Q7YcU3Zds2gHD28nBNC",
+        "input": {
+          "file_path": "d:\\intelligent-coding-assistant\\frontend\\src\\views\\Chat\\ChatView.vue",
+          "limit": 100
+        },
+        "name": "Read",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01M7YDZGf8mFpTXZGERkFfJS",
+    "model": "claude-haiku-4-5-20251001",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": null,
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 23706,
+      "cache_read_input_tokens": 32014,
+      "inference_geo": "not_available",
+      "input_tokens": 7,
+      "output_tokens": 1
+    }
+  },
+  "parentUuid": "9d8e49be-d803-4f29-bdf6-2537eee83bd5",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "slug": "serene-booping-turtle",
+  "timestamp": "2026-04-07T22:25:10.203Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "2b5714c7-df8f-4f10-bd4c-90f28100a345",
+  "version": "2.1.94"
+}

@@ -1,0 +1,27 @@
+{
+  "agentId": "ad94ec181cd0def78",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\t# ============================================================\n2\t# Intelligent Coding Assistant - Environment Configuration\n3\t# ============================================================\n4\t# IMPORTANT: Do NOT commit this file to version control.\n5\t# ============================================================\n6\t\n7\t# Runtime profile: dev / test / prod\n8\tSPRING_PROFILES_ACTIVE=prod\n9\t\n10\t# ----------------------------------------------------------\n11\t# MySQL Configuration\n12\t# ----------------------------------------------------------\n13\tMYSQL_HOST=mysql\n14\tMYSQL_PORT=3306\n15\tMYSQL_DB=coding_assistant\n16\tMYSQL_ROOT_PASSWORD=lifei777\n17\tMYSQL_DATABASE=coding_assistant\n18\tMYSQL_USER=root\n19\tMYSQL_PASSWORD=lifei777\n20\t\n21\t# ----------------------------------------------------------\n22\t# Redis Configuration\n23\t# ----------------------------------------------------------\n24\tREDIS_HOST=redis\n25\tREDIS_PORT=6379\n26\tREDIS_PASSWORD=\n27\t\n28\t# ----------------------------------------------------------\n29\t# Neo4j Configuration\n30\t# ----------------------------------------------------------\n31\tNEO4J_URI=bolt://neo4j:7687\n32\tNEO4J_USER=neo4j\n33\tNEO4J_PASSWORD=neo4j123\n34\t\n35\t# ----------------------------------------------------------\n36\t# JWT Configuration\n37\t# ----------------------------------------------------------\n38\tJWT_SECRET=mySecretKeyForJWTTokenGenerationThatIsLongEnough2024\n39\tJWT_EXPIRATION=86400000\n40\t\n41\t# ----------------------------------------------------------\n42\t# LLM Configuration\n43\t# ----------------------------------------------------------\n44\tLLM_PROVIDER=openai\n45\tOPENAI_API_KEY=your-real-api-key-here\n46\tOPENAI_BASE_URL=https://api.deepseek.com\n47\tOPENAI_MODEL=deepseek-chat\n48\tCHATGLM_API_KEY=\n49\tCHATGLM_BASE_URL=\n50\tCHATGLM_MODEL=chatglm3-turbo\n51\tQWEN_API_KEY=\n52\tQWEN_BASE_URL=\n53\tQWEN_MODEL=qwen-turbo\n54\t\n55\t# ----------------------------------------------------------\n56\t# App\n57\t# ----------------------------------------------------------\n58\tSERVER_PORT=8080\n59\tUPLOAD_DIR=./uploads\n60\tAPP_LOG_LEVEL=info\n61\t",
+        "tool_use_id": "tooluse_Az06Zzychw9J7gsQeqi5i1",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "8190a409-97a9-4f6c-bd89-8b41f89a2440",
+  "promptId": "93326166-ee8b-4af4-9c00-8b64e733a20b",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "8190a409-97a9-4f6c-bd89-8b41f89a2440",
+  "timestamp": "2026-04-08T03:41:26.753Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "50c199e9-8f47-4c24-a5fd-e6996e184b75",
+  "version": "2.1.94"
+}

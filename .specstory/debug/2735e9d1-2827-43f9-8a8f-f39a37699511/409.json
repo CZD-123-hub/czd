@@ -1,0 +1,36 @@
+{
+  "cwd": "D:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "content": "1\t\u003cscript setup lang=\"ts\"\u003e\n2\timport { ref, onMounted, computed } from 'vue'\n3\timport { useSnippetStore } from '@/stores/snippet'\n4\timport CodeEditor from '@/components/common/CodeEditor.vue'\n5\timport CodeBlock from '@/components/common/CodeBlock.vue'\n6\timport type { CodeSnippet } from '@/types'\n7\timport {\n8\t  Search,\n9\t  Plus,\n10\t  Edit,\n11\t  Delete,\n12\t  Download,\n13\t  Upload,\n14\t} from '@element-plus/icons-vue'\n15\timport { ElMessageBox } from 'element-plus'\n16\t\n17\tconst snippetStore = useSnippetStore()\n18\t\n19\tconst showDialog = ref(false)\n20\tconst dialogMode = ref\u003c'create' | 'edit'\u003e('create')\n21\tconst editingSnippet = ref\u003cPartial\u003cCodeSnippet\u003e\u003e({\n22\t  title: '',\n23\t  code: '',\n24\t  language: 'javascript',\n25\t  description: '',\n26\t  tags: [],\n27\t})\n28\tconst tagInput = ref('')\n29\tconst fileInputRef = ref\u003cHTMLInputElement | null\u003e(null)\n30\t\n31\tconst languages = [\n32\t  'javascript', 'typescript', 'python', 'java', 'go', 'rust',\n33\t  'c', 'cpp', 'csharp', 'php', 'ruby', 'swift', 'kotlin',\n34\t  'sql', 'html', 'css', 'scss', 'shell', 'yaml', 'json',\n35\t  'markdown', 'xml', 'plaintext',\n36\t]\n37\t\n38\tonMounted(() =\u003e {\n39\t  snippetStore.loadSnippets()\n40\t})\n41\t\n42\tfunction handleSearch() {\n43\t  snippetStore.filters.page = 1\n44\t  snippetStore.loadSnippets()\n45\t}\n46\t\n47\tfunction handlePageChange(page: number) {\n48\t  snippetStore.filters.page = page\n49\t  snippetStore.loadSnippets()\n50\t}\n51\t\n52\tfunction openCreateDialog() {\n53\t  dialogMode.value = 'create'\n54\t  editingSnippet.value = {\n55\t    title: '',\n56\t    code: '',\n57\t    language: 'javascript',\n58\t    description: '',\n59\t    tags: [],\n60\t  }",
+        "tool_use_id": "tooluse_QksZukbVs0k5YfAxc8Sd9B",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "f2bd4a18-f2bf-47c8-939a-edb17caf87e3",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "f2bd4a18-f2bf-47c8-939a-edb17caf87e3",
+  "timestamp": "2026-04-08T01:53:50.568Z",
+  "toolUseResult": {
+    "file": {
+      "content": "\u003cscript setup lang=\"ts\"\u003e\nimport { ref, onMounted, computed } from 'vue'\nimport { useSnippetStore } from '@/stores/snippet'\nimport CodeEditor from '@/components/common/CodeEditor.vue'\nimport CodeBlock from '@/components/common/CodeBlock.vue'\nimport type { CodeSnippet } from '@/types'\nimport {\n  Search,\n  Plus,\n  Edit,\n  Delete,\n  Download,\n  Upload,\n} from '@element-plus/icons-vue'\nimport { ElMessageBox } from 'element-plus'\n\nconst snippetStore = useSnippetStore()\n\nconst showDialog = ref(false)\nconst dialogMode = ref\u003c'create' | 'edit'\u003e('create')\nconst editingSnippet = ref\u003cPartial\u003cCodeSnippet\u003e\u003e({\n  title: '',\n  code: '',\n  language: 'javascript',\n  description: '',\n  tags: [],\n})\nconst tagInput = ref('')\nconst fileInputRef = ref\u003cHTMLInputElement | null\u003e(null)\n\nconst languages = [\n  'javascript', 'typescript', 'python', 'java', 'go', 'rust',\n  'c', 'cpp', 'csharp', 'php', 'ruby', 'swift', 'kotlin',\n  'sql', 'html', 'css', 'scss', 'shell', 'yaml', 'json',\n  'markdown', 'xml', 'plaintext',\n]\n\nonMounted(() =\u003e {\n  snippetStore.loadSnippets()\n})\n\nfunction handleSearch() {\n  snippetStore.filters.page = 1\n  snippetStore.loadSnippets()\n}\n\nfunction handlePageChange(page: number) {\n  snippetStore.filters.page = page\n  snippetStore.loadSnippets()\n}\n\nfunction openCreateDialog() {\n  dialogMode.value = 'create'\n  editingSnippet.value = {\n    title: '',\n    code: '',\n    language: 'javascript',\n    description: '',\n    tags: [],\n  }",
+      "filePath": "d:\\intelligent-coding-assistant\\frontend\\src\\views\\CodeSnippets\\CodeSnippetsView.vue",
+      "numLines": 60,
+      "startLine": 1,
+      "totalLines": 411
+    },
+    "type": "text"
+  },
+  "type": "user",
+  "userType": "external",
+  "uuid": "59943eac-29f8-4950-8aae-98d32b3ef5ed",
+  "version": "2.1.94"
+}

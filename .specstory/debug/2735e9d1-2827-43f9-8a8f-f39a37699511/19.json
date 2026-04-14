@@ -1,0 +1,27 @@
+{
+  "agentId": "aead78b845a43c16e",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "frontend\\src\\types\\index.ts\nfrontend\\src\\main.ts\nfrontend\\src\\api\\graph.ts\nfrontend\\src\\api\\progress.ts\nfrontend\\src\\api\\snippet.ts\nfrontend\\src\\stores\\graph.ts\nfrontend\\src\\stores\\snippet.ts\nfrontend\\src\\stores\\progress.ts\nfrontend\\src\\components.d.ts\nfrontend\\src\\api\\path.ts\nfrontend\\src\\stores\\chat.ts\nfrontend\\src\\api\\auth.ts\nfrontend\\src\\stores\\auth.ts\nfrontend\\src\\api\\request.ts\nfrontend\\src\\api\\chat.ts\nfrontend\\src\\stores\\path.ts\nfrontend\\src\\router\\index.ts\nfrontend\\src\\auto-imports.d.ts",
+        "tool_use_id": "tooluse_kAVCceyCWvs8AlmbJCOwpm",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "4c09267a-65dd-4653-9de4-b43ae77e0bfd",
+  "promptId": "c9efd091-67fc-4b71-90fb-fed972249c1b",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "4c09267a-65dd-4653-9de4-b43ae77e0bfd",
+  "timestamp": "2026-04-08T01:27:05.890Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "d923a52a-c038-40ad-98c2-c98dfb7987e1",
+  "version": "2.1.94"
+}

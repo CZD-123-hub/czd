@@ -1,0 +1,27 @@
+{
+  "agentId": "a7128afaafc595c06",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "/d/intelligent-coding-assistant/backend/pom.xml\n/d/intelligent-coding-assistant/frontend/package.json\n/d/intelligent-coding-assistant/frontend/README.md\n/d/intelligent-coding-assistant/recording/package.json\n/d/intelligent-coding-assistant/SPEC.md\n/d/intelligent-coding-assistant/部署文档.md",
+        "is_error": false,
+        "tool_use_id": "toolu_015yX72MsDrEZhmqFGARYWey",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "317dcb57-c1e9-426c-a9f4-b496cd578148",
+  "promptId": "800f6955-869d-49a2-ba91-5ef951fe8aa5",
+  "sessionId": "9222317f-0669-4816-a709-e748a6e0fdc1",
+  "sourceToolAssistantUUID": "317dcb57-c1e9-426c-a9f4-b496cd578148",
+  "timestamp": "2026-04-07T22:21:58.757Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "b8f5847d-8079-4579-bfc9-4ded9965475c",
+  "version": "2.1.94"
+}

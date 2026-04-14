@@ -1,0 +1,27 @@
+{
+  "agentId": "a50583799544996df",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\tpackage com.coding.assistant.entity;\n2\t\n3\timport com.baomidou.mybatisplus.annotation.IdType;\n4\timport com.baomidou.mybatisplus.annotation.TableField;\n5\timport com.baomidou.mybatisplus.annotation.TableId;\n6\timport com.baomidou.mybatisplus.annotation.TableName;\n7\timport lombok.AllArgsConstructor;\n8\timport lombok.Builder;\n9\timport lombok.Data;\n10\timport lombok.NoArgsConstructor;\n11\t\n12\timport java.time.LocalDateTime;\n13\t\n14\t@Data\n15\t@Builder\n16\t@NoArgsConstructor\n17\t@AllArgsConstructor\n18\t@TableName(\"message\")\n19\tpublic class Message {\n20\t\n21\t    @TableId(type = IdType.AUTO)\n22\t    private Long id;\n23\t\n24\t    @TableField(\"conversation_id\")\n25\t    private Long conversationId;\n26\t\n27\t    @TableField(\"role\")\n28\t    private String role;\n29\t\n30\t    @TableField(\"content\")\n31\t    private String content;\n32\t\n33\t    @TableField(\"sources\")\n34\t    private String sources;\n35\t\n36\t    @TableField(\"created_at\")\n37\t    private LocalDateTime createdAt;\n38\t}",
+        "tool_use_id": "tooluse_7kxJ9yrliymB5O7XkzV9e5",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "08589182-dbb8-42e0-b140-6909af436f3a",
+  "promptId": "63340959-8285-470d-9149-20cac08b92ab",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "sourceToolAssistantUUID": "08589182-dbb8-42e0-b140-6909af436f3a",
+  "timestamp": "2026-04-08T01:42:46.705Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "653b7a4d-e8fc-4993-8ef9-36ec45d1a26b",
+  "version": "2.1.94"
+}

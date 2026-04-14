@@ -1,0 +1,50 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "id": "tooluse_BUAidFMJXGKDyoEEClXPLC",
+        "input": {
+          "file_path": "d:\\intelligent-coding-assistant\\frontend\\src\\components\\common\\CodeBlock.vue"
+        },
+        "name": "Read",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_20260408093456",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 31371,
+      "iterations": [],
+      "output_tokens": 40,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "e26962d9-2e4b-474e-a5d5-c58d65348e30",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "slug": "ethereal-rolling-pixel",
+  "timestamp": "2026-04-08T01:35:00.538Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "b3d1e128-b15c-416d-96d2-da5f0984629d",
+  "version": "2.1.94"
+}

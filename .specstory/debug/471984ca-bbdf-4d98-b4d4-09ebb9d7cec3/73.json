@@ -1,0 +1,27 @@
+{
+  "agentId": "ad94ec181cd0def78",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\t\u003cscript setup lang=\"ts\"\u003e\n2\timport { ref, watch, onMounted, onBeforeUnmount, shallowRef } from 'vue'\n3\timport loader from '@monaco-editor/loader'\n4\timport type * as Monaco from 'monaco-editor'\n5\t\n6\tconst props = withDefaults(\n7\t  defineProps\u003c{\n8\t    modelValue: string\n9\t    language?: string\n10\t    readOnly?: boolean\n11\t    height?: string\n12\t    width?: string\n13\t  }\u003e(),\n14\t  {\n15\t    language: 'javascript',\n16\t    readOnly: false,\n17\t    height: '400px',\n18\t    width: '100%',\n19\t  },\n20\t)\n21\t\n22\tconst emit = defineEmits\u003c{\n23\t  'update:modelValue': [value: string]\n24\t}\u003e()\n25\t\n26\tconst editorContainer = ref\u003cHTMLDivElement | null\u003e(null)\n27\tconst editor = shallowRef\u003cMonaco.editor.IStandaloneCodeEditor | null\u003e(null)\n28\tlet monacoInstance: typeof Monaco | null = null\n29\t\n30\tonMounted(async () =\u003e {\n31\t  // 配置 Monaco 使用国内 CDN\n32\t  loader.config({\n33\t    paths: {\n34\t      vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs'\n35\t    }\n36\t  })\n37\t  \n38\t  monacoInstance = await loader.init()\n39\t\n40\t  if (!editorContainer.value) return\n41\t\n42\t  editor.value = monacoInstance.editor.create(editorContainer.value, {\n43\t    value: props.modelValue,\n44\t    language: props.language,\n45\t    readOnly: props.readOnly,\n46\t    theme: 'vs',\n47\t    automaticLayout: true,\n48\t    minimap: { enabled: false },\n49\t    scrollBeyondLastLine: false,\n50\t    fontSize: 14,",
+        "tool_use_id": "tooluse_W7MlLiuV8V8jsM6I931Hkv",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "45f4ef15-609b-4062-9f93-724058286aa2",
+  "promptId": "93326166-ee8b-4af4-9c00-8b64e733a20b",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "45f4ef15-609b-4062-9f93-724058286aa2",
+  "timestamp": "2026-04-08T03:42:35.573Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "d54cac8e-9b62-40d9-a561-02fe3747a403",
+  "version": "2.1.94"
+}

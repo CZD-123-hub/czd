@@ -1,0 +1,46 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "text": "效果：\n- **第一次点击**某个对话：正常请求，显示 loading\n- **再次点击**同一对话：瞬间从缓存显示，同时后台静默刷新确保数据最新\n- 发完消息后自动更新缓存，删除对话时清除对应缓存",
+        "type": "text"
+      }
+    ],
+    "id": "msg_20260408131445",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "",
+      "input_tokens": 133522,
+      "iterations": [],
+      "output_tokens": 81,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "a4ad2fa7-5fe4-4778-b516-ed1c80bbd0ef",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "timestamp": "2026-04-08T05:15:03.318Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "18938811-02e4-440a-ae51-7c8074c78a5c",
+  "version": "2.1.94"
+}

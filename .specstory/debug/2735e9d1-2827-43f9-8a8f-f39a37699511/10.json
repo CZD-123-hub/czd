@@ -1,0 +1,28 @@
+{
+  "agentId": "aead78b845a43c16e",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "\u003ctool_use_error\u003ePath does not exist: /Users/logan/vertex-pilot. Note: your current working directory is d:\\intelligent-coding-assistant.\u003c/tool_use_error\u003e",
+        "is_error": true,
+        "tool_use_id": "tooluse_1v7V2aL2i4MtHThI15Xc0z",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "038d2ea8-6019-4927-9ed8-82bf58eda2bb",
+  "promptId": "c9efd091-67fc-4b71-90fb-fed972249c1b",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "sourceToolAssistantUUID": "038d2ea8-6019-4927-9ed8-82bf58eda2bb",
+  "timestamp": "2026-04-08T01:26:55.379Z",
+  "toolUseResult": "Error: Path does not exist: /Users/logan/vertex-pilot. Note: your current working directory is d:\\intelligent-coding-assistant.",
+  "type": "user",
+  "userType": "external",
+  "uuid": "dc5c8b14-c78a-410e-b204-c83d9e79ddb6",
+  "version": "2.1.94"
+}

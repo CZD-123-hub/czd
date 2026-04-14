@@ -1,0 +1,47 @@
+{
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "id": "tooluse_acIZWeF8AYwWi38RWHFHbo",
+        "input": {
+          "file_path": "d:/intelligent-coding-assistant/frontend/src/stores/chat.ts",
+          "new_string": "  const loading = ref(false)\n  const streaming = ref(false)\n  const streamingContent = ref('')",
+          "old_string": "  const loading = ref(false)\n  const streaming = ref(false)",
+          "replace_all": false
+        },
+        "name": "Edit",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_20260408114952",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": null,
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "not_available",
+      "input_tokens": 52432,
+      "output_tokens": 0,
+      "service_tier": "standard"
+    }
+  },
+  "parentUuid": "42c5f264-3557-45d8-b5a6-424272643eb9",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "timestamp": "2026-04-08T03:49:57.754Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "1ccbc2c7-012a-48e3-a792-69994ae42d97",
+  "version": "2.1.94"
+}

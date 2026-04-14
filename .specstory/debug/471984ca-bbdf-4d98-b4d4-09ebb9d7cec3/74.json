@@ -1,0 +1,27 @@
+{
+  "agentId": "ad94ec181cd0def78",
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": true,
+  "message": {
+    "content": [
+      {
+        "content": "1\t\u003cscript setup lang=\"ts\"\u003e\n2\timport { ref, nextTick, onMounted, watch } from 'vue'\n3\timport { useChatStore } from '@/stores/chat'\n4\timport ConversationList from '@/components/chat/ConversationList.vue'\n5\timport MessageBubble from '@/components/chat/MessageBubble.vue'\n6\timport { Plus, Promotion } from '@element-plus/icons-vue'\n7\timport type { Conversation } from '@/types'\n8\t\n9\tconst chatStore = useChatStore()\n10\tconst messageInput = ref('')\n11\tconst messageContainer = ref\u003cHTMLDivElement | null\u003e(null)\n12\tconst inputRef = ref\u003cHTMLTextAreaElement | null\u003e(null)\n13\t\n14\tonMounted(() =\u003e {\n15\t  chatStore.loadConversations()\n16\t})\n17\t\n18\tfunction scrollToBottom() {\n19\t  nextTick(() =\u003e {\n20\t    if (messageContainer.value) {\n21\t      messageContainer.value.scrollTop = messageContainer.value.scrollHeight\n22\t    }\n23\t  })\n24\t}\n25\t\n26\twatch(\n27\t  () =\u003e chatStore.messages.length,\n28\t  () =\u003e {\n29\t    scrollToBottom()\n30\t  },\n31\t)\n32\t\n33\twatch(\n34\t  () =\u003e chatStore.streamingContent,\n35\t  () =\u003e {\n36\t    scrollToBottom()\n37\t  },\n38\t)\n39\t\n40\tfunction handleSelectConversation(conv: Conversation) {\n41\t  chatStore.selectConversation(conv)\n42\t}\n43\t\n44\tfunction handleDeleteConversation(convId: number) {\n45\t  chatStore.deleteConversation(convId)\n46\t}\n47\t\n48\tfunction handleNewConversation() {\n49\t  chatStore.newConversation()\n50\t  messageInput.value = ''",
+        "tool_use_id": "tooluse_YM4RQn5ChO8PGcFQiXMnsr",
+        "type": "tool_result"
+      }
+    ],
+    "role": "user"
+  },
+  "parentUuid": "94aca6d9-d99a-4fcb-9f09-c251fb02e874",
+  "promptId": "93326166-ee8b-4af4-9c00-8b64e733a20b",
+  "sessionId": "471984ca-bbdf-4d98-b4d4-09ebb9d7cec3",
+  "slug": "robust-cuddling-karp",
+  "sourceToolAssistantUUID": "94aca6d9-d99a-4fcb-9f09-c251fb02e874",
+  "timestamp": "2026-04-08T03:42:35.575Z",
+  "type": "user",
+  "userType": "external",
+  "uuid": "ddce238b-920f-40e2-889d-dfcb96cde5e6",
+  "version": "2.1.94"
+}

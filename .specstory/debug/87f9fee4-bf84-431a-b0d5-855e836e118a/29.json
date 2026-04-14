@@ -1,0 +1,50 @@
+{
+  "cwd": "D:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "message": {
+    "content": [
+      {
+        "id": "toolu_bdrk_01N7V3xJJLxckvLRgXBvFk71",
+        "input": {
+          "file_path": "d:/intelligent-coding-assistant/backend/src/main/java/com/coding/assistant/service/ProgressService.java"
+        },
+        "name": "Read",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_bdrk_013TU1KSLiKwjQoqnoo7pW7o",
+    "model": "claude-sonnet-4-6",
+    "role": "assistant",
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 12272,
+      "cache_read_input_tokens": 34815,
+      "inference_geo": "",
+      "input_tokens": 1,
+      "iterations": [],
+      "output_tokens": 151,
+      "server_tool_use": {
+        "web_fetch_requests": 0,
+        "web_search_requests": 0
+      },
+      "service_tier": "standard",
+      "speed": "standard"
+    }
+  },
+  "parentUuid": "9aff7023-979b-4e86-8446-54ce513af893",
+  "sessionId": "87f9fee4-bf84-431a-b0d5-855e836e118a",
+  "slug": "rippling-enchanting-mochi",
+  "timestamp": "2026-04-07T22:48:16.682Z",
+  "type": "assistant",
+  "userType": "external",
+  "uuid": "401996e5-3184-4c1c-b484-819b6903a69d",
+  "version": "2.1.94"
+}

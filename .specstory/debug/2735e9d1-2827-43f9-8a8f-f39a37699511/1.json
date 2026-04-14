@@ -1,0 +1,19 @@
+{
+  "attachment": {
+    "content": "- update-config: Use this skill to configure the Claude Code harness via settings.json. Automated behaviors (\"from now on when X\", \"each time X\", \"whenever X\", \"before/after X\") require hooks configured in settings.json - the harness executes these, not Claude, so m…\n- simplify: Review changed code for reuse, quality, and efficiency, then fix any issues found.\n- loop: Run a prompt or slash command on a recurring interval (e.g. /loop 5m /foo, defaults to 10m) - When the user wants to set up a recurring task, poll for status, or run something repeatedly on an interval (e.g. \"check the deploy every 5 minutes\", \"keep…\n- claude-api: Build apps with the Claude API or Anthropic SDK.\nTRIGGER when: code imports `anthropic`/`@anthropic-ai/sdk`/`claude_agent_sdk`, or user asks to use Claude API, Anthropic SDKs, or Agent SDK.\nDO NOT TRIGGER when: code imports `openai`/other AI SDK, ge…",
+    "isInitial": true,
+    "skillCount": 4,
+    "type": "skill_listing"
+  },
+  "cwd": "d:\\intelligent-coding-assistant",
+  "entrypoint": "claude-vscode",
+  "gitBranch": "HEAD",
+  "isSidechain": false,
+  "parentUuid": "d4ccf59c-c08e-4928-8800-c0b1409e688c",
+  "sessionId": "2735e9d1-2827-43f9-8a8f-f39a37699511",
+  "timestamp": "2026-04-08T01:26:39.952Z",
+  "type": "attachment",
+  "userType": "external",
+  "uuid": "a2d4c890-b23a-4f11-92a5-af04b9dc5f43",
+  "version": "2.1.94"
+}
