@@ -31,6 +31,7 @@ backend/target/
 backend/*.jar
 backend/*.war
 backend/.mvn/wrapper/maven-wrapper.jar
+backend/.jqwik-database
 
 # ----------------------------------------------------------
 # Frontend (Node.js / Vue)
@@ -39,12 +40,29 @@ frontend/node_modules/
 frontend/dist/
 frontend/.cache/
 frontend/.temp/
+.pnpm-store/
 
 # ----------------------------------------------------------
 # Docker
 # ----------------------------------------------------------
 docker/mysql/data/
 docker/neo4j/data/
+
+# ----------------------------------------------------------
+# Local Tooling Cache / Worktrees
+# ----------------------------------------------------------
+.specstory/
+.codex_tmp/
+.claude/worktrees/
+.m2/
+
+# ----------------------------------------------------------
+# Generated Media / Large Files
+# ----------------------------------------------------------
+backend/uploads/videos/
+recording/videos/
+*.mp4
+docs/~$*.docx
 
 # ----------------------------------------------------------
 # OS Generated Files
@@ -70,23 +88,4 @@ yarn-error.log*
 # ----------------------------------------------------------
 *.tmp
 *.bak
-*.orig.specstory/
-.codex_tmp/
-.m2/
-.claude/worktrees/
-.specstory/
-.codex_tmp/
-.m2/
-.claude/worktrees/
-.specstory/
-.codex_tmp/
-.m2/
-.claude/worktrees/
-backend/uploads/videos/
-recording/videos/
-*.mp4
-docs/~$*.docx
-.specstory/
-backend/uploads/videos/
-recording/videos/
-*.mp4
+*.orig
