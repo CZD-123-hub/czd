@@ -7,17 +7,19 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
+const backendTarget = process.env.VITE_BACKEND_TARGET || 'http://localhost:18081'
+
 export default defineConfig({
   plugins: [
     vue(),
     vueDevTools(),
     AutoImport({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({ importStyle: 'css' })],
       imports: ['vue', 'vue-router', 'pinia'],
       dts: 'src/auto-imports.d.ts',
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({ importStyle: 'css' })],
       dts: 'src/components.d.ts',
     }),
   ],
@@ -30,12 +32,31 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: backendTarget,
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'http://localhost:8080',
+        target: backendTarget,
         changeOrigin: true,
+      },
+    },
+  },
+  build: {
+    chunkSizeWarningLimit: 650,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (id.includes('node_modules/echarts')) return 'vendor-echarts'
+          if (id.includes('node_modules/highlight.js')) return 'vendor-highlight'
+          if (id.includes('node_modules/@monaco-editor') || id.includes('node_modules/monaco-editor')) {
+            return 'vendor-monaco'
+          }
+          if (id.includes('node_modules/@element-plus/icons-vue')) return 'vendor-ep-icons'
+          if (id.includes('node_modules/vue') || id.includes('node_modules/pinia') || id.includes('node_modules/vue-router')) {
+            return 'vendor-vue-core'
+          }
+        },
       },
     },
   },

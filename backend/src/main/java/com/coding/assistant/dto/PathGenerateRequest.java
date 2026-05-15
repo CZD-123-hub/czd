@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PathGenerateRequest {
 
-    @NotBlank(message = "Target is required")
+    @NotBlank(message = "target is required")
     private String target;
 
     private List<String> knownKnowledgeIds;

@@ -13,5 +13,7 @@ public class WeakAreaVO {
     private String key;
     private String name;
     private int score;
+    private Integer doneNodes;
+    private Integer totalNodes;
     private String suggestion;
 }

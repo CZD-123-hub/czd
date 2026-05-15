@@ -132,7 +132,7 @@ const groupedConversations = computed(() => {
 
 <style lang="scss" scoped>
 .conversation-list {
-  padding: 8px;
+  padding: 6px;
 }
 
 .skeleton-wrap {
@@ -175,8 +175,8 @@ const groupedConversations = computed(() => {
 }
 
 .group-label {
-  padding: 8px 12px 5px;
-  font-size: 12px;
+  padding: 7px 10px 4px;
+  font-size: 11px;
   color: var(--text-secondary);
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -185,9 +185,9 @@ const groupedConversations = computed(() => {
 .conv-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.2s, box-shadow 0.2s;
   position: relative;
@@ -221,18 +221,18 @@ const groupedConversations = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
 }
 
 .conv-icon {
   flex-shrink: 0;
   color: var(--text-secondary);
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .conv-title {
   flex: 1;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-regular);
   overflow: hidden;
   text-overflow: ellipsis;

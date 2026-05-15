@@ -1,6 +1,10 @@
 package com.coding.assistant.security;
 
+import com.coding.assistant.dto.ApiResponse;
+import com.coding.assistant.exception.ErrorCode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +30,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final TraceIdFilter traceIdFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,9 +42,28 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(401);
+                            response.setStatus(ErrorCode.UNAUTHORIZED);
+                            response.setCharacterEncoding("UTF-8");
                             response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"code\":401,\"message\":\"未登录或登录已过期\",\"data\":null}");
+                            String body = objectMapper.writeValueAsString(buildSecurityErrorBody(
+                                    request,
+                                    ErrorCode.UNAUTHORIZED,
+                                    ErrorCode.BIZ_UNAUTHORIZED,
+                                    "Not authenticated or token expired"
+                            ));
+                            response.getWriter().write(body);
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(ErrorCode.FORBIDDEN);
+                            response.setCharacterEncoding("UTF-8");
+                            response.setContentType("application/json;charset=UTF-8");
+                            String body = objectMapper.writeValueAsString(buildSecurityErrorBody(
+                                    request,
+                                    ErrorCode.FORBIDDEN,
+                                    ErrorCode.BIZ_FORBIDDEN,
+                                    "Access denied"
+                            ));
+                            response.getWriter().write(body);
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
@@ -48,7 +73,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(traceIdFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter, TraceIdFilter.class);
 
         return http.build();
     }
@@ -75,5 +101,20 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
+    }
+
+    private ApiResponse<Void> buildSecurityErrorBody(
+            HttpServletRequest request,
+            int statusCode,
+            String bizCode,
+            String message
+    ) {
+        ApiResponse<Void> body = ApiResponse.error(statusCode, bizCode, message, null);
+        Object traceId = request.getAttribute(TraceIdFilter.TRACE_ID_REQUEST_ATTR);
+        if (traceId != null) {
+            body.setTraceId(String.valueOf(traceId));
+        }
+        body.setPath(request.getRequestURI());
+        return body;
     }
 }

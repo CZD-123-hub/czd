@@ -19,4 +19,6 @@ public class LearningNodeVO {
     private Integer nodeOrder;
     private String status;
     private List<String> resourceUrls;
+    private List<NodeDocumentVO> recommendedDocuments;
+    private List<NodeVideoVO> recommendedVideos;
 }

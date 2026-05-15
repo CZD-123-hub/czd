@@ -1,6 +1,6 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, shallowRef } from 'vue'
-import * as echarts from 'echarts'
+import { init, type EChartsCoreOption, type EChartsType } from '@/utils/echarts'
 import type { RadarData } from '@/types'
 
 const props = defineProps<{
@@ -8,11 +8,12 @@ const props = defineProps<{
 }>()
 
 const chartContainer = ref<HTMLDivElement | null>(null)
-const chart = shallowRef<echarts.ECharts | null>(null)
+const chart = shallowRef<EChartsType | null>(null)
 
-function buildOption(): echarts.EChartsCoreOption {
+function buildOption(): EChartsCoreOption {
   if (!props.data) return {}
 
+  const periodDays = props.data.periodDays ?? 30
   const indicators = props.data.categories.map((cat) => ({
     name: cat,
     max: 100,
@@ -21,6 +22,17 @@ function buildOption(): echarts.EChartsCoreOption {
   return {
     tooltip: {
       trigger: 'item',
+      confine: true,
+      formatter: (params: any) => {
+        const normalizedValues = Array.isArray(params?.value) ? params.value : props.data?.values ?? []
+        const lines = props.data?.categories.map((category, index) => {
+          const raw = props.data?.rawCounts?.[index]
+          const normalized = Number(normalizedValues[index] ?? 0)
+          const rawText = typeof raw === 'number' ? `${raw} 次` : '-'
+          return `${category}: ${rawText}（归一化 ${normalized.toFixed(0)}）`
+        })
+        return [`最近 ${periodDays} 天知识活跃分布`, ...(lines || [])].join('<br/>')
+      },
     },
     radar: {
       indicator: indicators,
@@ -74,7 +86,7 @@ function buildOption(): echarts.EChartsCoreOption {
 
 function initChart() {
   if (!chartContainer.value) return
-  chart.value = echarts.init(chartContainer.value)
+  chart.value = init(chartContainer.value)
   if (props.data) {
     chart.value.setOption(buildOption())
   }

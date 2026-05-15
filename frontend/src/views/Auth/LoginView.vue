@@ -99,7 +99,7 @@ function goRegister() {
 
         <div class="form-footer">
           <span>还没有账号？</span>
-          <el-link type="primary" :underline="false" @click="goRegister">
+          <el-link type="primary" :underline="'never'" @click="goRegister">
             立即注册
           </el-link>
         </div>

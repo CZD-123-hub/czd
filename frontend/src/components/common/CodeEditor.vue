@@ -36,6 +36,7 @@ onMounted(async () => {
   })
   
   monacoInstance = await loader.init()
+  if (!monacoInstance) return
 
   if (!editorContainer.value) return
 

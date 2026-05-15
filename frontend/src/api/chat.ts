@@ -1,5 +1,5 @@
 import request from './request'
-import type { ApiResponse, Conversation, Message } from '@/types'
+import type { ApiResponse, Conversation, Message, RetrievalMetrics } from '@/types'
 
 export function getConversations() {
   return request.get<ApiResponse<Conversation[]>>('/chat/conversations')
@@ -13,12 +13,32 @@ export function deleteConversation(conversationId: number) {
   return request.delete<ApiResponse<null>>(`/chat/conversations/${conversationId}`)
 }
 
-export function submitFeedback(messageId: number, rating: 'useful' | 'useless' | 'none') {
-  // 如果是取消，发送 null
-  if (rating === 'none') {
-    return request.post<ApiResponse<null>>('/chat/feedback', { messageId, rating: null })
-  }
+export function submitFeedback(messageId: number, rating: 'useful' | 'useless' | null) {
   return request.post<ApiResponse<null>>('/chat/feedback', { messageId, rating })
+}
+
+export function getRetrievalMetrics() {
+  return request.get<ApiResponse<RetrievalMetrics>>('/chat/retrieval-metrics')
+}
+
+export function resetRetrievalMetrics() {
+  return request.post<ApiResponse<null>>('/chat/retrieval-metrics/reset')
+}
+
+export interface ChatSseMetaPayload {
+  conversationId: number
+}
+
+export interface ChatSseDonePayload {
+  assistantMessageId: number
+}
+
+export interface ChatSseCallbacks {
+  onMeta?: (meta: ChatSseMetaPayload) => void
+  onDelta: (chunk: string) => void
+  onDone: (payload: ChatSseDonePayload) => void
+  onError: (err: string) => void
+  onAbort?: () => void
 }
 
 /**
@@ -27,12 +47,19 @@ export function submitFeedback(messageId: number, rating: 'useful' | 'useless' |
 export function sendMessageSSE(
   conversationId: number | null,
   content: string,
-  onMessage: (chunk: string) => void,
-  onDone: () => void,
-  onError: (err: string) => void,
+  callbacks: ChatSseCallbacks,
 ): AbortController {
   const controller = new AbortController()
   const token = localStorage.getItem('token') || ''
+  const { onMeta, onDelta, onDone, onError, onAbort } = callbacks
+
+  function parseJsonPayload<T>(raw: string): T | null {
+    try {
+      return JSON.parse(raw) as T
+    } catch {
+      return null
+    }
+  }
 
   fetch('/api/chat/send', {
     method: 'POST',
@@ -46,13 +73,27 @@ export function sendMessageSSE(
   })
     .then(async (response) => {
       if (!response.ok) {
-        onError(`请求失败: ${response.status}`)
+        let message = `Request failed: ${response.status}`
+        try {
+          const contentType = response.headers.get('content-type') || ''
+          if (contentType.includes('application/json')) {
+            const payload = (await response.json()) as Partial<ApiResponse<unknown>>
+            const serverMessage = typeof payload.message === 'string' ? payload.message.trim() : ''
+            const traceId = typeof payload.traceId === 'string' ? payload.traceId.trim() : ''
+            if (serverMessage) {
+              message = traceId ? `${serverMessage} (traceId: ${traceId})` : serverMessage
+            }
+          }
+        } catch {
+          // keep fallback status-based message
+        }
+        onError(message)
         return
       }
 
       const reader = response.body?.getReader()
       if (!reader) {
-        onError('无法读取响应流')
+        onError('Unable to read response stream')
         return
       }
 
@@ -86,13 +127,31 @@ export function sendMessageSSE(
           }
 
           const data = dataParts.join('\n')
-          if (data === '[DONE]' || eventName === 'done') {
-            onDone()
+          if (!data) {
+            continue
+          }
+
+          if (eventName === 'meta') {
+            const metaPayload = parseJsonPayload<ChatSseMetaPayload>(data)
+            if (metaPayload && Number.isFinite(metaPayload.conversationId)) {
+              onMeta?.(metaPayload)
+            }
+            continue
+          }
+
+          if (eventName === 'done' || data === '[DONE]') {
+            const donePayload = parseJsonPayload<ChatSseDonePayload>(data) || { assistantMessageId: 0 }
+            onDone(donePayload)
             return
           }
 
-          if (data) {
-            onMessage(data)
+          if (eventName === 'error') {
+            onError(data || '服务异常，请稍后重试')
+            return
+          }
+
+          if (eventName === 'delta' || eventName === '') {
+            onDelta(data)
           }
         }
       }
@@ -111,15 +170,17 @@ export function sendMessageSSE(
         }
         const data = dataParts.join('\n')
         if (data && data !== '[DONE]') {
-          onMessage(data)
+          onDelta(data)
         }
       }
 
-      onDone()
+      onDone({ assistantMessageId: 0 })
     })
     .catch((err) => {
-      if (err.name !== 'AbortError') {
-        onError(err.message || '网络错误')
+      if (err.name === 'AbortError') {
+        onAbort?.()
+      } else {
+        onError(err.message || 'Network error')
       }
     })
 

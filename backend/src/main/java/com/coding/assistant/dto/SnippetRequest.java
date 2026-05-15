@@ -14,13 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 public class SnippetRequest {
 
-    @NotBlank(message = "Title is required")
+    @NotBlank(message = "title is required")
     private String title;
 
-    @NotBlank(message = "Code is required")
+    @NotBlank(message = "code is required")
     private String code;
 
-    @NotBlank(message = "Language is required")
+    @NotBlank(message = "language is required")
     private String language;
 
     private String description;

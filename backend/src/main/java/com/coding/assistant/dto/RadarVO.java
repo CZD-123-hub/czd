@@ -15,4 +15,7 @@ public class RadarVO {
 
     private List<String> categories;
     private List<Double> values;
+    private List<Long> rawCounts;
+    private long maxCount;
+    private int periodDays;
 }

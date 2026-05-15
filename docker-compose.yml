@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # ============================================================
   # MySQL 8.0 - Relational data store
@@ -9,7 +7,7 @@ services:
     container_name: ica-mysql
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "${MYSQL_HOST_PORT:-3306}:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-coding_assistant}
@@ -39,8 +37,8 @@ services:
     container_name: ica-neo4j
     restart: unless-stopped
     ports:
-      - "7474:7474"   # HTTP browser
-      - "7687:7687"   # Bolt protocol
+      - "${NEO4J_HTTP_HOST_PORT:-17474}:7474"   # HTTP browser
+      - "${NEO4J_BOLT_HOST_PORT:-17687}:7687"   # Bolt protocol
     environment:
       NEO4J_AUTH: ${NEO4J_USER:-neo4j}/${NEO4J_PASSWORD:-neo4j123}
       NEO4J_PLUGINS: '["apoc"]'
@@ -49,7 +47,7 @@ services:
     volumes:
       - neo4j-data:/data
       - neo4j-logs:/logs
-      - ./docker/neo4j/init-data.cypher:/var/lib/neo4j/import/init-data.cypher:ro
+      - ./docker/neo4j/init-data.cypher:/var/lib/neo4j/import/init-data.cypher
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
       interval: 10s
@@ -67,7 +65,7 @@ services:
     container_name: ica-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "16379:6379"
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data
@@ -77,6 +75,24 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+    networks:
+      - ica-network
+
+  # ============================================================
+  # Elasticsearch 8 - Vector search store
+  # ============================================================
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: ica-elasticsearch
+    restart: unless-stopped
+    ports:
+      - "19200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
     networks:
       - ica-network
 
@@ -112,6 +128,17 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
 
+      # Vector search
+      VECTOR_SEARCH_ENABLED: ${VECTOR_SEARCH_ENABLED:-true}
+      VECTOR_SEARCH_URIS: ${VECTOR_SEARCH_URIS:-http://elasticsearch:9200}
+      VECTOR_SEARCH_INDEX: ${VECTOR_SEARCH_INDEX:-knowledge_document_vector}
+      VECTOR_SEARCH_CHUNK_INDEX: ${VECTOR_SEARCH_CHUNK_INDEX:-knowledge_chunk_vector}
+      VECTOR_SEARCH_QUERY_LOG_ENABLED: ${VECTOR_SEARCH_QUERY_LOG_ENABLED:-true}
+      VECTOR_SEARCH_QUERY_LOG_INDEX: ${VECTOR_SEARCH_QUERY_LOG_INDEX:-query_log_index}
+      VECTOR_SEARCH_RETRIEVAL_LOG_INDEX: ${VECTOR_SEARCH_RETRIEVAL_LOG_INDEX:-retrieval_log_index}
+      VECTOR_SEARCH_TIMEOUT_MS: ${VECTOR_SEARCH_TIMEOUT_MS:-3000}
+      VECTOR_SEARCH_NUM_CANDIDATES: ${VECTOR_SEARCH_NUM_CANDIDATES:-50}
+
       # JWT
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
@@ -135,6 +162,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      elasticsearch:
+        condition: service_started
     networks:
       - ica-network
 
@@ -177,6 +206,8 @@ volumes:
   neo4j-logs:
     driver: local
   redis-data:
+    driver: local
+  es-data:
     driver: local
   frontend-dist:
     driver: local

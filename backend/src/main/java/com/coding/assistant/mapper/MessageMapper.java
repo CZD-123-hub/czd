@@ -17,4 +17,14 @@ public interface MessageMapper extends BaseMapper<Message> {
 
     @Delete("DELETE FROM message WHERE conversation_id = #{conversationId}")
     int deleteByConversationId(@Param("conversationId") Long conversationId);
+
+    @Select("""
+            SELECT content
+            FROM message
+            WHERE conversation_id = #{conversationId}
+              AND role = 'user'
+            ORDER BY created_at DESC
+            LIMIT 1
+            """)
+    String selectLatestUserContentByConversationId(@Param("conversationId") Long conversationId);
 }

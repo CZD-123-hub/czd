@@ -1,6 +1,7 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import type { LearningNodeInfo } from '@/types'
-import { CircleCheck, Loading, RemoveFilled, MoreFilled } from '@element-plus/icons-vue'
+import { CircleCheck, Loading, MoreFilled, RemoveFilled } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 
 type NodeStatus = LearningNodeInfo['status']
 
@@ -11,6 +12,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   statusChange: [nodeId: number, status: NodeStatus]
 }>()
+
+const router = useRouter()
 
 const statusMap: Record<NodeStatus, { label: string; type: 'success' | 'warning' | 'info' | 'danger'; color: string }> = {
   todo: { label: '待学习', type: 'info', color: '#6b7b9d' },
@@ -41,6 +44,18 @@ function getStatusIcon(status: NodeStatus) {
 
 function handleStatusChange(nodeId: number, status: NodeStatus) {
   emit('statusChange', nodeId, status)
+}
+
+function handleStatusCommand(nodeId: number, command: string | number | boolean) {
+  handleStatusChange(nodeId, String(command) as NodeStatus)
+}
+
+function openDocument(docId: number) {
+  void router.push({ name: 'documents', query: { docId: String(docId) } })
+}
+
+function openVideoInStudio(videoId: number) {
+  void router.push({ name: 'learning-studio', query: { videoId: String(videoId), from: 'path' } })
 }
 </script>
 
@@ -78,8 +93,8 @@ function handleStatusChange(nodeId: number, status: NodeStatus) {
               <el-tag :type="statusMap[node.status].type" size="small">
                 {{ statusMap[node.status].label }}
               </el-tag>
-              <el-dropdown trigger="click" @command="(cmd) => handleStatusChange(node.id, cmd as NodeStatus)">
-                <el-button size="small" text type="primary">
+              <el-dropdown trigger="click" @command="handleStatusCommand(node.id, $event)">
+                <el-button size="small" type="primary" class="status-toggle-btn">
                   切换状态
                   <el-icon class="el-icon--right"><MoreFilled /></el-icon>
                 </el-button>
@@ -118,6 +133,34 @@ function handleStatusChange(nodeId: number, status: NodeStatus) {
               资源 {{ i + 1 }}
             </a>
           </div>
+
+          <div v-if="node.recommendedDocuments && node.recommendedDocuments.length > 0" class="node-recommend">
+            <span class="resources-label">推荐文档</span>
+            <el-button
+              v-for="doc in node.recommendedDocuments"
+              :key="`doc-${node.id}-${doc.id}`"
+              size="small"
+              text
+              type="primary"
+              @click="openDocument(doc.id)"
+            >
+              {{ doc.title }}
+            </el-button>
+          </div>
+
+          <div v-if="node.recommendedVideos && node.recommendedVideos.length > 0" class="node-recommend">
+            <span class="resources-label">推荐视频</span>
+            <el-button
+              v-for="video in node.recommendedVideos"
+              :key="`video-${node.id}-${video.id}`"
+              size="small"
+              text
+              type="success"
+              @click="openVideoInStudio(video.id)"
+            >
+              {{ video.title }}
+            </el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -127,6 +170,9 @@ function handleStatusChange(nodeId: number, status: NodeStatus) {
 <style lang="scss" scoped>
 .path-timeline {
   padding: 14px;
+  --path-btn-bg: #2f6bff;
+  --path-btn-bg-hover: #255ae6;
+  --path-btn-bg-active: #1f4fcf;
 }
 
 .timeline-container {
@@ -239,6 +285,14 @@ function handleStatusChange(nodeId: number, status: NodeStatus) {
   flex-wrap: wrap;
 }
 
+.node-recommend {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .resources-label {
   font-size: 12px;
   color: var(--text-secondary);
@@ -297,5 +351,24 @@ function handleStatusChange(nodeId: number, status: NodeStatus) {
     width: 100%;
     justify-content: space-between;
   }
+}
+
+:deep(.el-button) {
+  color: #fff !important;
+  background: var(--path-btn-bg) !important;
+  border-color: var(--path-btn-bg) !important;
+}
+
+:deep(.el-button:hover),
+:deep(.el-button:focus-visible) {
+  color: #fff !important;
+  background: var(--path-btn-bg-hover) !important;
+  border-color: var(--path-btn-bg-hover) !important;
+}
+
+:deep(.el-button:active) {
+  color: #fff !important;
+  background: var(--path-btn-bg-active) !important;
+  border-color: var(--path-btn-bg-active) !important;
 }
 </style>

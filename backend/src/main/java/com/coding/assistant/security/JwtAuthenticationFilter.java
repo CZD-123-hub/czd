@@ -34,6 +34,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = jwtUtil.getUserIdFromToken(token);
                 String username = jwtUtil.getUsernameFromToken(token);
 
+                if (userId == null || userId <= 0 || !StringUtils.hasText(username)) {
+                    log.warn("Ignore token with missing claims: userId={}, username={}", userId, username);
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
                 JwtUserDetails userDetails = new JwtUserDetails(userId, username);
 
                 UsernamePasswordAuthenticationToken authentication =
@@ -44,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             log.error("Cannot set user authentication: {}", e.getMessage());
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

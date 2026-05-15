@@ -27,5 +27,14 @@ export function toggleWeeklyPlanItem(planId: string, completed: boolean) {
 }
 
 export function getReport() {
-  return request.get('/progress/report', { responseType: 'blob' })
+  return request.get('/progress/report', {
+    responseType: 'blob',
+    params: {
+      _ts: Date.now(),
+    },
+    headers: {
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache',
+    },
+  })
 }

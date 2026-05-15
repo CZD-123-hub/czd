@@ -1,11 +1,20 @@
 ﻿<script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, shallowRef, computed } from 'vue'
-import * as echarts from 'echarts'
+import { init, type EChartsCoreOption, type EChartsType } from '@/utils/echarts'
 import type { KnowledgeNode, GraphEdge } from '@/types'
+import {
+  normalizeDifficulty,
+  difficultyLabel,
+  difficultyNodeColor,
+  difficultyNodeShadowColor,
+} from '@/utils/graphDifficulty'
+import { relationDisplayLabel } from '@/utils/graphRelation'
 
 const props = defineProps<{
   nodes: KnowledgeNode[]
   edges: GraphEdge[]
+  highlightNodeIds?: string[]
+  highlightEdgeKeys?: string[]
 }>()
 
 const emit = defineEmits<{
@@ -13,9 +22,7 @@ const emit = defineEmits<{
 }>()
 
 const chartContainer = ref<HTMLDivElement | null>(null)
-const chart = shallowRef<echarts.ECharts | null>(null)
-
-const palette = ['#2f6bff', '#5a8bff', '#38bdf8', '#4f46e5', '#0ea5e9', '#60a5fa', '#64748b', '#2563eb']
+const chart = shallowRef<EChartsType | null>(null)
 
 const categories = computed(() => {
   const set = new Set<string>()
@@ -26,33 +33,48 @@ const categories = computed(() => {
 })
 
 function difficultyToSize(level?: string) {
-  if (level === 'hard') return 54
-  if (level === 'medium') return 44
+  const normalized = normalizeDifficulty(level)
+  if (normalized === 'hard') return 54
+  if (normalized === 'medium') return 44
   return 34
 }
 
-function buildOption(): echarts.EChartsCoreOption {
+function normalizeRelationType(type?: string): string {
+  return (type || '').trim().toUpperCase()
+}
+
+function edgeKey(edge: { source: string; target: string; type?: string }): string {
+  return `${edge.source}|${normalizeRelationType(edge.type)}|${edge.target}`
+}
+
+function buildOption(): EChartsCoreOption {
+  // 将业务节点/边数据映射为 ECharts 图谱节点/连线。
   const categoryIndex = new Map<string, number>()
   categories.value.forEach((name, idx) => categoryIndex.set(name, idx))
 
   const showLabel = props.nodes.length <= 120
+  const highlightSet = new Set(props.highlightNodeIds || [])
+  const highlightEdgeSet = new Set(props.highlightEdgeKeys || [])
 
   const graphNodes = props.nodes.map((node) => {
     const name = node.category || '未分类'
     const idx = categoryIndex.get(name) ?? 0
+    const difficulty = normalizeDifficulty(node.difficulty)
 
     return {
       id: node.id,
       name: node.name,
       category: idx,
       value: node.description,
+      difficultyLevel: difficulty,
+      difficultyLabel: difficultyLabel(node.difficulty),
       symbolSize: difficultyToSize(node.difficulty),
       itemStyle: {
-        color: palette[idx % palette.length],
-        borderColor: '#ffffff',
-        borderWidth: 1.5,
-        shadowBlur: 12,
-        shadowColor: 'rgba(47,107,255,0.25)',
+        color: difficultyNodeColor(node.difficulty),
+        borderColor: highlightSet.has(node.id) ? '#2f6bff' : '#ffffff',
+        borderWidth: highlightSet.has(node.id) ? 3 : 1.5,
+        shadowBlur: highlightSet.has(node.id) ? 24 : 12,
+        shadowColor: highlightSet.has(node.id) ? 'rgba(47,107,255,0.62)' : difficultyNodeShadowColor(node.difficulty),
       },
       label: {
         show: showLabel,
@@ -63,17 +85,19 @@ function buildOption(): echarts.EChartsCoreOption {
   })
 
   const graphEdges = props.edges.map((edge) => ({
+    key: edgeKey(edge),
     source: edge.source,
     target: edge.target,
     value: edge.type,
+    label: relationDisplayLabel(edge.type),
     lineStyle: {
-      width: 1.1,
-      color: 'rgba(107, 123, 157, 0.42)',
+      width: highlightEdgeSet.has(edgeKey(edge)) ? 2.8 : 1.1,
+      color: highlightEdgeSet.has(edgeKey(edge)) ? 'rgba(47,107,255,0.78)' : 'rgba(107, 123, 157, 0.42)',
       curveness: 0.12,
     },
     emphasis: {
       lineStyle: {
-        width: 2.2,
+        width: highlightEdgeSet.has(edgeKey(edge)) ? 3.2 : 2.2,
         color: 'rgba(47,107,255,0.7)',
       },
     },
@@ -90,11 +114,13 @@ function buildOption(): echarts.EChartsCoreOption {
       formatter: (params: any) => {
         if (params.dataType === 'node') {
           const desc = typeof params.data?.value === 'string' ? params.data.value : ''
-          return `<div style="max-width:260px"><strong>${params.name}</strong><br/>${desc || '暂无描述'}</div>`
+          const diff = params.data?.difficultyLabel || '基础'
+          return `<div style="max-width:260px"><strong>${params.name}</strong><br/>难度：${diff}<br/>${desc || '暂无描述'}</div>`
         }
 
         if (params.dataType === 'edge') {
-          return `关系：${params.data?.value || '关联'}`
+          const label = relationDisplayLabel(params.data?.value)
+          return `关系：${label}`
         }
 
         return ''
@@ -109,9 +135,9 @@ function buildOption(): echarts.EChartsCoreOption {
         focusNodeAdjacency: true,
         data: graphNodes,
         links: graphEdges,
-        categories: categories.value.map((name, idx) => ({
+        categories: categories.value.map((name) => ({
           name,
-          itemStyle: { color: palette[idx % palette.length] },
+          itemStyle: { color: '#7f95c7' },
         })),
         force: {
           repulsion: props.nodes.length > 80 ? 300 : 360,
@@ -126,6 +152,18 @@ function buildOption(): echarts.EChartsCoreOption {
             show: true,
             fontWeight: 700,
           },
+          edgeLabel: {
+            show: true,
+            color: '#4b5f86',
+            fontSize: 11,
+            formatter: (params: any) => relationDisplayLabel(params.data?.value),
+          },
+        },
+        edgeLabel: {
+          show: false,
+          color: '#6f7f9e',
+          fontSize: 10,
+          formatter: (params: any) => relationDisplayLabel(params.data?.value),
         },
         lineStyle: {
           opacity: 0.9,
@@ -139,9 +177,10 @@ function buildOption(): echarts.EChartsCoreOption {
 function initChart() {
   if (!chartContainer.value) return
 
-  chart.value = echarts.init(chartContainer.value)
+  chart.value = init(chartContainer.value)
   chart.value.setOption(buildOption())
 
+  // 将节点点击事件抛给父组件，用于加载详情。
   chart.value.on(
     'click',
     'series',
@@ -155,7 +194,11 @@ function initChart() {
 
 function updateChart() {
   if (!chart.value) return
-  chart.value.setOption(buildOption(), true)
+  // 全量刷新 option，确保力导布局与筛选后数据一致。
+  chart.value.setOption(buildOption(), {
+    notMerge: true,
+    lazyUpdate: true,
+  })
 }
 
 function handleResize() {
@@ -173,7 +216,7 @@ onBeforeUnmount(() => {
 })
 
 watch(
-  () => [props.nodes, props.edges],
+  () => [props.nodes, props.edges, props.highlightNodeIds, props.highlightEdgeKeys],
   () => {
     updateChart()
   },

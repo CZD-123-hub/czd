@@ -3,36 +3,9 @@ spring:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:coding_assistant_test}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:${MYSQL_ROOT_PASSWORD:root123}}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
-      timeout: 3000ms
-
-neo4j:
-  uri: ${NEO4J_URI:bolt://localhost:7687}
-  username: ${NEO4J_USER:neo4j}
-  password: ${NEO4J_PASSWORD:neo4j123}
 
 jwt:
-  secret: ${JWT_SECRET:mySecretKeyForJWTTokenGenerationThatIsLongEnough2024}
-
-llm:
-  provider: ${LLM_PROVIDER:openai}
-  openai:
-    api-key: ${OPENAI_API_KEY:}
-    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
-    model: ${OPENAI_MODEL:gpt-4o-mini}
-  chatglm:
-    api-key: ${CHATGLM_API_KEY:}
-    base-url: ${CHATGLM_BASE_URL:}
-    model: ${CHATGLM_MODEL:chatglm3-turbo}
-  qwen:
-    api-key: ${QWEN_API_KEY:}
-    base-url: ${QWEN_BASE_URL:}
-    model: ${QWEN_MODEL:qwen-turbo}
+  secret: ${JWT_SECRET:test-only-jwt-secret-key-change-me-32bytes}
 
 logging:
   level:

@@ -1,6 +1,7 @@
 package com.coding.assistant.ai;
 
 import com.coding.assistant.exception.BusinessException;
+import com.coding.assistant.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,11 @@ public class LlmProviderFactory {
         LlmProvider provider = providers.get(beanName);
         if (provider == null) {
             log.warn("LLM provider '{}' not found, available providers: {}", providerName, providers.keySet());
-            throw new BusinessException(500, "LLM provider '" + providerName + "' is not configured or not available");
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_AI_PROVIDER_UNAVAILABLE,
+                    "LLM provider '" + providerName + "' is not configured or not available"
+            );
         }
         return provider;
     }

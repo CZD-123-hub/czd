@@ -1,5 +1,5 @@
 import request from './request'
-import type { ApiResponse, LoginForm, RegisterForm, TokenInfo } from '@/types'
+import type { ApiResponse, LoginForm, RegisterForm, TokenInfo, UserProfileSummary } from '@/types'
 
 export function login(data: LoginForm) {
   return request.post<ApiResponse<TokenInfo>>('/auth/login', data)
@@ -15,6 +15,10 @@ export function logout() {
 
 export function getUserInfo() {
   return request.get<ApiResponse<TokenInfo['user']>>('/auth/me')
+}
+
+export function getProfileSummary() {
+  return request.get<ApiResponse<UserProfileSummary>>('/auth/profile-summary')
 }
 
 export function uploadAvatar(file: File) {

@@ -2,6 +2,7 @@ package com.coding.assistant.controller;
 
 import com.coding.assistant.dto.*;
 import com.coding.assistant.security.SecurityUtil;
+import com.coding.assistant.service.LearningActionType;
 import com.coding.assistant.service.PathService;
 import com.coding.assistant.service.ProgressService;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ public class PathController {
     public ApiResponse<LearningPathVO> generate(@Valid @RequestBody PathGenerateRequest request) {
         Long userId = SecurityUtil.getCurrentUserId();
         LearningPathVO path = pathService.generate(userId, request);
-        progressService.recordAction(userId, "path_learn", String.valueOf(path.getId()));
+        progressService.recordAction(userId, LearningActionType.PATH_LEARN, String.valueOf(path.getId()));
         return ApiResponse.success(path);
     }
 
@@ -38,7 +39,7 @@ public class PathController {
                                                @Valid @RequestBody NodeStatusRequest request) {
         Long userId = SecurityUtil.getCurrentUserId();
         pathService.updateNodeStatus(userId, id, request.getStatus());
-        progressService.recordAction(userId, "path_learn", String.valueOf(id));
+        progressService.recordAction(userId, LearningActionType.PATH_LEARN, String.valueOf(id));
         return ApiResponse.success();
     }
     /**

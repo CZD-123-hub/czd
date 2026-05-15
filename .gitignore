@@ -70,4 +70,23 @@ yarn-error.log*
 # ----------------------------------------------------------
 *.tmp
 *.bak
-*.orig
+*.orig.specstory/
+.codex_tmp/
+.m2/
+.claude/worktrees/
+.specstory/
+.codex_tmp/
+.m2/
+.claude/worktrees/
+.specstory/
+.codex_tmp/
+.m2/
+.claude/worktrees/
+backend/uploads/videos/
+recording/videos/
+*.mp4
+docs/~$*.docx
+.specstory/
+backend/uploads/videos/
+recording/videos/
+*.mp4

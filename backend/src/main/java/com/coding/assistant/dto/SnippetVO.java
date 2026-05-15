@@ -21,6 +21,8 @@ public class SnippetVO {
     private String description;
     private List<String> tags;
     private Integer useCount;
+    private Integer matchScore;
+    private String recommendReason;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

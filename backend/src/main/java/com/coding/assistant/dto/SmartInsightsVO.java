@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SmartInsightsVO {
     private int healthScore;
+    private HealthBreakdownVO healthBreakdown;
     private List<WeakAreaVO> weakAreas;
     private List<WeeklyPlanItemVO> weeklyPlan;
 }

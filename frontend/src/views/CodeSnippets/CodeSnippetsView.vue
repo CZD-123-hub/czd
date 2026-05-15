@@ -1,19 +1,21 @@
 ﻿<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useSnippetStore } from '@/stores/snippet'
 import CodeEditor from '@/components/common/CodeEditor.vue'
 import CodeBlock from '@/components/common/CodeBlock.vue'
+import AppFeedbackState from '@/components/common/AppFeedbackState.vue'
 import type { CodeSnippet } from '@/types'
 import {
   Search,
   Plus,
   Edit,
   Delete,
+  CopyDocument,
   Download,
   Upload,
   RefreshRight,
 } from '@element-plus/icons-vue'
-import { ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const snippetStore = useSnippetStore()
 
@@ -29,6 +31,20 @@ const editingSnippet = ref<Partial<CodeSnippet>>({
 })
 const tagInput = ref('')
 const fileInputRef = ref<HTMLInputElement | null>(null)
+const expandedSnippetIds = ref<number[]>([])
+const PREVIEW_LINES_COMFORTABLE = 12
+const PREVIEW_LINES_COMPACT = 8
+const BRACE_BLOCK_LANGUAGES = new Set([
+  'javascript', 'typescript', 'java', 'go', 'c', 'cpp', 'csharp', 'php', 'rust', 'swift', 'kotlin',
+])
+const PYTHON_BLOCK_LANGUAGES = new Set(['python'])
+
+interface SnippetPreviewState {
+  displayCode: string
+  hasOverflow: boolean
+  totalLines: number
+  mode: 'full' | 'function-block' | 'line'
+}
 
 const languages = [
   'javascript', 'typescript', 'python', 'java', 'go', 'rust',
@@ -45,11 +61,13 @@ function handleSearch(resetPage = true) {
   if (resetPage) {
     snippetStore.filters.page = 1
   }
+  expandedSnippetIds.value = []
   snippetStore.loadSnippets()
 }
 
 function handlePageChange(page: number) {
   snippetStore.filters.page = page
+  expandedSnippetIds.value = []
   snippetStore.loadSnippets()
 }
 
@@ -81,6 +99,18 @@ function openEditDialog(snippet: CodeSnippet) {
   showDialog.value = true
 }
 
+function isSnippetExpanded(snippetId: number): boolean {
+  return expandedSnippetIds.value.includes(snippetId)
+}
+
+function toggleSnippetExpand(snippetId: number) {
+  if (isSnippetExpanded(snippetId)) {
+    expandedSnippetIds.value = expandedSnippetIds.value.filter((id) => id !== snippetId)
+    return
+  }
+  expandedSnippetIds.value = [...expandedSnippetIds.value, snippetId]
+}
+
 async function handleSave() {
   if (!editingSnippet.value.title?.trim() || !editingSnippet.value.code?.trim()) return
 
@@ -102,6 +132,20 @@ async function handleDelete(snippet: CodeSnippet) {
     await snippetStore.deleteSnippet(snippet.id)
   } catch {
     // cancelled
+  }
+}
+
+async function handleSnippetCopied(snippet: CodeSnippet) {
+  await snippetStore.markSnippetUsed(snippet.id)
+}
+
+async function handleQuickCopy(snippet: CodeSnippet) {
+  try {
+    await navigator.clipboard.writeText(snippet.code)
+    await handleSnippetCopied(snippet)
+    ElMessage.success('代码已复制')
+  } catch {
+    ElMessage.error('复制失败')
   }
 }
 
@@ -141,6 +185,12 @@ function handleFileChange(event: Event) {
 
 const dialogTitle = computed(() => (dialogMode.value === 'create' ? '新建代码片段' : '编辑代码片段'))
 const editorLanguage = computed(() => editingSnippet.value.language ?? 'javascript')
+const editingCode = computed<string>({
+  get: () => editingSnippet.value.code ?? '',
+  set: (value) => {
+    editingSnippet.value.code = value
+  },
+})
 
 const availableTags = computed(() => {
   const counter = new Map<string, number>()
@@ -164,6 +214,201 @@ const activeFilterCount = computed(() => {
 })
 
 const skeletonCount = computed(() => (viewMode.value === 'compact' ? 6 : 4))
+const previewLineLimit = computed(() => (viewMode.value === 'compact' ? PREVIEW_LINES_COMPACT : PREVIEW_LINES_COMFORTABLE))
+
+function normalizeCode(code: string): string {
+  return (code || '').replace(/\r\n/g, '\n')
+}
+
+function snippetLineCount(code: string): number {
+  if (!code) return 0
+  return normalizeCode(code).split('\n').length
+}
+
+function countChar(text: string, target: string): number {
+  let count = 0
+  for (const char of text) {
+    if (char === target) count += 1
+  }
+  return count
+}
+
+function isBraceBlockLanguage(language: string): boolean {
+  return BRACE_BLOCK_LANGUAGES.has(language.toLowerCase())
+}
+
+function isPythonBlockLanguage(language: string): boolean {
+  return PYTHON_BLOCK_LANGUAGES.has(language.toLowerCase())
+}
+
+function ellipsisLine(language: string): string {
+  const normalized = language.toLowerCase()
+  if (normalized === 'python' || normalized === 'shell' || normalized === 'yaml' || normalized === 'yml') return '# ...'
+  if (normalized === 'sql') return '-- ...'
+  if (normalized === 'markdown' || normalized === 'plaintext') return '...'
+  return '// ...'
+}
+
+function detectBraceBlockStart(lines: string[]): number {
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i] ?? ''
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    if (/^(if|for|while|switch|catch)\b/.test(trimmed)) continue
+    if (/^\s*(export\s+)?(async\s+)?function\b/.test(trimmed)) return i
+    if (/^\s*(export\s+)?class\b/.test(trimmed)) return i
+    if (/^\s*(const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*(async\s*)?\([^)]*\)\s*=>/.test(trimmed)) return i
+    if (/^\s*[A-Za-z_$][\w$]*\s*\([^)]*\)\s*\{/.test(trimmed)) return i
+    if (/^\s*(public|private|protected|static|async)\s+[\w<>,\[\]\s]+\([^)]*\)\s*\{/.test(trimmed)) return i
+  }
+  return -1
+}
+
+function extractBraceBlock(lines: string[]): string[] | null {
+  const start = detectBraceBlockStart(lines)
+  if (start < 0) return null
+
+  let braceSeen = false
+  let balance = 0
+  const collected: string[] = []
+
+  for (let i = start; i < lines.length; i += 1) {
+    const line = lines[i] ?? ''
+    collected.push(line)
+    const opens = countChar(line, '{')
+    const closes = countChar(line, '}')
+    if (opens > 0) braceSeen = true
+    balance += opens - closes
+    if (braceSeen && balance <= 0 && i > start) break
+  }
+
+  return collected.length > 0 ? collected : null
+}
+
+function leadingIndent(line: string): number {
+  const match = line.match(/^(\s*)/)
+  return match?.[1]?.length || 0
+}
+
+function extractPythonBlock(lines: string[]): string[] | null {
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i] ?? ''
+    if (!/^\s*(def|class)\s+[A-Za-z_][\w]*\b/.test(line)) continue
+    const baseIndent = leadingIndent(line)
+    const collected: string[] = [line]
+
+    for (let j = i + 1; j < lines.length; j += 1) {
+      const nextLine = lines[j] ?? ''
+      if (/^\s*(def|class)\s+[A-Za-z_][\w]*\b/.test(nextLine) && leadingIndent(nextLine) <= baseIndent) {
+        break
+      }
+      collected.push(nextLine)
+    }
+    return collected
+  }
+
+  return null
+}
+
+function extractFunctionBlockPreview(snippet: CodeSnippet, lineLimit: number): { code: string; truncated: boolean } | null {
+  const language = (snippet.language || '').toLowerCase()
+  const lines = normalizeCode(snippet.code).split('\n')
+  let blockLines: string[] | null = null
+
+  if (isBraceBlockLanguage(language)) {
+    blockLines = extractBraceBlock(lines)
+  } else if (isPythonBlockLanguage(language)) {
+    blockLines = extractPythonBlock(lines)
+  }
+
+  if (!blockLines || blockLines.length === 0) return null
+
+  const truncated = blockLines.length > lineLimit
+  const limited = truncated ? blockLines.slice(0, lineLimit) : blockLines
+  return { code: limited.join('\n').trimEnd(), truncated }
+}
+
+const snippetPreviewStates = computed(() => {
+  const map = new Map<number, SnippetPreviewState>()
+
+  for (const snippet of snippetStore.snippets) {
+    const normalized = normalizeCode(snippet.code)
+    const totalLines = snippetLineCount(normalized)
+    const lineLimit = previewLineLimit.value
+    const expanded = isSnippetExpanded(snippet.id)
+
+    if (totalLines <= lineLimit) {
+      map.set(snippet.id, {
+        displayCode: snippet.code,
+        hasOverflow: false,
+        totalLines,
+        mode: 'full',
+      })
+      continue
+    }
+
+    let collapsedCode = ''
+    let collapsedMode: SnippetPreviewState['mode'] = 'line'
+
+    const blockPreview = extractFunctionBlockPreview(snippet, lineLimit)
+    if (blockPreview && blockPreview.code) {
+      const sourceNormalized = normalized.trimEnd()
+      const blockNormalized = blockPreview.code.trimEnd()
+      const hasOverflow = blockPreview.truncated || blockNormalized !== sourceNormalized
+      collapsedCode = hasOverflow
+        ? `${blockPreview.code}\n${ellipsisLine(snippet.language)}`
+        : blockPreview.code
+      collapsedMode = 'function-block'
+
+      if (!hasOverflow) {
+        map.set(snippet.id, {
+          displayCode: snippet.code,
+          hasOverflow: false,
+          totalLines,
+          mode: 'full',
+        })
+        continue
+      }
+    } else {
+      const lines = normalized.split('\n')
+      collapsedCode = `${lines.slice(0, lineLimit).join('\n')}\n...`
+      collapsedMode = 'line'
+    }
+
+    map.set(snippet.id, {
+      displayCode: expanded ? snippet.code : collapsedCode,
+      hasOverflow: true,
+      totalLines,
+      mode: collapsedMode,
+    })
+  }
+
+  return map
+})
+
+function snippetPreviewState(snippet: CodeSnippet): SnippetPreviewState {
+  return snippetPreviewStates.value.get(snippet.id) || {
+    displayCode: snippet.code,
+    hasOverflow: false,
+    totalLines: snippetLineCount(snippet.code),
+    mode: 'full',
+  }
+}
+
+function hasSnippetOverflow(snippet: CodeSnippet): boolean {
+  return snippetPreviewState(snippet).hasOverflow
+}
+
+function snippetDisplayCode(snippet: CodeSnippet): string {
+  return snippetPreviewState(snippet).displayCode
+}
+
+function snippetPreviewHint(snippet: CodeSnippet): string {
+  const preview = snippetPreviewState(snippet)
+  if (preview.mode === 'function-block') return `函数块预览 · 共 ${preview.totalLines} 行`
+  if (preview.mode === 'line') return `摘要预览 · 共 ${preview.totalLines} 行`
+  return `共 ${preview.totalLines} 行`
+}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('zh-CN', {
@@ -171,6 +416,10 @@ function formatDate(dateStr: string) {
     day: 'numeric',
   })
 }
+
+watch(viewMode, () => {
+  expandedSnippetIds.value = []
+})
 </script>
 
 <template>
@@ -247,9 +496,11 @@ function formatDate(dateStr: string) {
         </div>
 
         <div v-else-if="snippetStore.snippets.length === 0" class="empty-state soft-panel">
-          <el-empty description="暂时没有代码片段">
-            <el-button type="primary" @click="openCreateDialog">创建第一条片段</el-button>
-          </el-empty>
+          <AppFeedbackState type="empty" title="暂时没有代码片段" description="新建后可用于问答和复用。">
+            <template #actions>
+              <el-button type="primary" @click="openCreateDialog">创建第一条片段</el-button>
+            </template>
+          </AppFeedbackState>
         </div>
 
         <div v-else class="snippet-grid" :class="`mode-${viewMode}`">
@@ -263,6 +514,7 @@ function formatDate(dateStr: string) {
                 </div>
               </div>
               <div class="snippet-actions">
+                <el-button :icon="CopyDocument" text size="small" @click="handleQuickCopy(snippet)" />
                 <el-button :icon="Edit" text size="small" @click="openEditDialog(snippet)" />
                 <el-button :icon="Delete" text size="small" type="danger" @click="handleDelete(snippet)" />
               </div>
@@ -270,8 +522,20 @@ function formatDate(dateStr: string) {
 
             <p v-if="snippet.description" class="snippet-desc">{{ snippet.description }}</p>
 
-            <div class="snippet-code">
-              <CodeBlock :code="snippet.code" :language="snippet.language" />
+            <div class="snippet-code" :class="{ 'is-expanded': isSnippetExpanded(snippet.id) }">
+              <CodeBlock
+                :code="snippetDisplayCode(snippet)"
+                :copy-text="snippet.code"
+                :language="snippet.language"
+                @copied="handleSnippetCopied(snippet)"
+              />
+            </div>
+
+            <div v-if="hasSnippetOverflow(snippet)" class="snippet-preview-actions">
+              <el-button text size="small" @click="toggleSnippetExpand(snippet.id)">
+                {{ isSnippetExpanded(snippet.id) ? '收起代码' : '展开完整代码' }}
+              </el-button>
+              <span class="snippet-line-hint">{{ snippetPreviewHint(snippet) }}</span>
             </div>
 
             <div class="snippet-footer">
@@ -316,7 +580,7 @@ function formatDate(dateStr: string) {
 
         <el-form-item label="代码" required>
           <CodeEditor
-            v-model="editingSnippet.code"
+            v-model="editingCode"
             :language="editorLanguage"
             height="450px"
             width="100%"
@@ -432,11 +696,13 @@ function formatDate(dateStr: string) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 14px;
+  align-items: start;
 }
 
 .snippet-card {
   padding: 14px;
   border-radius: var(--radius-md);
+  align-self: start;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 
   &:hover {
@@ -500,6 +766,24 @@ function formatDate(dateStr: string) {
 .snippet-code {
   overflow: hidden;
   border-radius: var(--radius-sm);
+
+  &.is-expanded {
+    max-height: none !important;
+    overflow: visible;
+  }
+}
+
+.snippet-preview-actions {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.snippet-line-hint {
+  font-size: 12px;
+  color: var(--text-placeholder);
 }
 
 .snippet-footer {

@@ -30,7 +30,11 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        byte[] keyBytes = secret == null ? new byte[0] : secret.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < 32) {
+            throw new IllegalStateException("jwt.secret must be at least 32 bytes (256-bit key)");
+        }
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateToken(Long userId, String username) {

@@ -1,13 +1,17 @@
 package com.coding.assistant.controller;
 
 import com.coding.assistant.dto.ApiResponse;
+import com.coding.assistant.dto.DocumentCreateRequest;
+import com.coding.assistant.dto.KnowledgeDocumentVO;
+import com.coding.assistant.dto.RelatedGraphNodeVO;
 import com.coding.assistant.entity.KnowledgeDocument;
+import com.coding.assistant.security.SecurityUtil;
 import com.coding.assistant.service.DocumentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/documents")
@@ -17,18 +21,22 @@ public class DocumentController {
     private final DocumentService documentService;
 
     @GetMapping
-    public ApiResponse<List<KnowledgeDocument>> list() {
-        return ApiResponse.success(documentService.listAll());
+    public ApiResponse<List<KnowledgeDocumentVO>> list(
+            @RequestParam(defaultValue = "false") Boolean savedOnly
+    ) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        List<KnowledgeDocumentVO> documents = documentService.listAll(userId, Boolean.TRUE.equals(savedOnly));
+        return ApiResponse.success(documents);
     }
 
     @PostMapping
-    public ApiResponse<KnowledgeDocument> add(@RequestBody Map<String, String> body) {
+    public ApiResponse<KnowledgeDocumentVO> add(@Valid @RequestBody DocumentCreateRequest body) {
         KnowledgeDocument doc = documentService.addDocument(
-                body.get("title"),
-                body.get("content"),
-                body.get("category")
+                body.getTitle(),
+                body.getContent(),
+                body.getCategory()
         );
-        return ApiResponse.success(doc);
+        return ApiResponse.success(toVO(doc));
     }
 
     @DeleteMapping("/{id}")
@@ -36,4 +44,34 @@ public class DocumentController {
         documentService.deleteDocument(id);
         return ApiResponse.success();
     }
+
+    @PostMapping("/{id}/favorite")
+    public ApiResponse<Void> favorite(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "true") Boolean favorite
+    ) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        documentService.toggleFavorite(userId, id, Boolean.TRUE.equals(favorite));
+        return ApiResponse.success();
+    }
+
+    @GetMapping("/{id}/related-nodes")
+    public ApiResponse<List<RelatedGraphNodeVO>> relatedNodes(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "8") Integer limit
+    ) {
+        return ApiResponse.success(documentService.getRelatedNodes(id, limit));
+    }
+
+    private KnowledgeDocumentVO toVO(KnowledgeDocument doc) {
+        return KnowledgeDocumentVO.builder()
+                .id(doc.getId())
+                .title(doc.getTitle())
+                .content(doc.getContent())
+                .category(doc.getCategory())
+                .saved(Boolean.FALSE)
+                .createdAt(doc.getCreatedAt())
+                .build();
+    }
+
 }

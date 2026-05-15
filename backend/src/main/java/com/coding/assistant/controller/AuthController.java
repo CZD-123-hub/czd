@@ -15,9 +15,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ApiResponse<UserVO> register(@Valid @RequestBody RegisterRequest request) {
-        UserVO user = authService.register(request);
-        return ApiResponse.success(user);
+    public ApiResponse<TokenVO> register(@Valid @RequestBody RegisterRequest request) {
+        TokenVO token = authService.register(request);
+        return ApiResponse.success(token);
     }
 
     @PostMapping("/login")
@@ -30,6 +30,16 @@ public class AuthController {
     public ApiResponse<Void> logout() {
         // Stateless JWT - client discards token
         return ApiResponse.success();
+    }
+
+    @GetMapping("/me")
+    public ApiResponse<UserVO> getCurrentUserInfo() {
+        return ApiResponse.success(authService.getCurrentUserInfo());
+    }
+
+    @GetMapping("/profile-summary")
+    public ApiResponse<UserProfileVO> getProfileSummary() {
+        return ApiResponse.success(authService.getProfileSummary());
     }
 
     @PostMapping("/avatar")

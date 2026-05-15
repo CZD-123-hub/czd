@@ -2,6 +2,7 @@ package com.coding.assistant.controller;
 
 import com.coding.assistant.dto.*;
 import com.coding.assistant.security.SecurityUtil;
+import com.coding.assistant.service.LearningActionType;
 import com.coding.assistant.service.ProgressService;
 import com.coding.assistant.service.SnippetService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,12 +28,12 @@ public class SnippetController {
     public ApiResponse<SnippetVO> create(@Valid @RequestBody SnippetRequest request) {
         Long userId = SecurityUtil.getCurrentUserId();
         SnippetVO snippet = snippetService.create(userId, request);
-        progressService.recordAction(userId, "code_save", String.valueOf(snippet.getId()));
+        progressService.recordAction(userId, LearningActionType.CODE_SAVE, String.valueOf(snippet.getId()));
         return ApiResponse.success(snippet);
     }
 
     @GetMapping
-    public ApiResponse<PageResult<SnippetVO>> list(SnippetQueryRequest request) {
+    public ApiResponse<PageResult<SnippetVO>> list(@Valid SnippetQueryRequest request) {
         Long userId = SecurityUtil.getCurrentUserId();
         PageResult<SnippetVO> result = snippetService.list(userId, request);
         return ApiResponse.success(result);
@@ -58,6 +59,20 @@ public class SnippetController {
         Long userId = SecurityUtil.getCurrentUserId();
         snippetService.delete(userId, id);
         return ApiResponse.success();
+    }
+
+    @PostMapping("/{id}/use")
+    public ApiResponse<SnippetVO> markUsed(@PathVariable Long id) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        SnippetVO snippet = snippetService.markUsed(userId, id);
+        return ApiResponse.success(snippet);
+    }
+
+    @PostMapping("/{id}/feedback")
+    public ApiResponse<SnippetVO> feedback(@PathVariable Long id, @RequestParam String rating) {
+        Long userId = SecurityUtil.getCurrentUserId();
+        SnippetVO snippet = snippetService.feedback(userId, id, rating);
+        return ApiResponse.success(snippet);
     }
 
     @GetMapping(value = "/export", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -2,11 +2,10 @@
 import { ref, onMounted, computed } from 'vue'
 import { usePathStore } from '@/stores/path'
 import PathTimeline from '@/components/path/PathTimeline.vue'
-import type { LearningPath } from '@/types'
-import { Plus, Delete, Operation, CollectionTag, CircleCheck, Timer } from '@element-plus/icons-vue'
+import AppFeedbackState from '@/components/common/AppFeedbackState.vue'
+import type { LearningPath, NodeStatus } from '@/types'
+import { Plus, Operation, CollectionTag, CircleCheck, Timer, Delete } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
-
-type NodeStatus = 'todo' | 'doing' | 'done' | 'skipped'
 
 const pathStore = usePathStore()
 
@@ -71,15 +70,20 @@ function handleStatusChange(nodeId: number, status: NodeStatus) {
 
 async function handleDeletePath(path: LearningPath) {
   try {
-    await ElMessageBox.confirm('确定删除这条学习路径吗？', '提示', {
-      confirmButtonText: '删除',
-      cancelButtonText: '取消',
-      type: 'warning',
-    })
-    await pathStore.deletePath(path.id)
+    await ElMessageBox.confirm(
+      `确认删除学习路径「${path.target}」吗？删除后不可恢复。`,
+      '删除确认',
+      {
+        confirmButtonText: '确认删除',
+        cancelButtonText: '取消',
+        type: 'warning',
+      },
+    )
   } catch {
-    // cancelled
+    return
   }
+
+  await pathStore.deletePath(path.id)
 }
 
 function getProgressPercent(path: LearningPath): number {
@@ -128,13 +132,20 @@ function getStatusLabel(status: string): string {
       <aside class="path-sidebar soft-panel">
         <div class="sidebar-header">
           <h3>路径总览</h3>
-          <el-button type="primary" plain :icon="Plus" size="small" @click="openGenerateDialog">新建</el-button>
+          <el-button type="primary" :icon="Plus" size="small" class="new-path-btn" @click="openGenerateDialog">新建</el-button>
         </div>
         <div class="path-list">
           <div v-if="pathStore.paths.length === 0" class="empty-state">
-            <el-empty description="还没有学习路径" :image-size="76">
-              <el-button type="primary" @click="openGenerateDialog">生成第一条路径</el-button>
-            </el-empty>
+            <AppFeedbackState
+              :type="pathStore.loadError ? 'error' : 'empty'"
+              :title="pathStore.loadError ? '学习路径加载失败' : '还没有学习路径'"
+              :description="pathStore.loadError || '先生成一条路径开始学习。'"
+            >
+              <template #actions>
+                <el-button v-if="pathStore.loadError" type="primary" @click="pathStore.loadPaths">重试加载</el-button>
+                <el-button v-else type="primary" @click="openGenerateDialog">生成第一条路径</el-button>
+              </template>
+            </AppFeedbackState>
           </div>
 
           <div
@@ -146,11 +157,22 @@ function getStatusLabel(status: string): string {
           >
             <div class="path-card-header">
               <span class="path-target">{{ path.target }}</span>
-              <el-button :icon="Delete" text size="small" class="delete-btn" @click.stop="handleDeletePath(path)" />
             </div>
             <div class="path-card-meta">
-              <el-tag :type="getStatusType(path.status)" size="small">{{ getStatusLabel(path.status) }}</el-tag>
-              <span class="node-count">{{ path.nodes?.length || 0 }} 节点</span>
+              <div class="path-meta-left">
+                <el-tag :type="getStatusType(path.status)" size="small">{{ getStatusLabel(path.status) }}</el-tag>
+                <span class="node-count">{{ path.nodes?.length || 0 }} 节点</span>
+              </div>
+              <el-button
+                :icon="Delete"
+                text
+                size="small"
+                type="danger"
+                class="delete-btn"
+                @click.stop="handleDeletePath(path)"
+              >
+                删除
+              </el-button>
             </div>
             <el-progress
               :percentage="getProgressPercent(path)"
@@ -166,13 +188,20 @@ function getStatusLabel(status: string): string {
         <div class="drawer-content">
           <div class="sidebar-header">
             <h3>路径总览</h3>
-            <el-button type="primary" plain :icon="Plus" size="small" @click="openGenerateDialog">新建</el-button>
+            <el-button type="primary" :icon="Plus" size="small" class="new-path-btn" @click="openGenerateDialog">新建</el-button>
           </div>
           <div class="path-list">
             <div v-if="pathStore.paths.length === 0" class="empty-state">
-              <el-empty description="还没有学习路径" :image-size="76">
-                <el-button type="primary" @click="openGenerateDialog">生成第一条路径</el-button>
-              </el-empty>
+              <AppFeedbackState
+                :type="pathStore.loadError ? 'error' : 'empty'"
+                :title="pathStore.loadError ? '学习路径加载失败' : '还没有学习路径'"
+                :description="pathStore.loadError || '先生成一条路径开始学习。'"
+              >
+                <template #actions>
+                  <el-button v-if="pathStore.loadError" type="primary" @click="pathStore.loadPaths">重试加载</el-button>
+                  <el-button v-else type="primary" @click="openGenerateDialog">生成第一条路径</el-button>
+                </template>
+              </AppFeedbackState>
             </div>
 
             <div
@@ -184,11 +213,22 @@ function getStatusLabel(status: string): string {
             >
               <div class="path-card-header">
                 <span class="path-target">{{ path.target }}</span>
-                <el-button :icon="Delete" text size="small" class="delete-btn" @click.stop="handleDeletePath(path)" />
               </div>
               <div class="path-card-meta">
-                <el-tag :type="getStatusType(path.status)" size="small">{{ getStatusLabel(path.status) }}</el-tag>
-                <span class="node-count">{{ path.nodes?.length || 0 }} 节点</span>
+                <div class="path-meta-left">
+                  <el-tag :type="getStatusType(path.status)" size="small">{{ getStatusLabel(path.status) }}</el-tag>
+                  <span class="node-count">{{ path.nodes?.length || 0 }} 节点</span>
+                </div>
+                <el-button
+                  :icon="Delete"
+                  text
+                  size="small"
+                  type="danger"
+                  class="delete-btn"
+                  @click.stop="handleDeletePath(path)"
+                >
+                  删除
+                </el-button>
               </div>
               <el-progress :percentage="getProgressPercent(path)" :stroke-width="6" :show-text="false" class="path-progress" />
             </div>
@@ -198,9 +238,15 @@ function getStatusLabel(status: string): string {
 
       <section class="path-content soft-panel">
         <div v-if="!pathStore.currentPath" class="empty-content">
-          <el-empty description="请选择或创建一条学习路径">
-            <el-button type="primary" @click="openGenerateDialog">立即生成路径</el-button>
-          </el-empty>
+          <AppFeedbackState
+            type="empty"
+            title="请选择或创建一条学习路径"
+            description="选择左侧路径查看详情，或者新建一条路径。"
+          >
+            <template #actions>
+              <el-button type="primary" @click="openGenerateDialog">立即生成路径</el-button>
+            </template>
+          </AppFeedbackState>
         </div>
 
         <div v-else class="path-detail">
@@ -214,7 +260,7 @@ function getStatusLabel(status: string): string {
                 <span>创建于 {{ new Date(pathStore.currentPath.createdAt).toLocaleDateString('zh-CN') }}</span>
               </div>
             </div>
-            <el-progress type="circle" :percentage="currentPathProgress" :width="72" stroke-width="8" />
+            <el-progress type="circle" :percentage="currentPathProgress" :width="72" :stroke-width="8" />
           </div>
 
           <div class="stats-row">
@@ -280,6 +326,9 @@ function getStatusLabel(status: string): string {
 <style lang="scss" scoped>
 .path-view {
   min-height: 0;
+  --path-btn-bg: #2f6bff;
+  --path-btn-bg-hover: #255ae6;
+  --path-btn-bg-active: #1f4fcf;
 }
 
 .path-body {
@@ -311,6 +360,10 @@ function getStatusLabel(status: string): string {
   }
 }
 
+.new-path-btn {
+  border-radius: 10px;
+}
+
 .path-list {
   flex: 1;
   min-height: 0;
@@ -330,10 +383,6 @@ function getStatusLabel(status: string): string {
   &:hover {
     border-color: var(--primary-color);
     box-shadow: var(--shadow-sm);
-
-    .delete-btn {
-      opacity: 1;
-    }
   }
 
   &.active {
@@ -363,8 +412,10 @@ function getStatusLabel(status: string): string {
 }
 
 .delete-btn {
-  opacity: 0;
-  transition: opacity 0.2s;
+  opacity: 1;
+  border-radius: 8px;
+  padding: 0 6px;
+  transition: background-color 0.2s ease, filter 0.2s ease;
 }
 
 .path-card-meta {
@@ -373,6 +424,12 @@ function getStatusLabel(status: string): string {
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 8px;
+}
+
+.path-meta-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .node-count {
@@ -534,5 +591,24 @@ function getStatusLabel(status: string): string {
   .stats-row {
     grid-template-columns: 1fr;
   }
+}
+
+:deep(.el-button) {
+  color: #fff !important;
+  background: var(--path-btn-bg) !important;
+  border-color: var(--path-btn-bg) !important;
+}
+
+:deep(.el-button:hover),
+:deep(.el-button:focus-visible) {
+  color: #fff !important;
+  background: var(--path-btn-bg-hover) !important;
+  border-color: var(--path-btn-bg-hover) !important;
+}
+
+:deep(.el-button:active) {
+  color: #fff !important;
+  background: var(--path-btn-bg-active) !important;
+  border-color: var(--path-btn-bg-active) !important;
 }
 </style>

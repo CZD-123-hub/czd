@@ -1,8 +1,16 @@
 package com.coding.assistant.service;
 
 import com.coding.assistant.dto.EdgeVO;
+import com.coding.assistant.dto.GraphHealthVO;
+import com.coding.assistant.dto.GraphNodeCreateRequest;
+import com.coding.assistant.dto.GraphRelationCreateRequest;
 import com.coding.assistant.dto.GraphVO;
 import com.coding.assistant.dto.KnowledgeNodeVO;
+import com.coding.assistant.dto.RelatedDocumentVO;
+import com.coding.assistant.entity.KnowledgeDocument;
+import com.coding.assistant.exception.BusinessException;
+import com.coding.assistant.exception.ErrorCode;
+import com.coding.assistant.mapper.KnowledgeDocumentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.neo4j.driver.Driver;
@@ -15,9 +23,11 @@ import org.neo4j.driver.types.Relationship;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Locale;
 import java.util.Set;
 
 @Slf4j
@@ -26,70 +36,61 @@ import java.util.Set;
 public class GraphService {
 
     private final Driver neo4jDriver;
+    private final KnowledgeDocumentMapper documentMapper;
+
     private static final Map<String, String> NODE_DESCRIPTION_ZH = Map.ofEntries(
-            Map.entry("java", "一种广泛使用的面向对象编程语言，强调可移植性与稳定性能。"),
-            Map.entry("python", "一种高级解释型语言，语法简洁，适合脚本开发、数据分析与 AI。"),
-            Map.entry("javascript", "Web 开发核心语言，可用于前端交互与 Node.js 后端开发。"),
-            Map.entry("typescript", "JavaScript 的类型化超集，提供静态类型检查并编译为 JavaScript。"),
-            Map.entry("sql", "用于关系型数据库查询与管理的结构化查询语言。"),
-            Map.entry("spring-boot", "用于快速构建生产级 Spring 应用的框架，约定优于配置。"),
-            Map.entry("spring-mvc", "Spring 体系中的 Web 框架，用于构建 REST API 和 Web 应用。"),
-            Map.entry("spring-security", "提供认证与授权能力的安全框架，用于保护 Spring 应用。"),
-            Map.entry("spring-data", "通过仓储抽象简化数据访问，支持关系型与 NoSQL 数据库。"),
-            Map.entry("spring-cloud", "构建微服务体系的一组组件，涵盖注册发现、配置与网关等能力。"),
-            Map.entry("mybatis", "通过 SQL 映射进行持久化的框架，便于精细控制数据库操作。"),
-            Map.entry("mybatis-plus", "MyBatis 增强工具，提供通用 CRUD、分页和代码生成能力。"),
-            Map.entry("jpa", "Java 持久化规范，用于对象关系映射（ORM）。"),
-            Map.entry("maven", "Java 项目的构建与依赖管理工具，基于 pom.xml。"),
-            Map.entry("vue3", "渐进式前端框架，适合构建响应式用户界面。"),
-            Map.entry("react", "基于组件的前端库，用于构建交互式用户界面。"),
-            Map.entry("angular", "基于 TypeScript 的完整前端框架，适合大型单页应用。"),
-            Map.entry("nodejs", "基于 Chrome V8 的 JavaScript 运行时，常用于服务端开发。"),
-            Map.entry("vite", "现代前端构建工具与开发服务器，启动快、构建高效。"),
-            Map.entry("element-plus", "面向 Vue 3 的企业级 UI 组件库。"),
-            Map.entry("vue-router", "Vue 官方路由库，负责页面路由与导航管理。"),
-            Map.entry("pinia", "Vue 官方推荐状态管理库，轻量且类型友好。"),
-            Map.entry("mysql", "开源关系型数据库管理系统。"),
-            Map.entry("redis", "内存数据结构数据库，常用于缓存、消息与高并发场景。"),
-            Map.entry("neo4j", "图数据库，以节点和关系形式存储与查询数据。"),
-            Map.entry("mongodb", "面向文档的 NoSQL 数据库，使用类 JSON 文档存储。"),
-            Map.entry("postgresql", "功能强大的开源对象关系型数据库。"),
-            Map.entry("docker", "容器化平台，用于应用打包、分发与运行。"),
-            Map.entry("kubernetes", "容器编排平台，用于容器集群管理与自动化运维。"),
-            Map.entry("git", "分布式版本控制系统，用于代码协作与版本追踪。"),
-            Map.entry("linux", "开源操作系统家族，广泛用于服务器与云环境。"),
-            Map.entry("nginx", "高性能 Web 服务器与反向代理。"),
-            Map.entry("jenkins", "开源 CI/CD 自动化服务器，用于持续集成与交付流程。"),
-            Map.entry("data-structures", "数据组织基础，包括数组、链表、树、图、哈希表等。"),
-            Map.entry("algorithms", "解决问题的方法集合，如排序、搜索、动态规划等。"),
-            Map.entry("design-patterns", "软件设计中可复用的经典模式。"),
-            Map.entry("oop", "以对象为核心的编程范式，强调封装、继承与多态。"),
-            Map.entry("networking", "计算机网络基础，涵盖 TCP/IP、HTTP、DNS 等协议。"),
-            Map.entry("rest-api", "基于 REST 思想设计网络 API 的架构风格。"),
-            Map.entry("microservices", "将系统拆分为松耦合、可独立部署服务的架构方式。"),
-            Map.entry("jwt", "JSON Web Token，用于无状态认证与身份传递。"),
-            Map.entry("ci-cd", "持续集成与持续交付实践，加快质量反馈与发布效率。"),
-            Map.entry("rag", "检索增强生成，通过先检索相关知识再生成回答来提升准确性。")
+            Map.entry("java", "面向对象编程语言，常用于企业级后端开发。"),
+            Map.entry("python", "语法简洁的通用语言，适合脚本、数据分析和 AI。"),
+            Map.entry("javascript", "Web 前端核心语言，也可用于 Node.js 后端开发。"),
+            Map.entry("typescript", "JavaScript 的类型增强版本，提升大型项目可维护性。"),
+            Map.entry("spring-boot", "用于快速构建 Spring 应用的框架，约定优于配置。"),
+            Map.entry("spring-mvc", "Spring Web 模块，用于构建 REST API 与 Web 应用。"),
+            Map.entry("spring-security", "Spring 生态中的认证与授权框架。"),
+            Map.entry("mybatis", "通过 SQL 映射实现数据持久化的框架。"),
+            Map.entry("mybatis-plus", "MyBatis 增强工具，提供常用 CRUD 与分页能力。"),
+            Map.entry("vue3", "渐进式前端框架，适合构建响应式界面。"),
+            Map.entry("mysql", "主流关系型数据库系统。"),
+            Map.entry("redis", "高性能内存数据库，常用于缓存和高并发场景。"),
+            Map.entry("neo4j", "图数据库，适合存储和查询复杂关系网络。"),
+            Map.entry("docker", "容器化平台，用于应用打包、分发和运行。"),
+            Map.entry("kubernetes", "容器编排平台，用于自动化部署与集群管理。"),
+            Map.entry("git", "分布式版本控制系统。"),
+            Map.entry("rest-api", "基于 REST 风格设计网络 API 的方法。"),
+            Map.entry("microservices", "将系统拆分为可独立部署服务的架构方式。"),
+            Map.entry("jwt", "用于无状态认证的 JSON Web Token。"),
+            Map.entry("ci-cd", "持续集成与持续交付实践。"),
+            Map.entry("rag", "检索增强生成，通过检索外部知识提升回答准确性。")
     );
 
+    private static final Set<String> ALLOWED_RELATION_TYPES = Set.of(
+            "DEPENDS_ON",
+            "CONTAINS",
+            "RELATED_TO"
+    );
+
+    private static final Set<String> ALLOWED_NODE_CATEGORIES = Set.of(
+            "language",
+            "framework",
+            "runtime",
+            "database",
+            "tool",
+            "fundamental",
+            "concept"
+    );
+
+    // 查询图谱总览，供页面首屏渲染使用。
     public GraphVO getOverview() {
         List<KnowledgeNodeVO> nodes = new ArrayList<>();
         List<EdgeVO> edges = new ArrayList<>();
-        Set<String> nodeIds = new HashSet<>();
 
         try (Session session = neo4jDriver.session()) {
-            // Get nodes
             String nodeCypher = "MATCH (n:Knowledge) RETURN n LIMIT 500";
             Result nodeResult = session.run(nodeCypher);
             while (nodeResult.hasNext()) {
-                Record record = nodeResult.next();
-                Node node = record.get("n").asNode();
-                KnowledgeNodeVO vo = mapToKnowledgeNodeVO(node);
-                nodes.add(vo);
-                nodeIds.add(vo.getId());
+                Node node = nodeResult.next().get("n").asNode();
+                nodes.add(mapToKnowledgeNodeVO(node));
             }
 
-            // Get relationships
             String relCypher = "MATCH (a:Knowledge)-[r]->(b:Knowledge) RETURN a, r, b LIMIT 500";
             Result relResult = session.run(relCypher);
             while (relResult.hasNext()) {
@@ -117,6 +118,7 @@ public class GraphService {
                 .build();
     }
 
+    // 按业务 id 查询单个节点详情。
     public KnowledgeNodeVO getNodeDetail(String id) {
         try (Session session = neo4jDriver.session()) {
             String cypher = "MATCH (n:Knowledge {id: $id}) RETURN n";
@@ -128,51 +130,100 @@ public class GraphService {
             }
         } catch (Exception e) {
             log.error("Error getting node detail from Neo4j: {}", e.getMessage());
-            throw new RuntimeException("获取节点详情失败", e);
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_INTERNAL_SERVER_ERROR,
+                    "获取节点详情失败，请稍后重试"
+            );
         }
 
-        throw new RuntimeException("节点不存在: " + id);
+        throw new BusinessException(
+                ErrorCode.NOT_FOUND,
+                ErrorCode.BIZ_NOT_FOUND,
+                "节点不存在: " + id
+        );
     }
 
-    public GraphVO getNeighbors(String id) {
+    // 按深度（1..4）扩展某节点邻域，并返回子图。
+    public GraphVO getNeighbors(String id, Integer depth) {
         List<KnowledgeNodeVO> nodes = new ArrayList<>();
         List<EdgeVO> edges = new ArrayList<>();
         Set<String> addedNodeIds = new HashSet<>();
+        Set<String> addedEdgeKeys = new HashSet<>();
+        int effectiveDepth = Math.max(1, Math.min(depth == null ? 1 : depth, 4));
 
         try (Session session = neo4jDriver.session()) {
-            String cypher = "MATCH (n:Knowledge {id: $id})-[r]-(m:Knowledge) RETURN n, r, m";
-            Result result = session.run(cypher, Values.parameters("id", id));
+            // 获取以中心节点为起点路径上出现的所有节点。
+            String nodeCypher = String.format(
+                    "MATCH (center:Knowledge {id: $id}) " +
+                            "MATCH p=(center)-[*1..%d]-(n:Knowledge) " +
+                            "UNWIND nodes(p) AS nd " +
+                            "RETURN DISTINCT nd",
+                    effectiveDepth
+            );
 
-            while (result.hasNext()) {
-                Record record = result.next();
-                Node centerNode = record.get("n").asNode();
-                Node neighborNode = record.get("m").asNode();
-                Relationship rel = record.get("r").asRelationship();
+            Result nodeResult = session.run(nodeCypher, Values.parameters("id", id));
+            while (nodeResult.hasNext()) {
+                Node node = nodeResult.next().get("nd").asNode();
+                String nodeId = node.containsKey("id") ? node.get("id").asString() : String.valueOf(node.id());
+                if (addedNodeIds.add(nodeId)) {
+                    nodes.add(mapToKnowledgeNodeVO(node));
+                }
+            }
 
-                // Add center node if not already added
-                String centerId = centerNode.containsKey("id") ? centerNode.get("id").asString() : String.valueOf(centerNode.id());
-                if (addedNodeIds.add(centerId)) {
+            // 即使没有邻居，也保证能返回中心节点本身。
+            if (addedNodeIds.isEmpty()) {
+                String centerCypher = "MATCH (n:Knowledge {id: $id}) RETURN n";
+                Result centerResult = session.run(centerCypher, Values.parameters("id", id));
+                if (centerResult.hasNext()) {
+                    Node centerNode = centerResult.next().get("n").asNode();
+                    String centerId = centerNode.containsKey("id") ? centerNode.get("id").asString() : String.valueOf(centerNode.id());
+                    addedNodeIds.add(centerId);
                     nodes.add(mapToKnowledgeNodeVO(centerNode));
                 }
+            }
 
-                // Add neighbor node if not already added
-                String neighborId = neighborNode.containsKey("id") ? neighborNode.get("id").asString() : String.valueOf(neighborNode.id());
-                if (addedNodeIds.add(neighborId)) {
-                    nodes.add(mapToKnowledgeNodeVO(neighborNode));
+            // 仅拉取已纳入子图节点集合之间的关系。
+            if (!addedNodeIds.isEmpty()) {
+                String relCypher =
+                        "MATCH (a:Knowledge)-[r]-(b:Knowledge) " +
+                                "WHERE a.id IN $nodeIds AND b.id IN $nodeIds " +
+                                "RETURN DISTINCT a, r, b";
+                Result relResult = session.run(relCypher, Values.parameters("nodeIds", new ArrayList<>(addedNodeIds)));
+
+                while (relResult.hasNext()) {
+                    Record record = relResult.next();
+                    Node sourceNode = record.get("a").asNode();
+                    Node targetNode = record.get("b").asNode();
+                    Relationship rel = record.get("r").asRelationship();
+
+                    String sourceId = sourceNode.containsKey("id") ? sourceNode.get("id").asString() : String.valueOf(sourceNode.id());
+                    String targetId = targetNode.containsKey("id") ? targetNode.get("id").asString() : String.valueOf(targetNode.id());
+
+                    // 保持边方向与关系起点方向一致。
+                    if (sourceNode.id() != rel.startNodeId()) {
+                        String temp = sourceId;
+                        sourceId = targetId;
+                        targetId = temp;
+                    }
+
+                    String edgeKey = sourceId + "|" + rel.type() + "|" + targetId;
+                    if (addedEdgeKeys.add(edgeKey)) {
+                        edges.add(EdgeVO.builder()
+                                .source(sourceId)
+                                .target(targetId)
+                                .type(rel.type())
+                                .build());
+                    }
                 }
-
-                // Determine edge direction
-                String startId = centerNode.id() == rel.startNodeId() ? centerId : neighborId;
-                String endId = centerNode.id() == rel.startNodeId() ? neighborId : centerId;
-
-                edges.add(EdgeVO.builder()
-                        .source(startId)
-                        .target(endId)
-                        .type(rel.type())
-                        .build());
             }
         } catch (Exception e) {
             log.error("Error getting neighbors from Neo4j: {}", e.getMessage());
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_INTERNAL_SERVER_ERROR,
+                    "获取关联节点失败，请稍后重试"
+            );
         }
 
         return GraphVO.builder()
@@ -202,13 +253,13 @@ public class GraphService {
         return nodes;
     }
 
+    // 按名称/分类/关键词搜索图谱，并携带命中节点相关边。
     public GraphVO searchGraph(String keyword) {
         List<KnowledgeNodeVO> nodes = new ArrayList<>();
         List<EdgeVO> edges = new ArrayList<>();
         Set<String> nodeIds = new HashSet<>();
 
         try (Session session = neo4jDriver.session()) {
-            // Find matching nodes and their direct relationships
             String cypher = "MATCH (n:Knowledge) " +
                     "WHERE toLower(n.name) CONTAINS toLower($keyword) " +
                     "OR toLower(n.category) CONTAINS toLower($keyword) " +
@@ -238,7 +289,6 @@ public class GraphService {
                     String sourceId = node.containsKey("id") ? node.get("id").asString() : String.valueOf(node.id());
                     String targetId = neighborNode.containsKey("id") ? neighborNode.get("id").asString() : String.valueOf(neighborNode.id());
 
-                    // Determine correct direction
                     if (node.id() != rel.startNodeId()) {
                         String temp = sourceId;
                         sourceId = targetId;
@@ -260,6 +310,567 @@ public class GraphService {
                 .nodes(nodes)
                 .edges(edges)
                 .build();
+    }
+
+    // 创建 Knowledge 节点，并做参数校验与重复校验。
+    public KnowledgeNodeVO createNode(GraphNodeCreateRequest request) {
+        String nodeId = safeLower(request.getId());
+        String nodeName = request.getName() == null ? "" : request.getName().trim();
+        String category = safeLower(request.getCategory());
+        String difficulty = request.getDifficulty() == null ? "beginner" : request.getDifficulty().trim().toLowerCase(Locale.ROOT);
+        String description = request.getDescription() == null ? "" : request.getDescription().trim();
+        List<String> keywords = request.getKeywords() == null
+                ? List.of()
+                : request.getKeywords().stream()
+                .map(item -> item == null ? "" : item.trim())
+                .filter(item -> !item.isBlank())
+                .distinct()
+                .limit(20)
+                .toList();
+
+        if (nodeId.isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, ErrorCode.BIZ_BAD_REQUEST, "节点ID不能为空");
+        }
+        if (nodeName.isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, ErrorCode.BIZ_BAD_REQUEST, "节点名称不能为空");
+        }
+        if (!ALLOWED_NODE_CATEGORIES.contains(category)) {
+            throw new BusinessException(
+                    ErrorCode.BAD_REQUEST,
+                    ErrorCode.BIZ_BAD_REQUEST,
+                    "节点分类不合法，可选值：" + ALLOWED_NODE_CATEGORIES
+            );
+        }
+
+        try (Session session = neo4jDriver.session()) {
+            boolean exists = session.run(
+                    "MATCH (n:Knowledge {id: $id}) RETURN count(n) > 0 AS exists",
+                    Values.parameters("id", nodeId)
+            ).single().get("exists").asBoolean(false);
+            if (exists) {
+                throw new BusinessException(
+                        ErrorCode.BAD_REQUEST,
+                        ErrorCode.BIZ_BAD_REQUEST,
+                        "节点ID已存在：" + nodeId
+                );
+            }
+
+            Node node = session.run(
+                    "CREATE (n:Knowledge {id:$id, name:$name, category:$category, difficulty:$difficulty, description:$description, keywords:$keywords}) RETURN n",
+                    Values.parameters(
+                            "id", nodeId,
+                            "name", nodeName,
+                            "category", category,
+                            "difficulty", difficulty,
+                            "description", description,
+                            "keywords", keywords
+                    )
+            ).single().get("n").asNode();
+            return mapToKnowledgeNodeVO(node);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Error creating graph node: {}", e.getMessage());
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_INTERNAL_SERVER_ERROR,
+                    "新增图谱节点失败，请稍后重试"
+            );
+        }
+    }
+
+    // 在已存在节点之间创建一条有向关系。
+    public EdgeVO createRelation(GraphRelationCreateRequest request) {
+        String sourceId = safeLower(request.getSourceId());
+        String targetId = safeLower(request.getTargetId());
+        String relationType = normalizeRelationType(request.getRelationType());
+
+        if (sourceId.isBlank() || targetId.isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, ErrorCode.BIZ_BAD_REQUEST, "关系节点ID不能为空");
+        }
+        if (sourceId.equals(targetId)) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, ErrorCode.BIZ_BAD_REQUEST, "源节点和目标节点不能相同");
+        }
+        if (!ALLOWED_RELATION_TYPES.contains(relationType)) {
+            throw new BusinessException(
+                    ErrorCode.BAD_REQUEST,
+                    ErrorCode.BIZ_BAD_REQUEST,
+                    "关系类型不合法，可选值：" + ALLOWED_RELATION_TYPES
+            );
+        }
+
+        try (Session session = neo4jDriver.session()) {
+            long sourceCount = readLong(
+                    session,
+                    "MATCH (n:Knowledge {id: $id}) RETURN count(n) AS c",
+                    Values.parameters("id", sourceId),
+                    "c"
+            );
+            long targetCount = readLong(
+                    session,
+                    "MATCH (n:Knowledge {id: $id}) RETURN count(n) AS c",
+                    Values.parameters("id", targetId),
+                    "c"
+            );
+            if (sourceCount == 0 || targetCount == 0) {
+                throw new BusinessException(
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.BIZ_NOT_FOUND,
+                        "源节点或目标节点不存在"
+                );
+            }
+
+            String relationCypher = String.format(
+                    "MATCH (a:Knowledge {id: $sourceId}), (b:Knowledge {id: $targetId}) MERGE (a)-[r:%s]->(b) RETURN a,b,r",
+                    relationType
+            );
+            session.run(
+                    relationCypher,
+                    Values.parameters("sourceId", sourceId, "targetId", targetId)
+            );
+            return EdgeVO.builder()
+                    .source(sourceId)
+                    .target(targetId)
+                    .type(relationType)
+                    .build();
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Error creating graph relation: {}", e.getMessage());
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_INTERNAL_SERVER_ERROR,
+                    "新增图谱关系失败，请稍后重试"
+            );
+        }
+    }
+
+    // 删除节点，并级联删除其关联关系。
+    public void deleteNode(String nodeIdRaw) {
+        String nodeId = safeLower(nodeIdRaw);
+        if (nodeId.isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, ErrorCode.BIZ_BAD_REQUEST, "节点ID不能为空");
+        }
+
+        try (Session session = neo4jDriver.session()) {
+            long nodeCount = readLong(
+                    session,
+                    "MATCH (n:Knowledge {id: $id}) RETURN count(n) AS c",
+                    Values.parameters("id", nodeId),
+                    "c"
+            );
+            if (nodeCount <= 0) {
+                throw new BusinessException(
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.BIZ_NOT_FOUND,
+                        "节点不存在: " + nodeId
+                );
+            }
+
+            session.run(
+                    "MATCH (n:Knowledge {id: $id}) DETACH DELETE n",
+                    Values.parameters("id", nodeId)
+            );
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Error deleting graph node {}: {}", nodeId, e.getMessage());
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_INTERNAL_SERVER_ERROR,
+                    "删除图谱节点失败，请稍后重试"
+            );
+        }
+    }
+
+    // 删除一条有向关系，并严格校验关系类型。
+    public void deleteRelation(GraphRelationCreateRequest request) {
+        String sourceId = safeLower(request.getSourceId());
+        String targetId = safeLower(request.getTargetId());
+        String relationType = normalizeRelationType(request.getRelationType());
+
+        if (sourceId.isBlank() || targetId.isBlank()) {
+            throw new BusinessException(ErrorCode.BAD_REQUEST, ErrorCode.BIZ_BAD_REQUEST, "关系节点ID不能为空");
+        }
+        if (!ALLOWED_RELATION_TYPES.contains(relationType)) {
+            throw new BusinessException(
+                    ErrorCode.BAD_REQUEST,
+                    ErrorCode.BIZ_BAD_REQUEST,
+                    "关系类型不合法，可选值：" + ALLOWED_RELATION_TYPES
+            );
+        }
+
+        try (Session session = neo4jDriver.session()) {
+            String countCypher = String.format(
+                    "MATCH (a:Knowledge {id: $sourceId})-[r:%s]->(b:Knowledge {id: $targetId}) RETURN count(r) AS c",
+                    relationType
+            );
+            long relationCount = readLong(
+                    session,
+                    countCypher,
+                    Values.parameters("sourceId", sourceId, "targetId", targetId),
+                    "c"
+            );
+            if (relationCount <= 0) {
+                throw new BusinessException(
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.BIZ_NOT_FOUND,
+                        "关系不存在，无法删除"
+                );
+            }
+
+            String deleteCypher = String.format(
+                    "MATCH (a:Knowledge {id: $sourceId})-[r:%s]->(b:Knowledge {id: $targetId}) DELETE r",
+                    relationType
+            );
+            session.run(
+                    deleteCypher,
+                    Values.parameters("sourceId", sourceId, "targetId", targetId)
+            );
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Error deleting graph relation {}->{}({}): {}", sourceId, targetId, relationType, e.getMessage());
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_INTERNAL_SERVER_ERROR,
+                    "删除图谱关系失败，请稍后重试"
+            );
+        }
+    }
+
+    public List<RelatedDocumentVO> getRelatedDocuments(String nodeId, Integer limit) {
+        int size = Math.max(1, Math.min(limit == null ? 6 : limit, 20));
+        try (Session session = neo4jDriver.session()) {
+            Result result = session.run(
+                    "MATCH (n:Knowledge {id: $id}) RETURN n",
+                    Values.parameters("id", nodeId)
+            );
+            if (!result.hasNext()) {
+                throw new BusinessException(
+                        ErrorCode.NOT_FOUND,
+                        ErrorCode.BIZ_NOT_FOUND,
+                        "节点不存在: " + nodeId
+                );
+            }
+
+            Node node = result.next().get("n").asNode();
+            String nodeName = node.containsKey("name") ? node.get("name").asString("") : "";
+            String nodeCategory = node.containsKey("category") ? node.get("category").asString("") : "";
+            List<String> nodeKeywords = node.containsKey("keywords")
+                    ? node.get("keywords").asList(v -> v.asString(""))
+                    : List.of();
+
+            List<KnowledgeDocument> docs = documentMapper.selectList(null);
+            List<ScoredRelatedDocument> scored = docs.stream()
+                    .map(doc -> scoreRelatedDocument(doc, nodeId, nodeName, nodeCategory, nodeKeywords))
+                    .filter(item -> item.score > 0.0)
+                    .sorted(Comparator.comparingDouble((ScoredRelatedDocument item) -> item.score).reversed())
+                    .limit(size)
+                    .toList();
+
+            return scored.stream()
+                    .map(item -> RelatedDocumentVO.builder()
+                            .id(item.document.getId())
+                            .title(item.document.getTitle())
+                            .category(item.document.getCategory())
+                            .createdAt(item.document.getCreatedAt())
+                            .score(item.score)
+                            .reason(item.reason)
+                            .build())
+                    .toList();
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Error loading related documents for node {}: {}", nodeId, e.getMessage());
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_INTERNAL_SERVER_ERROR,
+                    "加载关联知识文档失败，请稍后重试"
+            );
+        }
+    }
+
+    public GraphHealthVO getHealthOverview() {
+        long totalNodes = 0L;
+        long totalEdges = 0L;
+        long relationTypeCount = 0L;
+        long isolatedNodeCount = 0L;
+        long selfLoopEdgeCount = 0L;
+        long duplicateEdgeGroupCount = 0L;
+        long duplicateEdgeExtraCount = 0L;
+        long missingIdCount = 0L;
+        long missingNameCount = 0L;
+        long missingCategoryCount = 0L;
+        long missingDescriptionCount = 0L;
+        long missingDifficultyCount = 0L;
+        long invalidRelationTypeCount = 0L;
+        long invalidCategoryCount = 0L;
+        boolean hasDependencyCycle = false;
+
+        List<String> isolatedNodeSamples = new ArrayList<>();
+        List<String> duplicateEdgeSamples = new ArrayList<>();
+        List<String> cycleNodeSamples = new ArrayList<>();
+        List<String> invalidRelationTypeSamples = new ArrayList<>();
+        List<String> invalidCategorySamples = new ArrayList<>();
+
+        try (Session session = neo4jDriver.session()) {
+            totalNodes = readLong(session,
+                    "MATCH (n:Knowledge) RETURN count(n) AS c",
+                    "c"
+            );
+
+            totalEdges = readLong(session,
+                    "MATCH (:Knowledge)-[r]->(:Knowledge) RETURN count(r) AS c",
+                    "c"
+            );
+
+            relationTypeCount = readLong(session,
+                    "MATCH ()-[r]->() RETURN count(DISTINCT type(r)) AS c",
+                    "c"
+            );
+
+            Result isolatedResult = session.run(
+                    "MATCH (n:Knowledge) " +
+                            "WHERE NOT (n)--() " +
+                            "RETURN count(n) AS c, collect(coalesce(n.id, toString(id(n))))[0..8] AS samples"
+            );
+            if (isolatedResult.hasNext()) {
+                Record record = isolatedResult.next();
+                isolatedNodeCount = record.get("c").asLong(0L);
+                isolatedNodeSamples = record.get("samples").asList(v -> v.asString());
+            }
+
+            selfLoopEdgeCount = readLong(session,
+                    "MATCH (n:Knowledge)-[r]->(n) RETURN count(r) AS c",
+                    "c"
+            );
+
+            Result duplicateResult = session.run(
+                    "MATCH (a:Knowledge)-[r]->(b:Knowledge) " +
+                            "WITH coalesce(a.id, toString(id(a))) AS sourceId, type(r) AS relType, " +
+                            "coalesce(b.id, toString(id(b))) AS targetId, count(r) AS c " +
+                            "WHERE c > 1 " +
+                            "RETURN count(*) AS groupCount, coalesce(sum(c - 1), 0) AS extraCount, " +
+                            "collect(sourceId + '-[' + relType + ']->' + targetId + ' x' + toString(c))[0..8] AS samples"
+            );
+            if (duplicateResult.hasNext()) {
+                Record record = duplicateResult.next();
+                duplicateEdgeGroupCount = record.get("groupCount").asLong(0L);
+                duplicateEdgeExtraCount = record.get("extraCount").asLong(0L);
+                duplicateEdgeSamples = record.get("samples").asList(v -> v.asString());
+            }
+
+            Result missingFieldResult = session.run(
+                    "MATCH (n:Knowledge) " +
+                            "RETURN " +
+                            "sum(CASE WHEN n.id IS NULL OR trim(toString(n.id)) = '' THEN 1 ELSE 0 END) AS missingIdCount, " +
+                            "sum(CASE WHEN n.name IS NULL OR trim(toString(n.name)) = '' THEN 1 ELSE 0 END) AS missingNameCount, " +
+                            "sum(CASE WHEN n.category IS NULL OR trim(toString(n.category)) = '' THEN 1 ELSE 0 END) AS missingCategoryCount, " +
+                            "sum(CASE WHEN n.description IS NULL OR trim(toString(n.description)) = '' THEN 1 ELSE 0 END) AS missingDescriptionCount, " +
+                            "sum(CASE WHEN n.difficulty IS NULL OR trim(toString(n.difficulty)) = '' THEN 1 ELSE 0 END) AS missingDifficultyCount"
+            );
+            if (missingFieldResult.hasNext()) {
+                Record record = missingFieldResult.next();
+                missingIdCount = record.get("missingIdCount").asLong(0L);
+                missingNameCount = record.get("missingNameCount").asLong(0L);
+                missingCategoryCount = record.get("missingCategoryCount").asLong(0L);
+                missingDescriptionCount = record.get("missingDescriptionCount").asLong(0L);
+                missingDifficultyCount = record.get("missingDifficultyCount").asLong(0L);
+            }
+
+            Result invalidRelationResult = session.run(
+                    "MATCH ()-[r]->() " +
+                            "WHERE NOT type(r) IN $allowedTypes " +
+                            "RETURN count(r) AS c, collect(DISTINCT type(r))[0..8] AS samples",
+                    Values.parameters("allowedTypes", new ArrayList<>(ALLOWED_RELATION_TYPES))
+            );
+            if (invalidRelationResult.hasNext()) {
+                Record record = invalidRelationResult.next();
+                invalidRelationTypeCount = record.get("c").asLong(0L);
+                invalidRelationTypeSamples = record.get("samples").asList(v -> v.asString());
+            }
+
+            Result invalidCategoryResult = session.run(
+                    "MATCH (n:Knowledge) " +
+                            "WITH n, toLower(trim(coalesce(toString(n.category), ''))) AS normalizedCategory " +
+                            "WHERE normalizedCategory <> '' AND NOT normalizedCategory IN $allowedCategories " +
+                            "RETURN count(n) AS c, collect(coalesce(n.id, toString(id(n))) + ':' + normalizedCategory)[0..8] AS samples",
+                    Values.parameters("allowedCategories", new ArrayList<>(ALLOWED_NODE_CATEGORIES))
+            );
+            if (invalidCategoryResult.hasNext()) {
+                Record record = invalidCategoryResult.next();
+                invalidCategoryCount = record.get("c").asLong(0L);
+                invalidCategorySamples = record.get("samples").asList(v -> v.asString());
+            }
+
+            Result cycleResult = session.run(
+                    "MATCH (n:Knowledge) " +
+                            "WHERE EXISTS { MATCH (n)-[:DEPENDS_ON*1..8]->(n) } " +
+                            "RETURN count(n) AS cycleNodeCount, collect(coalesce(n.id, toString(id(n))))[0..8] AS samples"
+            );
+            if (cycleResult.hasNext()) {
+                Record record = cycleResult.next();
+                hasDependencyCycle = record.get("cycleNodeCount").asLong(0L) > 0;
+                cycleNodeSamples = record.get("samples").asList(v -> v.asString());
+            }
+        } catch (Exception e) {
+            log.error("Error calculating graph health from Neo4j: {}", e.getMessage());
+            throw new BusinessException(
+                    ErrorCode.INTERNAL_SERVER_ERROR,
+                    ErrorCode.BIZ_INTERNAL_SERVER_ERROR,
+                    "图谱健康检查失败，请稍后重试"
+            );
+        }
+
+        int healthScore = calculateHealthScore(
+                totalNodes,
+                totalEdges,
+                isolatedNodeCount,
+                selfLoopEdgeCount,
+                duplicateEdgeExtraCount,
+                missingIdCount + missingNameCount + missingCategoryCount + missingDescriptionCount + missingDifficultyCount,
+                invalidRelationTypeCount,
+                invalidCategoryCount,
+                hasDependencyCycle
+        );
+
+        return GraphHealthVO.builder()
+                .healthScore(healthScore)
+                .totalNodes(totalNodes)
+                .totalEdges(totalEdges)
+                .relationTypeCount(relationTypeCount)
+                .isolatedNodeCount(isolatedNodeCount)
+                .selfLoopEdgeCount(selfLoopEdgeCount)
+                .duplicateEdgeGroupCount(duplicateEdgeGroupCount)
+                .duplicateEdgeExtraCount(duplicateEdgeExtraCount)
+                .missingIdCount(missingIdCount)
+                .missingNameCount(missingNameCount)
+                .missingCategoryCount(missingCategoryCount)
+                .missingDescriptionCount(missingDescriptionCount)
+                .missingDifficultyCount(missingDifficultyCount)
+                .invalidRelationTypeCount(invalidRelationTypeCount)
+                .invalidCategoryCount(invalidCategoryCount)
+                .hasDependencyCycle(hasDependencyCycle)
+                .isolatedNodeSamples(isolatedNodeSamples)
+                .duplicateEdgeSamples(duplicateEdgeSamples)
+                .cycleNodeSamples(cycleNodeSamples)
+                .invalidRelationTypeSamples(invalidRelationTypeSamples)
+                .invalidCategorySamples(invalidCategorySamples)
+                .build();
+    }
+
+    private ScoredRelatedDocument scoreRelatedDocument(
+            KnowledgeDocument doc,
+            String nodeId,
+            String nodeName,
+            String nodeCategory,
+            List<String> nodeKeywords
+    ) {
+        String title = safeLower(doc.getTitle());
+        String content = safeLower(doc.getContent());
+        String category = safeLower(doc.getCategory());
+
+        String normalizedNodeId = safeLower(nodeId);
+        String normalizedNodeName = safeLower(nodeName);
+        String normalizedNodeCategory = safeLower(nodeCategory);
+
+        double score = 0.0;
+        StringBuilder reason = new StringBuilder();
+
+        if (!normalizedNodeName.isBlank() && title.contains(normalizedNodeName)) {
+            score += 4.0;
+            reason.append("标题命中节点名");
+        } else if (!normalizedNodeName.isBlank() && content.contains(normalizedNodeName)) {
+            score += 2.5;
+            reason.append("内容命中节点名");
+        }
+
+        if (!normalizedNodeId.isBlank() && (title.contains(normalizedNodeId) || content.contains(normalizedNodeId))) {
+            score += 1.5;
+            if (!reason.isEmpty()) reason.append("；");
+            reason.append("命中节点ID");
+        }
+
+        if (!normalizedNodeCategory.isBlank() && category.equals(normalizedNodeCategory)) {
+            score += 2.0;
+            if (!reason.isEmpty()) reason.append("；");
+            reason.append("分类一致");
+        }
+
+        int keywordHits = 0;
+        if (nodeKeywords != null) {
+            for (String keyword : nodeKeywords) {
+                String normalized = safeLower(keyword);
+                if (normalized.length() < 2) continue;
+                if (title.contains(normalized) || content.contains(normalized)) {
+                    keywordHits++;
+                }
+            }
+        }
+        if (keywordHits > 0) {
+            score += Math.min(3.0, keywordHits * 0.8);
+            if (!reason.isEmpty()) reason.append("；");
+            reason.append("关键词命中 ").append(keywordHits).append(" 个");
+        }
+
+        if (reason.isEmpty()) {
+            reason.append("语义相关");
+        }
+
+        return new ScoredRelatedDocument(doc, score, reason.toString());
+    }
+
+    private String safeLower(String text) {
+        return text == null ? "" : text.toLowerCase().trim();
+    }
+
+    private long readLong(Session session, String cypher, String key) {
+        Result result = session.run(cypher);
+        if (!result.hasNext()) return 0L;
+        return result.next().get(key).asLong(0L);
+    }
+
+    private long readLong(Session session, String cypher, org.neo4j.driver.Value params, String key) {
+        Result result = session.run(cypher, params);
+        if (!result.hasNext()) return 0L;
+        return result.next().get(key).asLong(0L);
+    }
+
+    private String normalizeRelationType(String relationType) {
+        return relationType == null ? "" : relationType.trim().toUpperCase(Locale.ROOT);
+    }
+
+    private int calculateHealthScore(
+            long totalNodes,
+            long totalEdges,
+            long isolatedNodeCount,
+            long selfLoopEdgeCount,
+            long duplicateEdgeExtraCount,
+            long missingFieldCount,
+            long invalidRelationTypeCount,
+            long invalidCategoryCount,
+            boolean hasDependencyCycle
+    ) {
+        int score = 100;
+        score -= penaltyByRate(isolatedNodeCount, totalNodes, 25);
+        score -= penaltyByRate(selfLoopEdgeCount, Math.max(1L, totalEdges), 15);
+        score -= penaltyByRate(duplicateEdgeExtraCount, Math.max(1L, totalEdges), 20);
+        score -= penaltyByRate(missingFieldCount, Math.max(1L, totalNodes * 5), 20);
+        score -= penaltyByRate(invalidRelationTypeCount, Math.max(1L, totalEdges), 10);
+        score -= penaltyByRate(invalidCategoryCount, Math.max(1L, totalNodes), 10);
+        if (hasDependencyCycle) {
+            score -= 10;
+        }
+        return Math.max(0, score);
+    }
+
+    private int penaltyByRate(long badCount, long totalCount, int maxPenalty) {
+        if (badCount <= 0 || totalCount <= 0 || maxPenalty <= 0) return 0;
+        double rate = (double) badCount / (double) totalCount;
+        int penalty = (int) Math.round(rate * maxPenalty);
+        if (penalty <= 0) penalty = 1;
+        return Math.min(maxPenalty, penalty);
     }
 
     private KnowledgeNodeVO mapToKnowledgeNodeVO(Node node) {
@@ -299,5 +910,17 @@ public class GraphService {
             }
         }
         return false;
+    }
+
+    private static final class ScoredRelatedDocument {
+        private final KnowledgeDocument document;
+        private final double score;
+        private final String reason;
+
+        private ScoredRelatedDocument(KnowledgeDocument document, double score, String reason) {
+            this.document = document;
+            this.score = score;
+            this.reason = reason;
+        }
     }
 }

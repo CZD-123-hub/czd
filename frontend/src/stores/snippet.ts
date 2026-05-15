@@ -36,42 +36,44 @@ export const useSnippetStore = defineStore('snippet', () => {
     }
   }
 
-  async function createSnippet(data: Partial<CodeSnippet>) {
+  async function runMutation(action: () => Promise<unknown>, successMessage: string): Promise<boolean> {
     loading.value = true
     try {
-      await snippetApi.createSnippet(data)
-      ElMessage.success('代码片段创建成功')
+      await action()
+      ElMessage.success(successMessage)
       await loadSnippets()
+      return true
     } catch {
-      ElMessage.error('创建失败')
+      // unified error message is handled by request interceptor
+      return false
     } finally {
       loading.value = false
     }
+  }
+
+  async function createSnippet(data: Partial<CodeSnippet>) {
+    return runMutation(() => snippetApi.createSnippet(data), '代码片段创建成功')
   }
 
   async function updateSnippet(id: number, data: Partial<CodeSnippet>) {
-    loading.value = true
-    try {
-      await snippetApi.updateSnippet(id, data)
-      ElMessage.success('更新成功')
-      await loadSnippets()
-    } catch {
-      ElMessage.error('更新失败')
-    } finally {
-      loading.value = false
-    }
+    return runMutation(() => snippetApi.updateSnippet(id, data), '更新成功')
   }
 
   async function deleteSnippet(id: number) {
-    loading.value = true
+    return runMutation(() => snippetApi.deleteSnippet(id), '删除成功')
+  }
+
+  async function markSnippetUsed(id: number) {
     try {
-      await snippetApi.deleteSnippet(id)
-      ElMessage.success('删除成功')
-      await loadSnippets()
+      const res = await snippetApi.markSnippetUsed(id)
+      const updated = res.data.data
+      const local = snippets.value.find((item) => item.id === id)
+      if (local) {
+        local.useCount = updated.useCount
+        local.updatedAt = updated.updatedAt
+      }
     } catch {
-      ElMessage.error('删除失败')
-    } finally {
-      loading.value = false
+      // Ignore tracking failures to avoid interrupting user actions.
     }
   }
 
@@ -86,19 +88,22 @@ export const useSnippetStore = defineStore('snippet', () => {
       link.click()
       URL.revokeObjectURL(url)
       ElMessage.success('导出成功')
+      return true
     } catch {
-      ElMessage.error('导出失败')
+      return false
     }
   }
 
   async function importFile(file: File) {
     loading.value = true
     try {
-      await snippetApi.importFile(file)
-      ElMessage.success('导入成功')
+      const res = await snippetApi.importFile(file)
+      const result = res.data.data
+      ElMessage.success(`导入完成：成功 ${result.successCount} 条，失败 ${result.failCount} 条`)
       await loadSnippets()
+      return true
     } catch {
-      ElMessage.error('导入失败')
+      return false
     } finally {
       loading.value = false
     }
@@ -120,6 +125,7 @@ export const useSnippetStore = defineStore('snippet', () => {
     createSnippet,
     updateSnippet,
     deleteSnippet,
+    markSnippetUsed,
     exportAll,
     importFile,
     resetFilters,

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+﻿import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +43,18 @@ const router = createRouter({
           meta: { title: '学习路径' },
         },
         {
+          path: 'learning-studio',
+          name: 'learning-studio',
+          component: () => import('@/views/LearningStudio/LearningStudioView.vue'),
+          meta: { title: '学习看台' },
+        },
+        {
+          path: 'practice',
+          name: 'practice',
+          component: () => import('@/views/PracticeTest/PracticeTestView.vue'),
+          meta: { title: '练与测' },
+        },
+        {
           path: 'snippets',
           name: 'snippets',
           component: () => import('@/views/CodeSnippets/CodeSnippetsView.vue'),
@@ -58,7 +70,7 @@ const router = createRouter({
           path: 'dashboard',
           name: 'dashboard',
           component: () => import('@/views/Dashboard/DashboardView.vue'),
-          meta: { title: '学习仪表盘' },
+          meta: { title: '学习看板' },
         },
         {
           path: 'profile',

@@ -1,51 +1,56 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { submitFeedback } from '@/api/chat'
 
 const props = defineProps<{
   messageId: number
+  initialRating?: 'useful' | 'useless' | null
 }>()
 
-const feedbackGiven = ref<'up' | 'down' | null>(null)
+const emit = defineEmits<{
+  (e: 'updated', rating: 'useful' | 'useless' | null): void
+}>()
+
+function toUiState(rating: 'useful' | 'useless' | null | undefined): 'up' | 'down' | null {
+  if (rating === 'useful') return 'up'
+  if (rating === 'useless') return 'down'
+  return null
+}
+
+const feedbackGiven = ref<'up' | 'down' | null>(toUiState(props.initialRating))
 const loading = ref(false)
 
+watch(
+  () => props.initialRating,
+  (rating) => {
+    feedbackGiven.value = toUiState(rating)
+  },
+)
+
 async function handleFeedback(type: 'up' | 'down') {
-  if (loading.value) return
-  
+  if (loading.value || props.messageId <= 0) return
+
+  const previousState = feedbackGiven.value
+  const nextState = previousState === type ? null : type
+  const ratingValue: 'useful' | 'useless' | null =
+    nextState === 'up' ? 'useful' : nextState === 'down' ? 'useless' : null
+
   loading.value = true
   try {
-    let ratingValue: 'useful' | 'useless' | null = null
-    let newState: 'up' | 'down' | null = null
-    
-    // 判断当前点击的按钮状态
-    if (feedbackGiven.value === type) {
-      // 如果点击的是已经选中的按钮，则取消点赞
-      ratingValue = null
-      newState = null
-    } else {
-      // 如果是新选中的按钮，则发送对应的 rating
-      ratingValue = type === 'up' ? 'useful' : 'useless'
-      newState = type
-    }
-    
-    // 发送请求到后端
-    if (ratingValue) {
-      await submitFeedback(props.messageId, ratingValue)
-    } else {
-      // 取消点赞：发送 'none'
-      await submitFeedback(props.messageId, 'none' as any)
-    }
-    
-    // 更新前端状态
-    feedbackGiven.value = newState
+    await submitFeedback(props.messageId, ratingValue)
+    feedbackGiven.value = nextState
+    emit('updated', ratingValue)
   } catch (error) {
-    console.error('反馈提交失败:', error)
-    // 即使后端失败，也更新前端状态（用户体验更好）
-    if (feedbackGiven.value === type) {
-      feedbackGiven.value = null
-    } else {
+    const errorMessage = error instanceof Error ? error.message : ''
+    // Compatibility: old backend may still return duplicate-submit error.
+    if (errorMessage.toLowerCase().includes('already submitted')) {
+      const fallbackRating: 'useful' | 'useless' = type === 'up' ? 'useful' : 'useless'
       feedbackGiven.value = type
+      emit('updated', fallbackRating)
+      return
     }
+    feedbackGiven.value = previousState
+    console.error('Feedback submit failed:', error)
   } finally {
     loading.value = false
   }
@@ -103,3 +108,4 @@ async function handleFeedback(type: 'up' | 'down') {
   }
 }
 </style>
+

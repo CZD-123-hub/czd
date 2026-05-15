@@ -18,5 +18,6 @@ public class MessageVO {
     private String role;
     private String content;
     private String sources;
+    private String feedbackRating;
     private LocalDateTime createdAt;
 }

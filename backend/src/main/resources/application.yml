@@ -1,16 +1,44 @@
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:8081}
+  tomcat:
+    uri-encoding: UTF-8
 
 spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
   servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-request: true
+      force-response: true
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:coding_assistant}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:12345678}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:16379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000ms
+
+neo4j:
+  uri: ${NEO4J_URI:bolt://localhost:17687}
+  username: ${NEO4J_USER:neo4j}
+  password: ${NEO4J_PASSWORD:neo4j123456}
 
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
@@ -24,7 +52,34 @@ mybatis-plus:
       logic-not-delete-value: 0
 
 jwt:
+  secret: ${JWT_SECRET:change-me-in-dev-secret-at-least-32-bytes}
   expiration: ${JWT_EXPIRATION:86400000}
+
+llm:
+  provider: ${LLM_PROVIDER:openai}
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+    model: ${OPENAI_MODEL:gpt-4o-mini}
+  chatglm:
+    api-key: ${CHATGLM_API_KEY:}
+    base-url: ${CHATGLM_BASE_URL:}
+    model: ${CHATGLM_MODEL:chatglm3-turbo}
+  qwen:
+    api-key: ${QWEN_API_KEY:}
+    base-url: ${QWEN_BASE_URL:}
+    model: ${QWEN_MODEL:qwen-turbo}
+
+vector-search:
+  enabled: ${VECTOR_SEARCH_ENABLED:true}
+  uris: ${VECTOR_SEARCH_URIS:http://localhost:19200}
+  index-name: ${VECTOR_SEARCH_INDEX:knowledge_document_vector}
+  chunk-index-name: ${VECTOR_SEARCH_CHUNK_INDEX:knowledge_chunk_vector}
+  query-log-enabled: ${VECTOR_SEARCH_QUERY_LOG_ENABLED:true}
+  query-log-index-name: ${VECTOR_SEARCH_QUERY_LOG_INDEX:query_log_index}
+  retrieval-log-index-name: ${VECTOR_SEARCH_RETRIEVAL_LOG_INDEX:retrieval_log_index}
+  timeout-ms: ${VECTOR_SEARCH_TIMEOUT_MS:3000}
+  num-candidates: ${VECTOR_SEARCH_NUM_CANDIDATES:50}
 
 file:
   upload-dir: ${UPLOAD_DIR:./uploads}

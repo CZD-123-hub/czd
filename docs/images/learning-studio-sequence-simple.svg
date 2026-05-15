@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="690" viewBox="0 0 1180 690">
+  <rect width="1180" height="690" fill="#ffffff"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#111111"/>
+    </marker>
+    <marker id="arrow-dashed" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3 L0,6 Z" fill="#111111"/>
+    </marker>
+  </defs>
+
+  <style>
+    .box { fill: #ffffff; stroke: #111111; stroke-width: 1.4; }
+    .line { stroke: #111111; stroke-width: 1.4; fill: none; marker-end: url(#arrow); }
+    .dash { stroke: #111111; stroke-width: 1.4; fill: none; stroke-dasharray: 4 4; marker-end: url(#arrow-dashed); }
+    .life { stroke: #111111; stroke-width: 1.2; }
+    .text { font-family: "Microsoft YaHei", "SimSun", sans-serif; font-size: 19px; fill: #111111; }
+    .label { font-family: "Microsoft YaHei", "SimSun", sans-serif; font-size: 18px; fill: #111111; }
+  </style>
+
+  <!-- participant boxes -->
+  <rect class="box" x="45" y="20" width="150" height="70" rx="3"/>
+  <text class="text" x="120" y="62" text-anchor="middle">学习者</text>
+
+  <rect class="box" x="270" y="20" width="165" height="70" rx="3"/>
+  <text class="text" x="352.5" y="62" text-anchor="middle">前端页面</text>
+
+  <rect class="box" x="520" y="20" width="165" height="70" rx="3"/>
+  <text class="text" x="602.5" y="62" text-anchor="middle">后端服务</text>
+
+  <rect class="box" x="760" y="20" width="150" height="70" rx="3"/>
+  <text class="text" x="835" y="62" text-anchor="middle">MySQL</text>
+
+  <rect class="box" x="975" y="20" width="165" height="70" rx="3"/>
+  <text class="text" x="1057.5" y="62" text-anchor="middle">外部视频平台</text>
+
+  <!-- lifelines -->
+  <line class="life" x1="120" y1="90" x2="120" y2="595"/>
+  <line class="life" x1="352.5" y1="90" x2="352.5" y2="595"/>
+  <line class="life" x1="602.5" y1="90" x2="602.5" y2="595"/>
+  <line class="life" x1="835" y1="90" x2="835" y2="595"/>
+  <line class="life" x1="1057.5" y1="90" x2="1057.5" y2="595"/>
+
+  <!-- messages -->
+  <line class="line" x1="120" y1="140" x2="352.5" y2="140"/>
+  <text class="label" x="236" y="127" text-anchor="middle">1. 进入学习看台</text>
+
+  <line class="line" x1="352.5" y1="195" x2="602.5" y2="195"/>
+  <text class="label" x="477" y="182" text-anchor="middle">2. 查询视频与推荐资源</text>
+
+  <line class="line" x1="602.5" y1="250" x2="835" y2="250"/>
+  <text class="label" x="719" y="237" text-anchor="middle">3. 读取视频、收藏和历史</text>
+
+  <line class="dash" x1="835" y1="305" x2="602.5" y2="305"/>
+  <text class="label" x="719" y="292" text-anchor="middle">4. 返回资源数据</text>
+
+  <line class="dash" x1="602.5" y1="360" x2="352.5" y2="360"/>
+  <text class="label" x="477" y="347" text-anchor="middle">5. 返回视频列表</text>
+
+  <line class="line" x1="352.5" y1="415" x2="602.5" y2="415"/>
+  <text class="label" x="477" y="402" text-anchor="middle">6. 搜索联网视频</text>
+
+  <line class="line" x1="602.5" y1="470" x2="1057.5" y2="470"/>
+  <text class="label" x="830" y="457" text-anchor="middle">7. 请求外部视频资源</text>
+
+  <line class="dash" x1="1057.5" y1="525" x2="602.5" y2="525"/>
+  <text class="label" x="830" y="512" text-anchor="middle">8. 返回搜索结果</text>
+
+  <line class="line" x1="602.5" y1="580" x2="835" y2="580"/>
+  <text class="label" x="719" y="567" text-anchor="middle">9. 保存视频与观看记录</text>
+
+  <!-- bottom boxes -->
+  <rect class="box" x="45" y="600" width="150" height="70" rx="3"/>
+  <text class="text" x="120" y="642" text-anchor="middle">学习者</text>
+
+  <rect class="box" x="270" y="600" width="165" height="70" rx="3"/>
+  <text class="text" x="352.5" y="642" text-anchor="middle">前端页面</text>
+
+  <rect class="box" x="520" y="600" width="165" height="70" rx="3"/>
+  <text class="text" x="602.5" y="642" text-anchor="middle">后端服务</text>
+
+  <rect class="box" x="760" y="600" width="150" height="70" rx="3"/>
+  <text class="text" x="835" y="642" text-anchor="middle">MySQL</text>
+
+  <rect class="box" x="975" y="600" width="165" height="70" rx="3"/>
+  <text class="text" x="1057.5" y="642" text-anchor="middle">外部视频平台</text>
+</svg>

@@ -26,6 +26,9 @@
         <if test="tag != null and tag != ''">
             AND JSON_CONTAINS(tags, JSON_QUOTE(#{tag}))
         </if>
+        <if test="language != null and language != ''">
+            AND language = #{language}
+        </if>
         ORDER BY updated_at DESC
     </select>
 

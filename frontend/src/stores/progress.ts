@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import * as progressApi from '@/api/progress'
 import type { DashboardData, HeatmapData, RadarData, SmartInsights } from '@/types'
-import { ElMessage } from 'element-plus'
+import { resolveErrorMessage } from '@/utils/errorMessage'
 
 export const useProgressStore = defineStore('progress', () => {
   const dashboard = ref<DashboardData | null>(null)
@@ -10,13 +10,39 @@ export const useProgressStore = defineStore('progress', () => {
   const radar = ref<RadarData | null>(null)
   const smartInsights = ref<SmartInsights | null>(null)
   const loading = ref(false)
+  const errors = ref<Record<string, string>>({})
+  const actionError = ref('')
+
+  function setError(scope: string, message: string) {
+    errors.value = { ...errors.value, [scope]: message }
+  }
+
+  function clearError(scope?: string) {
+    if (!scope) {
+      errors.value = {}
+      return
+    }
+    const next = { ...errors.value }
+    delete next[scope]
+    errors.value = next
+  }
+
+  function getError(scope: string) {
+    return errors.value[scope] || ''
+  }
+
+  function clearActionError() {
+    actionError.value = ''
+  }
 
   async function loadDashboard() {
     loading.value = true
     try {
       const res = await progressApi.getDashboard()
       dashboard.value = res.data.data
-    } catch {
+      clearError('dashboard')
+    } catch (error) {
+      setError('dashboard', resolveErrorMessage(error, '学习概览加载失败，请重试。'))
       dashboard.value = null
     } finally {
       loading.value = false
@@ -27,7 +53,9 @@ export const useProgressStore = defineStore('progress', () => {
     try {
       const res = await progressApi.getHeatmap(year)
       heatmap.value = res.data.data
-    } catch {
+      clearError('heatmap')
+    } catch (error) {
+      setError('heatmap', resolveErrorMessage(error, '活跃热力图加载失败，请稍后重试。'))
       heatmap.value = null
     }
   }
@@ -36,7 +64,9 @@ export const useProgressStore = defineStore('progress', () => {
     try {
       const res = await progressApi.getRadar()
       radar.value = res.data.data
-    } catch {
+      clearError('radar')
+    } catch (error) {
+      setError('radar', resolveErrorMessage(error, '雷达图加载失败，可先查看基础数据。'))
       radar.value = null
     }
   }
@@ -45,12 +75,15 @@ export const useProgressStore = defineStore('progress', () => {
     try {
       const res = await progressApi.getSmartInsights()
       smartInsights.value = res.data.data
-    } catch {
+      clearError('insights')
+    } catch (error) {
+      setError('insights', resolveErrorMessage(error, '学习建议加载失败，请稍后重试。'))
       smartInsights.value = null
     }
   }
 
-  async function toggleWeeklyPlanItem(planId: string, completed: boolean) {
+  async function toggleWeeklyPlanItem(planId: string, completed: boolean): Promise<boolean> {
+    clearActionError()
     try {
       await progressApi.toggleWeeklyPlanItem(planId, completed)
       if (smartInsights.value) {
@@ -59,25 +92,21 @@ export const useProgressStore = defineStore('progress', () => {
           item.completed = completed
         }
       }
-      ElMessage.success(completed ? '计划已完成' : '已取消完成')
-    } catch {
-      ElMessage.error('更新计划状态失败')
+      return true
+    } catch (error) {
+      actionError.value = resolveErrorMessage(error, '更新计划状态失败，请稍后重试。')
+      throw error
     }
   }
 
-  async function downloadReport() {
+  async function fetchReportBlob(): Promise<Blob> {
+    clearActionError()
     try {
       const res = await progressApi.getReport()
-      const blob = new Blob([res.data as BlobPart], { type: 'application/pdf' })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = 'learning-report.pdf'
-      link.click()
-      URL.revokeObjectURL(url)
-      ElMessage.success('报告下载成功')
-    } catch {
-      ElMessage.error('下载失败')
+      return new Blob([res.data as BlobPart], { type: 'application/pdf' })
+    } catch (error) {
+      actionError.value = resolveErrorMessage(error, '导出报告失败，请稍后重试。')
+      throw error
     }
   }
 
@@ -87,11 +116,17 @@ export const useProgressStore = defineStore('progress', () => {
     radar,
     smartInsights,
     loading,
+    errors,
+    actionError,
     loadDashboard,
     loadHeatmap,
     loadRadar,
     loadSmartInsights,
     toggleWeeklyPlanItem,
-    downloadReport,
+    fetchReportBlob,
+    setError,
+    clearError,
+    getError,
+    clearActionError,
   }
 })

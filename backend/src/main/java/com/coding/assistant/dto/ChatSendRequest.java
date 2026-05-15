@@ -14,6 +14,6 @@ public class ChatSendRequest {
 
     private Long conversationId;
 
-    @NotBlank(message = "Content is required")
+    @NotBlank(message = "content is required")
     private String content;
 }

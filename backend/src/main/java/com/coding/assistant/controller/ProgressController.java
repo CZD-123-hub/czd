@@ -3,12 +3,15 @@ package com.coding.assistant.controller;
 import com.coding.assistant.dto.*;
 import com.coding.assistant.security.SecurityUtil;
 import com.coding.assistant.service.ProgressService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 @RestController
@@ -31,11 +34,8 @@ public class ProgressController {
     }
 
     @PostMapping("/weekly-plan/toggle")
-    public ApiResponse<Void> toggleWeeklyPlan(@RequestBody WeeklyPlanToggleRequest request) {
+    public ApiResponse<Void> toggleWeeklyPlan(@Valid @RequestBody WeeklyPlanToggleRequest request) {
         Long userId = SecurityUtil.getCurrentUserId();
-        if (request == null || request.getPlanId() == null || request.getCompleted() == null) {
-            return ApiResponse.error(400, "参数不完整");
-        }
         progressService.toggleWeeklyPlan(userId, request.getPlanId(), request.getCompleted());
         return ApiResponse.success();
     }
@@ -59,7 +59,12 @@ public class ProgressController {
         byte[] pdfBytes = progressService.generateReport(userId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "learning-progress-report.pdf");
+        headers.setContentDisposition(
+                ContentDisposition.attachment().filename("学习数据报告.pdf", StandardCharsets.UTF_8).build()
+        );
+        headers.setCacheControl("no-store, no-cache, must-revalidate, max-age=0");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
         headers.setContentLength(pdfBytes.length);
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }

@@ -1,106 +1,100 @@
-import { defineStore } from 'pinia'
+﻿import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import request from '@/api/request'
+import * as pathApi from '@/api/path'
 import { ElMessage } from 'element-plus'
-import type { LearningPath } from '@/types'
+import type { LearningPath, NodeStatus, PathStatus } from '@/types'
 
 export const usePathStore = defineStore('path', () => {
   const paths = ref<LearningPath[]>([])
   const currentPath = ref<LearningPath | null>(null)
   const loading = ref(false)
+  const loadError = ref('')
 
-  // 加载学习路径列表
+  function computePathStatus(path: LearningPath): PathStatus {
+    const nodes = path.nodes || []
+    if (nodes.length === 0) return 'active'
+    const allFinished = nodes.every((n) => n.status === 'done' || n.status === 'skipped')
+    const anyStarted = nodes.some((n) => n.status === 'doing' || n.status === 'done' || n.status === 'skipped')
+    if (allFinished) return 'completed'
+    if (anyStarted) return 'in_progress'
+    return 'active'
+  }
+
+  function applyNodeStatus(path: LearningPath, nodeId: number, status: NodeStatus) {
+    const node = path.nodes?.find((n) => n.id === nodeId)
+    if (!node) return
+    node.status = status
+    path.status = computePathStatus(path)
+  }
+
   async function loadPaths() {
     loading.value = true
+    loadError.value = ''
     try {
-      const res = await request.get('/path/list')
+      const res = await pathApi.listPaths()
       paths.value = res.data.data || []
-    } catch (error) {
-      console.error('加载学习路径失败:', error)
-      ElMessage.error('加载学习路径失败')
+      if (currentPath.value) {
+        currentPath.value = paths.value.find((p) => p.id === currentPath.value!.id) || null
+      }
+    } catch {
+      loadError.value = '学习路径加载失败，请稍后重试'
+      ElMessage.error(loadError.value)
+      paths.value = []
     } finally {
       loading.value = false
     }
   }
 
-  // 生成学习路径
   async function generatePath(target: string, knownKnowledgeIds: string[]) {
     loading.value = true
     try {
-      const res = await request.post('/path/generate', { 
-        target, 
-        knownKnowledgeIds 
-      })
+      const res = await pathApi.generatePath(target, knownKnowledgeIds)
       const newPath = res.data.data
-      // 添加到列表头部
       paths.value.unshift(newPath)
       currentPath.value = newPath
       ElMessage.success('学习路径生成成功')
       return newPath
-    } catch (error: any) {
-      const message = error.response?.data?.message || '生成失败'
-      ElMessage.error(message)
-      throw error
     } finally {
       loading.value = false
     }
   }
 
-  // 更新节点状态
-  async function updateNodeStatus(pathId: number, nodeId: number, status: 'todo' | 'doing' | 'done' | 'skipped') {
+  async function updateNodeStatus(pathId: number, nodeId: number, status: NodeStatus) {
     try {
-      await request.put(`/path/node/${nodeId}/status`, { status })
-      
-      // 更新列表中的路径节点状态
-      const path = paths.value.find(p => p.id === pathId)
-      if (path && path.nodes) {
-        const node = path.nodes.find(n => n.id === nodeId)
-        if (node) {
-          node.status = status
-        }
+      await pathApi.updateNodeStatus(nodeId, status)
+
+      const listPath = paths.value.find((p) => p.id === pathId)
+      if (listPath) {
+        applyNodeStatus(listPath, nodeId, status)
       }
-      
-      // 更新当前选中的路径节点状态
-      if (currentPath.value?.id === pathId && currentPath.value.nodes) {
-        const node = currentPath.value.nodes.find(n => n.id === nodeId)
-        if (node) {
-          node.status = status
-        }
+
+      if (currentPath.value?.id === pathId) {
+        applyNodeStatus(currentPath.value, nodeId, status)
       }
-      
+
       ElMessage.success('状态更新成功')
-    } catch (error) {
-      console.error('更新节点状态失败:', error)
-      ElMessage.error('状态更新失败')
+    } catch {
+      // unified error message is handled by request interceptor
     }
   }
 
-  // 删除学习路径
   async function deletePath(pathId: number) {
     try {
-      await request.delete(`/path/${pathId}`)
-      
-      // 重新加载列表
-      await loadPaths()
-      
-      // 如果当前选中的路径被删除，清空当前路径
+      await pathApi.deletePath(pathId)
+      paths.value = paths.value.filter((p) => p.id !== pathId)
       if (currentPath.value?.id === pathId) {
         currentPath.value = null
       }
-      
       ElMessage.success('删除成功')
-    } catch (error) {
-      console.error('删除学习路径失败:', error)
-      ElMessage.error('删除失败')
+    } catch {
+      // unified error message is handled by request interceptor
     }
   }
 
-  // 选择学习路径
   function selectPath(path: LearningPath) {
     currentPath.value = path
   }
 
-  // 清空当前路径
   function clearCurrentPath() {
     currentPath.value = null
   }
@@ -109,6 +103,7 @@ export const usePathStore = defineStore('path', () => {
     paths,
     currentPath,
     loading,
+    loadError,
     loadPaths,
     generatePath,
     updateNodeStatus,

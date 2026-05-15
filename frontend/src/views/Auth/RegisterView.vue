@@ -140,7 +140,7 @@ function goLogin() {
 
         <div class="form-footer">
           <span>已有账号？</span>
-          <el-link type="primary" :underline="false" @click="goLogin">
+          <el-link type="primary" :underline="'never'" @click="goLogin">
             立即登录
           </el-link>
         </div>

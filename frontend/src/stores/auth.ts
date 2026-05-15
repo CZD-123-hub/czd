@@ -1,12 +1,13 @@
-import { defineStore } from 'pinia'
+﻿import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import * as authApi from '@/api/auth'
-import type { UserInfo, LoginForm, RegisterForm } from '@/types'
+import type { LoginForm, RegisterForm, UserInfo, UserProfileSummary } from '@/types'
 import { ElMessage } from 'element-plus'
 import router from '@/router'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserInfo | null>(null)
+  const profileSummary = ref<UserProfileSummary | null>(null)
   const token = ref<string>('')
 
   const isAuthenticated = computed(() => !!token.value)
@@ -46,6 +47,12 @@ export const useAuthStore = defineStore('auth', () => {
     router.push('/chat')
   }
 
+  async function loadProfileSummary() {
+    const res = await authApi.getProfileSummary()
+    profileSummary.value = res.data.data
+    return profileSummary.value
+  }
+
   function updateUser(newUser: UserInfo) {
     user.value = newUser
     localStorage.setItem('user', JSON.stringify(newUser))
@@ -55,10 +62,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await authApi.logout()
     } catch {
-      // Ignore logout API errors
+      // ignore logout API errors
     }
     token.value = ''
     user.value = null
+    profileSummary.value = null
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     router.push('/login')
@@ -74,12 +82,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     user,
+    profileSummary,
     token,
     isAuthenticated,
     initFromStorage,
     login,
     register,
     logout,
+    loadProfileSummary,
     updateUser,
     uploadAvatar,
   }

@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount, shallowRef } from 'vue'
-import * as echarts from 'echarts'
+import { init, type EChartsCoreOption, type EChartsType } from '@/utils/echarts'
 import type { HeatmapData } from '@/types'
 
 const props = defineProps<{
@@ -8,9 +8,9 @@ const props = defineProps<{
 }>()
 
 const chartContainer = ref<HTMLDivElement | null>(null)
-const chart = shallowRef<echarts.ECharts | null>(null)
+const chart = shallowRef<EChartsType | null>(null)
 
-function buildOption(): echarts.EChartsCoreOption {
+function buildOption(): EChartsCoreOption {
   if (!props.data) return {}
 
   const year = props.data.year
@@ -84,7 +84,7 @@ function buildOption(): echarts.EChartsCoreOption {
 
 function initChart() {
   if (!chartContainer.value) return
-  chart.value = echarts.init(chartContainer.value)
+  chart.value = init(chartContainer.value)
   if (props.data) {
     chart.value.setOption(buildOption())
   }

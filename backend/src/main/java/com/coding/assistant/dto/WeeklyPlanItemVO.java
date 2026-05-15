@@ -13,5 +13,6 @@ public class WeeklyPlanItemVO {
     private String id;
     private String title;
     private String description;
+    private String expectedImpact;
     private boolean completed;
 }

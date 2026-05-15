@@ -2,12 +2,18 @@ package com.coding.assistant.service;
 
 import com.coding.assistant.dto.LearningNodeVO;
 import com.coding.assistant.dto.LearningPathVO;
+import com.coding.assistant.dto.NodeDocumentVO;
+import com.coding.assistant.dto.NodeVideoVO;
 import com.coding.assistant.dto.PathGenerateRequest;
+import com.coding.assistant.entity.LearningVideo;
 import com.coding.assistant.entity.LearningNode;
 import com.coding.assistant.entity.LearningPath;
 import com.coding.assistant.exception.BusinessException;
+import com.coding.assistant.exception.ErrorCode;
 import com.coding.assistant.mapper.LearningNodeMapper;
 import com.coding.assistant.mapper.LearningPathMapper;
+import com.coding.assistant.mapper.LearningVideoMapper;
+import com.coding.assistant.mapper.KnowledgeDocumentMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +33,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PathService {
+    private static final int RESOURCE_LIMIT_PER_NODE = 3;
 
     private final LearningPathMapper learningPathMapper;
     private final LearningNodeMapper learningNodeMapper;
     private final Driver neo4jDriver;
     private final ChatService chatService;  // 使用 ChatService 代替 LLMService
+    private final KnowledgeDocumentMapper knowledgeDocumentMapper;
+    private final LearningVideoMapper learningVideoMapper;
 
     @Transactional
     public LearningPathVO generate(Long userId, PathGenerateRequest request) {
@@ -106,6 +115,7 @@ public class PathService {
                     .status("todo")
                     .build();
             learningNodeMapper.insert(node);
+            NodeResourceBundle resources = buildNodeResources(knowledgeId, nodeNames.getOrDefault(knowledgeId, knowledgeId));
 
             nodeVOs.add(LearningNodeVO.builder()
                     .id(node.getId())
@@ -113,7 +123,9 @@ public class PathService {
                     .knowledgeName(nodeNames.getOrDefault(knowledgeId, knowledgeId))
                     .nodeOrder(i + 1)
                     .status("todo")
-                    .resourceUrls(List.of())
+                    .resourceUrls(resources.resourceUrls())
+                    .recommendedDocuments(resources.documents())
+                    .recommendedVideos(resources.videos())
                     .build());
         }
 
@@ -142,7 +154,11 @@ public class PathService {
             String aiResponse = chatService.generateLearningPath(prompt);
 
             if (aiResponse == null || aiResponse.isEmpty()) {
-                throw new BusinessException(400, "无法生成学习路径，请尝试其他学习目标");
+                throw new BusinessException(
+                        ErrorCode.BAD_REQUEST,
+                        ErrorCode.BIZ_AI_GENERATION_FAILED,
+                        "无法生成学习路径，请尝试其他学习目标"
+                );
             }
 
             log.info("AI response received, length: {}", aiResponse.length());
@@ -152,7 +168,11 @@ public class PathService {
 
             if (aiNodes.isEmpty()) {
                 log.warn("No nodes parsed from AI response: {}", aiResponse);
-                throw new BusinessException(400, "无法生成学习路径，请尝试其他学习目标");
+                throw new BusinessException(
+                        ErrorCode.BAD_REQUEST,
+                        ErrorCode.BIZ_AI_GENERATION_FAILED,
+                        "无法生成学习路径，请尝试其他学习目标"
+                );
             }
 
             // 保存学习路径
@@ -180,6 +200,7 @@ for (int i = 0; i < aiNodes.size(); i++) {
             .status("todo")
             .build();
     learningNodeMapper.insert(node);
+    NodeResourceBundle resources = buildNodeResources(knowledgeId, nodeName);
 
     nodeVOs.add(LearningNodeVO.builder()
             .id(node.getId())
@@ -187,7 +208,9 @@ for (int i = 0; i < aiNodes.size(); i++) {
             .knowledgeName(nodeName)  // 直接使用原始名称
             .nodeOrder(i + 1)
             .status("todo")
-            .resourceUrls(List.of())
+            .resourceUrls(resources.resourceUrls())
+            .recommendedDocuments(resources.documents())
+            .recommendedVideos(resources.videos())
             .build());
 }
 
@@ -205,7 +228,11 @@ for (int i = 0; i < aiNodes.size(); i++) {
             throw e;
         } catch (Exception e) {
             log.error("AI generation failed: {}", e.getMessage(), e);
-            throw new BusinessException(400, "No learning nodes found for the given target");
+            throw new BusinessException(
+                    ErrorCode.BAD_REQUEST,
+                    ErrorCode.BIZ_AI_GENERATION_FAILED,
+                    "No learning nodes found for the given target"
+            );
         }
     }
 
@@ -293,10 +320,18 @@ for (int i = 0; i < aiNodes.size(); i++) {
 public void deletePath(Long userId, Long pathId) {
     LearningPath path = learningPathMapper.selectById(pathId);
     if (path == null) {
-        throw new BusinessException(404, "学习路径不存在");
+        throw new BusinessException(
+                ErrorCode.NOT_FOUND,
+                ErrorCode.BIZ_LEARNING_PATH_NOT_FOUND,
+                "学习路径不存在"
+        );
     }
     if (!path.getUserId().equals(userId)) {
-        throw new BusinessException(403, "无权删除此学习路径");
+        throw new BusinessException(
+                ErrorCode.FORBIDDEN,
+                ErrorCode.BIZ_FORBIDDEN,
+                "无权删除此学习路径"
+        );
     }
     learningNodeMapper.deleteByPathId(pathId);
     learningPathMapper.deleteById(pathId);
@@ -306,24 +341,62 @@ public void deletePath(Long userId, Long pathId) {
 public void updateNodeStatus(Long userId, Long nodeId, String status) {
     LearningNode node = learningNodeMapper.selectById(nodeId);
     if (node == null) {
-        throw new BusinessException(404, "学习节点不存在");
+        throw new BusinessException(
+                ErrorCode.NOT_FOUND,
+                ErrorCode.BIZ_LEARNING_NODE_NOT_FOUND,
+                "学习节点不存在"
+        );
     }
-    
+
     LearningPath path = learningPathMapper.selectById(node.getPathId());
     if (path == null || !path.getUserId().equals(userId)) {
-        throw new BusinessException(403, "无权修改此节点");
+        throw new BusinessException(
+                ErrorCode.FORBIDDEN,
+                ErrorCode.BIZ_FORBIDDEN,
+                "无权修改此节点"
+        );
     }
-    
+
     node.setStatus(status);
     learningNodeMapper.updateById(node);
-    
+
+    // 根据所有节点状态自动计算路径状态
+    List<LearningNode> allNodes = learningNodeMapper.selectByPathId(path.getId());
+    String pathStatus = computePathStatus(allNodes);
+    path.setStatus(pathStatus);
     path.setUpdatedAt(LocalDateTime.now());
     learningPathMapper.updateById(path);
-    
-    log.info("Learning node {} status updated to '{}' by user {}", nodeId, status, userId);
-}
-       
 
+    log.info("Learning node {} status updated to '{}', path {} status -> '{}' by user {}",
+            nodeId, status, path.getId(), pathStatus, userId);
+}
+
+    /**
+     * 根据节点状态计算路径整体状态
+     * - 全部 done/skipped → completed
+     * - 存在 doing 或部分 done → in_progress
+     * - 全部 todo → active
+     */
+    private String computePathStatus(List<LearningNode> nodes) {
+        if (nodes == null || nodes.isEmpty()) return "active";
+
+        boolean allFinished = true;
+        boolean anyStarted = false;
+
+        for (LearningNode n : nodes) {
+            String s = n.getStatus();
+            if (!"done".equals(s) && !"skipped".equals(s)) {
+                allFinished = false;
+            }
+            if ("doing".equals(s) || "done".equals(s) || "skipped".equals(s)) {
+                anyStarted = true;
+            }
+        }
+
+        if (allFinished) return "completed";
+        if (anyStarted) return "in_progress";
+        return "active";
+    }
 
     private List<String> topologicalSort(Set<String> allNodes, List<Map<String, String>> dependencies) {
         Map<String, Set<String>> adjList = new HashMap<>();
@@ -373,7 +446,7 @@ public void updateNodeStatus(Long userId, Long nodeId, String status) {
         return sorted;
     }
 
- private LearningNodeVO toLearningNodeVO(LearningNode node) {
+private LearningNodeVO toLearningNodeVO(LearningNode node) {
     List<String> urls = new ArrayList<>();
     if (node.getResourceUrls() != null && !node.getResourceUrls().isEmpty()) {
         try {
@@ -385,15 +458,16 @@ public void updateNodeStatus(Long userId, Long nodeId, String status) {
         }
     }
 
-    // 获取知识名称
     String knowledgeName;
-    
-    // 如果是 AI 生成的节点，使用 customName
     if (node.getKnowledgeId() != null && node.getKnowledgeId().startsWith("ai_") && node.getCustomName() != null) {
         knowledgeName = node.getCustomName();
     } else {
         knowledgeName = getKnowledgeName(node.getKnowledgeId());
     }
+
+    NodeResourceBundle resources = buildNodeResources(node.getKnowledgeId(), knowledgeName);
+    LinkedHashSet<String> mergedUrls = new LinkedHashSet<>(urls);
+    mergedUrls.addAll(resources.resourceUrls());
 
     return LearningNodeVO.builder()
             .id(node.getId())
@@ -401,9 +475,144 @@ public void updateNodeStatus(Long userId, Long nodeId, String status) {
             .knowledgeName(knowledgeName)
             .nodeOrder(node.getNodeOrder())
             .status(node.getStatus())
-            .resourceUrls(urls)
+            .resourceUrls(new ArrayList<>(mergedUrls))
+            .recommendedDocuments(resources.documents())
+            .recommendedVideos(resources.videos())
             .build();
 }
+
+    private NodeResourceBundle buildNodeResources(String knowledgeId, String knowledgeName) {
+        List<String> keywords = buildSearchKeywords(knowledgeName, knowledgeId);
+        LinkedHashMap<Long, NodeDocumentVO> documentMap = new LinkedHashMap<>();
+        LinkedHashMap<Long, NodeVideoVO> videoMap = new LinkedHashMap<>();
+
+        for (String keyword : keywords) {
+            if (documentMap.size() < RESOURCE_LIMIT_PER_NODE) {
+                try {
+                    knowledgeDocumentMapper.searchByKeyword(keyword, RESOURCE_LIMIT_PER_NODE).forEach(doc -> {
+                        if (doc.getId() != null && !documentMap.containsKey(doc.getId())) {
+                            documentMap.put(doc.getId(), NodeDocumentVO.builder()
+                                    .id(doc.getId())
+                                    .title(doc.getTitle())
+                                    .category(doc.getCategory())
+                                    .build());
+                        }
+                    });
+                } catch (Exception ex) {
+                    log.warn("Failed to load recommended documents for keyword '{}': {}", keyword, ex.getMessage());
+                }
+            }
+
+            if (videoMap.size() < RESOURCE_LIMIT_PER_NODE) {
+                try {
+                    learningVideoMapper.recommendByKeyword(keyword, RESOURCE_LIMIT_PER_NODE).forEach(video -> {
+                        if (video.getId() != null && !videoMap.containsKey(video.getId())) {
+                            videoMap.put(video.getId(), toNodeVideoVO(video));
+                        }
+                    });
+                } catch (Exception ex) {
+                    log.warn("Failed to load recommended videos for keyword '{}': {}", keyword, ex.getMessage());
+                }
+            }
+
+            if (documentMap.size() >= RESOURCE_LIMIT_PER_NODE && videoMap.size() >= RESOURCE_LIMIT_PER_NODE) {
+                break;
+            }
+        }
+
+        // Fallback: keep each stage actionable even when semantic keyword match is weak.
+        if (documentMap.isEmpty()) {
+            try {
+                knowledgeDocumentMapper.selectRecent(RESOURCE_LIMIT_PER_NODE).forEach(doc -> {
+                    if (doc.getId() != null && !documentMap.containsKey(doc.getId())) {
+                        documentMap.put(doc.getId(), NodeDocumentVO.builder()
+                                .id(doc.getId())
+                                .title(doc.getTitle())
+                                .category(doc.getCategory())
+                                .build());
+                    }
+                });
+            } catch (Exception ex) {
+                log.warn("Failed to load fallback documents: {}", ex.getMessage());
+            }
+        }
+
+        if (videoMap.isEmpty()) {
+            try {
+                learningVideoMapper.selectRecent(RESOURCE_LIMIT_PER_NODE).forEach(video -> {
+                    if (video.getId() != null && !videoMap.containsKey(video.getId())) {
+                        videoMap.put(video.getId(), toNodeVideoVO(video));
+                    }
+                });
+            } catch (Exception ex) {
+                log.warn("Failed to load fallback videos: {}", ex.getMessage());
+            }
+        }
+
+        List<NodeDocumentVO> documents = documentMap.values().stream()
+                .limit(RESOURCE_LIMIT_PER_NODE)
+                .collect(Collectors.toList());
+        List<NodeVideoVO> videos = videoMap.values().stream()
+                .limit(RESOURCE_LIMIT_PER_NODE)
+                .collect(Collectors.toList());
+
+        List<String> resourceUrls = new ArrayList<>();
+        resourceUrls.addAll(documents.stream()
+                .map(doc -> "/documents?docId=" + doc.getId())
+                .collect(Collectors.toList()));
+        resourceUrls.addAll(videos.stream()
+                .map(NodeVideoVO::getUrl)
+                .filter(url -> url != null && !url.isBlank())
+                .collect(Collectors.toList()));
+
+        return new NodeResourceBundle(resourceUrls, documents, videos);
+    }
+
+    private List<String> buildSearchKeywords(String knowledgeName, String knowledgeId) {
+        LinkedHashSet<String> keywords = new LinkedHashSet<>();
+        addKeyword(keywords, knowledgeName);
+        addKeyword(keywords, knowledgeId == null ? null : knowledgeId.replace('-', ' '));
+        if (knowledgeId != null) {
+            for (String segment : knowledgeId.split("[-_\\s]+")) {
+                addKeyword(keywords, segment);
+            }
+        }
+
+        List<String> tokenSource = new ArrayList<>();
+        if (knowledgeName != null) tokenSource.add(knowledgeName);
+        if (knowledgeId != null) tokenSource.add(knowledgeId);
+        for (String text : tokenSource) {
+            for (String token : text.split("[^A-Za-z0-9#+.-]+")) {
+                if (token.length() >= 2) {
+                    addKeyword(keywords, token);
+                }
+            }
+        }
+        return new ArrayList<>(keywords);
+    }
+
+    private void addKeyword(Set<String> keywords, String candidate) {
+        if (candidate == null) return;
+        String trimmed = candidate.trim();
+        if (trimmed.isBlank()) return;
+        keywords.add(trimmed);
+    }
+
+    private NodeVideoVO toNodeVideoVO(LearningVideo video) {
+        return NodeVideoVO.builder()
+                .id(video.getId())
+                .title(video.getTitle())
+                .platform(video.getPlatform())
+                .url(video.getUrl())
+                .durationSeconds(video.getDurationSeconds())
+                .build();
+    }
+
+    private record NodeResourceBundle(
+            List<String> resourceUrls,
+            List<NodeDocumentVO> documents,
+            List<NodeVideoVO> videos
+    ) {}
 
     private String getKnowledgeName(String knowledgeId) {
         // 如果是 AI 生成的虚拟 ID，直接返回 ID 作为名称

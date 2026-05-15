@@ -1,6 +1,7 @@
 package com.coding.assistant.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -25,4 +26,12 @@ public class KnowledgeDocument {
     /** 向量，JSON 数组字符串，如 "[0.1, 0.2, ...]" */
     private String embedding;
     private LocalDateTime createdAt;
+
+    /** 命中的 chunk 序号（仅检索返回使用，不入库） */
+    @TableField(exist = false)
+    private Integer hitChunkIndex;
+
+    /** 命中的 chunk 相似度分数（仅检索返回使用，不入库） */
+    @TableField(exist = false)
+    private Double hitScore;
 }

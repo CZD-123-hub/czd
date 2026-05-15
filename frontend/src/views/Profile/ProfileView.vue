@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { ref, computed } from 'vue'
+﻿<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { User, Camera } from '@element-plus/icons-vue'
 
@@ -8,6 +8,11 @@ const uploading = ref(false)
 const fileInput = ref<HTMLInputElement>()
 
 const userInfo = computed(() => authStore.user)
+const profileSummary = computed(() => authStore.profileSummary)
+
+onMounted(() => {
+  void authStore.loadProfileSummary()
+})
 
 function getLevelLabel(level: string): string {
   const map: Record<string, string> = {
@@ -40,16 +45,14 @@ async function handleFileChange(event: Event) {
 
   const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
   if (!allowedTypes.includes(file.type)) {
-    import('element-plus').then(({ ElMessage }) => {
-      ElMessage.error('仅支持 JPG、PNG、GIF、WebP 格式的图片')
-    })
+    const { ElMessage } = await import('element-plus')
+    ElMessage.error('仅支持 JPG、PNG、GIF、WebP 格式图片')
     return
   }
 
   if (file.size > 5 * 1024 * 1024) {
-    import('element-plus').then(({ ElMessage }) => {
-      ElMessage.error('图片大小不能超过 5MB')
-    })
+    const { ElMessage } = await import('element-plus')
+    ElMessage.error('图片大小不能超过 5MB')
     return
   }
 
@@ -57,7 +60,7 @@ async function handleFileChange(event: Event) {
   try {
     await authStore.uploadAvatar(file)
   } catch {
-    // error handled by store/interceptor
+    // handled by store/interceptor
   } finally {
     uploading.value = false
     input.value = ''
@@ -99,15 +102,9 @@ async function handleFileChange(event: Event) {
         <div class="profile-body">
           <h3 class="section-title">基本信息</h3>
           <el-descriptions :column="1" border>
-            <el-descriptions-item label="用户ID">
-              {{ userInfo?.id || '-' }}
-            </el-descriptions-item>
-            <el-descriptions-item label="用户名">
-              {{ userInfo?.username || '-' }}
-            </el-descriptions-item>
-            <el-descriptions-item label="邮箱">
-              {{ userInfo?.email || '-' }}
-            </el-descriptions-item>
+            <el-descriptions-item label="用户ID">{{ userInfo?.id || '-' }}</el-descriptions-item>
+            <el-descriptions-item label="用户名">{{ userInfo?.username || '-' }}</el-descriptions-item>
+            <el-descriptions-item label="邮箱">{{ userInfo?.email || '-' }}</el-descriptions-item>
             <el-descriptions-item label="等级">
               <el-tag :type="getLevelType(userInfo?.level || '')" size="small">
                 {{ getLevelLabel(userInfo?.level || '') }}
@@ -118,13 +115,23 @@ async function handleFileChange(event: Event) {
             </el-descriptions-item>
           </el-descriptions>
 
+          <h3 class="section-title">学习画像</h3>
+          <el-descriptions :column="1" border>
+            <el-descriptions-item label="当前目标">{{ profileSummary?.primaryGoal || '-' }}</el-descriptions-item>
+            <el-descriptions-item label="学习风格">{{ profileSummary?.learningStyle || '-' }}</el-descriptions-item>
+            <el-descriptions-item label="薄弱点">
+              <template v-if="profileSummary?.weakPoints?.length">{{ profileSummary.weakPoints.join(' / ') }}</template>
+              <template v-else>-</template>
+            </el-descriptions-item>
+            <el-descriptions-item label="偏好语言">
+              <template v-if="profileSummary?.preferredLanguages?.length">{{ profileSummary.preferredLanguages.join(' / ') }}</template>
+              <template v-else>-</template>
+            </el-descriptions-item>
+            <el-descriptions-item label="下一步建议">{{ profileSummary?.nextTaskHint || '-' }}</el-descriptions-item>
+          </el-descriptions>
+
           <div class="profile-tips">
-            <el-alert
-              title="个人资料功能说明"
-              type="info"
-              :closable="false"
-              show-icon
-            >
+            <el-alert title="个人资料功能说明" type="info" :closable="false" show-icon>
               <template #default>
                 点击头像即可上传自定义头像，支持 JPG、PNG、GIF、WebP 格式，大小不超过 5MB。
               </template>
@@ -223,7 +230,7 @@ async function handleFileChange(event: Event) {
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 16px;
+  margin: 16px 0;
 }
 
 .profile-tips {
