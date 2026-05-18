@@ -39,6 +39,40 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DocumentService {
 
+    /*
+     * DocumentService 方法总览：
+     * 1. initCorpus：启动后初始化 TF-IDF 语料统计，并预热 ES 向量索引。
+     * 2. addDocument：新增知识文档，生成文档向量、分块和 chunk 向量。
+     * 3. search：RAG 文档检索总入口，融合语义检索和关键词检索。
+     * 4. searchSemantic：语义检索入口，按 chunk -> 文档向量 -> 本地相似度回退。
+     * 5. searchSemanticByChunk：优先检索命中文档分块，并按语义和关键词重排。
+     * 6. searchByKeywords：按扩写关键词做标题、分类、正文匹配。
+     * 7. listAll：查询知识文档列表，并补充当前用户收藏状态。
+     * 8. safeSelectFavoriteDocIds：安全读取用户收藏文档 ID。
+     * 9. toggleFavorite：收藏或取消收藏知识文档。
+     * 10. getRelatedNodes：根据文档内容从 Neo4j 匹配相关图谱节点。
+     * 11. deleteDocument：删除知识文档。
+     * 12. warmDocumentVectors：把已有文档向量同步到 ES 文档索引。
+     * 13. warmChunkVectors：把已有文档分块向量同步到 ES chunk 索引。
+     * 14. upsertChunksForDocument：为文档重新生成 chunk、embedding 和 ES 索引。
+     * 15. splitToChunks：按固定长度和重叠窗口切分正文。
+     * 16. scoreSemantic(query, doc)：根据问题文本计算文档语义分。
+     * 17. scoreSemantic(queryVector, doc)：根据问题向量计算文档语义分。
+     * 18. scoreChunkSemantic：计算问题向量与 chunk 向量的语义分。
+     * 19. scoreChunkKeyword：计算 chunk 的关键词命中分。
+     * 20. parseEmbedding：把数据库中的 embedding JSON 解析成向量。
+     * 21. resolveDocumentVectorForIndex：确保写入 ES 的文档向量维度正确。
+     * 22. scoreKeyword：计算文档标题、分类、正文的关键词命中分。
+     * 23. rankBonus：按召回排名给结果加轻量奖励。
+     * 24. trimChunkContent：裁剪 chunk 摘要。
+     * 25. safe：空字符串兜底。
+     * 26. logSemanticTrace：记录语义检索路径和指标。
+     * 27. summarizeHits：生成检索命中摘要日志。
+     * 28. trimLog：裁剪日志文本。
+     * 29. copyDocument：复制文档对象，避免修改原实体。
+     * 30. toVO：把文档实体转换为前端 VO。
+     */
+
     private static final int CHUNK_SIZE = 500;
     private static final int CHUNK_OVERLAP = 120;
 
@@ -52,7 +86,7 @@ public class DocumentService {
     private final ElasticsearchVectorService elasticsearchVectorService;
     private final RetrievalMetricsService retrievalMetricsService;
 
-    /** 应用启动后初始化语料统计，并在开启 ES 向量检索时预热文档/分块索引。 */
+    /** 1. 应用启动后初始化语料统计，并在开启 ES 向量检索时预热文档/分块索引。 */
     @PostConstruct
     public void initCorpus() {
         try {
@@ -80,7 +114,7 @@ public class DocumentService {
     }
 
     /**
-     * 新增知识文档：写入文档、生成 embedding、建立 chunk 与向量索引。
+     * 2. 新增知识文档：写入文档、生成 embedding、建立 chunk 与向量索引。
      */
     public KnowledgeDocument addDocument(String title, String content, String category) {
         // 先更新语料统计（DF/总文档数），供后续 TF-IDF 权重计算使用。
@@ -112,7 +146,7 @@ public class DocumentService {
         return doc;
     }
 
-    /** 混合检索：语义召回 + 关键词召回，并做分数融合后排序。 */
+    /** 3. 混合检索：语义召回 + 关键词召回，并做分数融合后排序。 */
     public List<KnowledgeDocument> search(String query, int topK) {
         long startNs = System.nanoTime();
         List<String> expandedTerms = queryRewriteService.expandTerms(query);
@@ -162,7 +196,7 @@ public class DocumentService {
     }
 
     /**
-     * 语义检索主入口：
+     * 4. 语义检索主入口：
      * 优先走 chunk 级召回（引用更精确），若失败则回退文档向量检索，再回退本地 embedding 打分。
      * 返回仍是文档对象，但 content 会替换为命中的 chunk 摘要。
      */
@@ -212,7 +246,7 @@ public class DocumentService {
     }
 
     /**
-     * chunk 级语义检索：
+     * 5. chunk 级语义检索：
      * 1) 先查 ES chunk 向量候选；2) 用语义+关键词重排；3) 按文档去重取 topK。
      */
     private List<KnowledgeDocument> searchSemanticByChunk(List<Double> queryVector, List<String> expandedTerms, int topK) {
@@ -283,6 +317,7 @@ public class DocumentService {
         return new ArrayList<>(docMap.values());
     }
 
+    /** 6. 按扩写关键词检索文档，并根据标题、分类、正文命中情况排序。 */
     public List<KnowledgeDocument> searchByKeywords(List<String> keywords, int topK) {
         if (keywords == null || keywords.isEmpty()) {
             return List.of();
@@ -306,6 +341,7 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
+    /** 7. 查询知识文档列表，并根据用户收藏状态转换为前端 VO。 */
     public List<KnowledgeDocumentVO> listAll(Long userId, boolean savedOnly) {
         List<KnowledgeDocument> docs;
         Set<Long> savedIds;
@@ -345,6 +381,7 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
+    /** 8. 安全查询用户收藏文档 ID，异常时返回空列表避免影响主列表。 */
     private List<Long> safeSelectFavoriteDocIds(Long userId) {
         if (userId == null) {
             return List.of();
@@ -358,6 +395,7 @@ public class DocumentService {
         }
     }
 
+    /** 9. 收藏或取消收藏知识文档。 */
     public void toggleFavorite(Long userId, Long documentId, boolean favorite) {
         KnowledgeDocument doc = documentMapper.selectById(documentId);
         if (doc == null) {
@@ -387,6 +425,7 @@ public class DocumentService {
         }
     }
 
+    /** 10. 根据文档文本、分类和关键词从 Neo4j 匹配相关知识图谱节点。 */
     public List<RelatedGraphNodeVO> getRelatedNodes(Long documentId, Integer limit) {
         int size = Math.max(1, Math.min(limit == null ? 8 : limit, 20));
         KnowledgeDocument doc = documentMapper.selectById(documentId);
@@ -452,6 +491,7 @@ public class DocumentService {
         }
     }
 
+    /** 11. 删除知识文档，未命中时抛出业务异常。 */
     public void deleteDocument(Long id) {
         int affectedRows = documentMapper.deleteById(id);
         if (affectedRows == 0) {
@@ -463,6 +503,7 @@ public class DocumentService {
         }
     }
 
+    /** 12. 将已有文档的向量写入 Elasticsearch 文档级索引。 */
     private void warmDocumentVectors(List<KnowledgeDocument> all) {
         for (KnowledgeDocument doc : all) {
             List<Double> vector = resolveDocumentVectorForIndex(doc);
@@ -473,6 +514,7 @@ public class DocumentService {
         log.info("Document vector index warm-up finished for {} documents", all.size());
     }
 
+    /** 13. 为已有文档生成或刷新 chunk，并同步 chunk 向量索引。 */
     private void warmChunkVectors(List<KnowledgeDocument> all) {
         for (KnowledgeDocument doc : all) {
             upsertChunksForDocument(doc);
@@ -480,6 +522,7 @@ public class DocumentService {
         log.info("Chunk vector index warm-up finished for {} documents", all.size());
     }
 
+    /** 14. 为单篇文档重建 chunk、chunk embedding 和 ES chunk 索引。 */
     private void upsertChunksForDocument(KnowledgeDocument doc) {
         if (doc == null || doc.getId() == null) {
             return;
@@ -519,6 +562,7 @@ public class DocumentService {
         }
     }
 
+    /** 15. 将正文按固定长度和重叠窗口切分为多个 chunk。 */
     private List<String> splitToChunks(String content, int chunkSize, int overlap) {
         if (content == null || content.isBlank()) {
             return List.of();
@@ -544,11 +588,13 @@ public class DocumentService {
         return result;
     }
 
+    /** 16. 将问题文本向量化后计算文档语义相似度。 */
     private double scoreSemantic(String query, KnowledgeDocument doc) {
         List<Double> queryVector = embeddingService.embed(query);
         return scoreSemantic(queryVector, doc);
     }
 
+    /** 17. 使用已有问题向量计算文档级余弦相似度。 */
     private double scoreSemantic(List<Double> queryVector, KnowledgeDocument doc) {
         List<Double> docVector = parseEmbedding(doc.getEmbedding());
         if (docVector.isEmpty()) {
@@ -558,6 +604,7 @@ public class DocumentService {
         return embeddingService.cosineSimilarity(queryVector, docVector);
     }
 
+    /** 18. 使用问题向量计算 chunk 级余弦相似度。 */
     private double scoreChunkSemantic(List<Double> queryVector, KnowledgeChunk chunk) {
         List<Double> chunkVector = parseEmbedding(chunk.getEmbedding());
         if (chunkVector.isEmpty()) {
@@ -567,6 +614,7 @@ public class DocumentService {
         return embeddingService.cosineSimilarity(queryVector, chunkVector);
     }
 
+    /** 19. 计算 chunk 正文对扩写关键词的命中分。 */
     private double scoreChunkKeyword(KnowledgeChunk chunk, List<String> keywords) {
         if (keywords == null || keywords.isEmpty()) {
             return 0.0;
@@ -585,6 +633,7 @@ public class DocumentService {
         return score;
     }
 
+    /** 20. 将数据库中的 embedding JSON 字符串解析为向量列表。 */
     private List<Double> parseEmbedding(String embeddingJson) {
         if (embeddingJson == null || embeddingJson.isBlank()) {
             return List.of();
@@ -598,7 +647,7 @@ public class DocumentService {
     }
 
     /**
-     * 确保写入 ES 的向量维度固定一致。
+     * 21. 确保写入 ES 的向量维度固定一致。
      * 若历史 embedding 维度不匹配，则重新生成。
      */
     private List<Double> resolveDocumentVectorForIndex(KnowledgeDocument doc) {
@@ -615,6 +664,7 @@ public class DocumentService {
         return embeddingService.embed(doc.getTitle() + "\n" + doc.getContent());
     }
 
+    /** 22. 计算文档标题、分类、正文的关键词命中分。 */
     private double scoreKeyword(KnowledgeDocument doc, List<String> keywords) {
         String title = safe(doc.getTitle()).toLowerCase();
         String category = safe(doc.getCategory()).toLowerCase();
@@ -639,10 +689,12 @@ public class DocumentService {
         return score;
     }
 
+    /** 23. 根据召回排名给靠前结果一个轻量加分。 */
     private double rankBonus(int index) {
         return Math.max(0.0, 1.0 - index * 0.05);
     }
 
+    /** 24. 裁剪 chunk 内容摘要，避免注入过长上下文。 */
     private String trimChunkContent(String content, int maxLength) {
         if (content == null) {
             return "";
@@ -654,10 +706,12 @@ public class DocumentService {
         return normalized.substring(0, maxLength) + "...";
     }
 
+    /** 25. 字符串空值兜底。 */
     private String safe(String value) {
         return value == null ? "" : value;
     }
 
+    /** 26. 记录语义检索路径、耗时和命中文档摘要。 */
     private void logSemanticTrace(String path, String query, int topK, List<KnowledgeDocument> result, long startNs) {
         long elapsedMs = (System.nanoTime() - startNs) / 1_000_000;
         retrievalMetricsService.recordSemanticPath(path, result.size(), elapsedMs);
@@ -670,6 +724,7 @@ public class DocumentService {
                 summarizeHits(result));
     }
 
+    /** 27. 生成命中文档摘要，用于检索日志。 */
     private String summarizeHits(List<KnowledgeDocument> docs) {
         if (docs == null || docs.isEmpty()) {
             return "[]";
@@ -684,6 +739,7 @@ public class DocumentService {
                 .collect(Collectors.joining(",", "[", "]"));
     }
 
+    /** 28. 裁剪日志文本，避免日志内容过长。 */
     private String trimLog(String text, int maxLength) {
         if (text == null) {
             return "";
@@ -695,6 +751,7 @@ public class DocumentService {
         return normalized.substring(0, maxLength) + "...";
     }
 
+    /** 29. 复制文档对象，避免检索过程修改原始实体。 */
     private KnowledgeDocument copyDocument(KnowledgeDocument source) {
         return KnowledgeDocument.builder()
                 .id(source.getId())
@@ -706,6 +763,7 @@ public class DocumentService {
                 .build();
     }
 
+    /** 30. 将文档实体转换为前端展示 VO。 */
     private KnowledgeDocumentVO toVO(KnowledgeDocument doc, boolean saved) {
         return KnowledgeDocumentVO.builder()
                 .id(doc.getId())

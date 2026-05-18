@@ -6,13 +6,9 @@ import java.util.List;
 
 public interface LlmProvider {
 
-    /**
-     * Stream chat completion responses
-     */
+    // 异步聊天完成，响应流式传输
     Flux<String> chatStream(List<ChatMessage> messages, String systemPrompt);
 
-    /**
-     * Synchronous chat completion
-     */
+    // 同步聊天完成，返回完整响应
     String chat(List<ChatMessage> messages, String systemPrompt);
 }
